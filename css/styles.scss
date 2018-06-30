@@ -45,8 +45,8 @@ $font-weights: (
 );
 
 $fonts: (
-	"ProximaNova",
-	"Gilroy",
+	"proxima": "ProximaNova",
+	"gilroy": "Gilroy",
 );
 
 $font-size-loops: 40;
@@ -259,8 +259,8 @@ body{
 
 }
 
-@each $name in $fonts{
-	.font-#{$name}{
+@each $tag, $name in $fonts{
+	.font-#{$tag}{
 		font-family: $name;
 	}
 }
