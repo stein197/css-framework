@@ -1,3 +1,6 @@
+@import "fonts";
+@import "position";
+
 $footer-height: (
 	"default": 50px,
 	"md": 60px,
@@ -32,24 +35,6 @@ $sides: (
 	"l": left
 );
 
-$font-weights: (
-	"thin": 100,
-	"light-x": 200,
-	"light": 300,
-	"regular": 400,
-	"medium": 500,
-	"bold-s": 600,
-	"bold": 700,
-	"bold-x": 800,
-	"black": 900,
-);
-
-$fonts: (
-	"proxima": "ProximaNova",
-	"gilroy": "Gilroy",
-);
-
-$font-size-loops: 40;
 $padding-loops: 30;
 
 $backgrounds: (
@@ -77,6 +62,7 @@ $backgrounds: (
 		box-shadow: 0 $y $r 0 rgba($color, $opacity);
 	}
 }
+
 @mixin mq($width, $type: min){
 	@if map_has_key($breakpoints, $width){
 		$width: map_get($breakpoints, $width);
@@ -88,13 +74,13 @@ $backgrounds: (
 		}
 	}
 }
-@mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
-	@font-face {
-		font-family: $family;
-		src: url($path + $filename) format($type);
-		font-weight: $weight;
-	}
+
+@mixin pseudo($pos: absolute){
+	content: "";
+	position: $pos;
+	display: block;
 }
+
 *{
 	position: relative;
 	background-repeat: no-repeat;
@@ -107,15 +93,6 @@ body{
 	font-family: "Gilroy";
 }
 
-@include font("Proxima", "ProximaNova-Light.ttf", 300);
-@include font("Proxima", "ProximaNova-Regular.ttf", 400);
-@include font("Proxima", "ProximaNova-Bold.ttf", 700);
-@include font("Proxima", "ProximaNova-Extrabld.ttf", 800);
-@include font("Proxima", "ProximaNova-Black.ttf", 900);
-
-@include font("Gilroy", "Gilroy-Light.ttf", 300);
-@include font("Gilroy", "Gilroy-ExtraBold.ttf", 800);
-
 .float::after{
 	content: "";
 	display: block;
@@ -124,79 +101,8 @@ body{
 .nofloat{
 	clear: both;
 }
-.nowrap{
-	white-space: nowrap;
-}
-.pre{
-	white-space: pre;
-}
 .cp{
 	cursor: pointer;
-}
-
-// Links
-.link{
-	text-decoration: underline;
-	color: inherit !important;
-	&:hover{
-		text-decoration: none;
-		color: inherit;
-	}
-}
-
-.link-dotted{
-	text-decoration: none !important;
-	color: inherit !important;
-	border-bottom: 1px dotted;
-	&:hover{
-		border-bottom-color: transparent;
-	}
-}
-
-.link-dashed{
-	text-decoration: none !important;
-	color: inherit !important;
-	border-bottom: 1px dashed;
-	&:hover{
-		border-bottom-color: transparent;
-	}
-}
-
-// Alignment
-.justify{
-	display: block;
-	text-align: justify;
-	font-size: 0.1px;
-	line-height: 0;
-	& > *{
-		display: inline-block;
-		font-size: 14px;
-		line-height: 1em;
-	}
-	&::after{
-		content: "";
-		display: inline-block;
-		width: 100%;
-	}
-}
-
-.valign > *{
-	display: inline-block;
-	vertical-align: middle;
-}
-
-.center{
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	&-x{
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	&-y{
-		top: 50%;
-		transform: translateY(-50%);
-	}
 }
 
 .img{
@@ -213,55 +119,17 @@ body{
 .full-w{
 	width: 100%;
 }
-// Defaults for pseudoelements
-%pseudo{
-	content: "";
-	position: absolute;
-	display: block;
-}
+
 .pseudo{
 	&::before,
 	&::after{
-		@extend %pseudo;
+		@include pseudo;
 	}
 	&-before::before{
-		@extend %pseudo;
+		@include pseudo;
 	}
 	&-after::after{
-		@extend %pseudo;
-	}
-}
-
-.noselect{
-	user-select: none;
-	-o-user-select: none;
-	-ms-user-select: text;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-}
-
-.uppercase{
-	text-transform: uppercase;
-}
-
-@each $name, $value in $font-weights{
-	.fw-#{$name}{
-		font-weight: $value;
-	}
-}
-
-// Font sizes
-@for $i from 4 through $font-size-loops{
-	$size: $i * 2;
-	.fs-#{$size}{
-		font-size: #{$size}px;
-	}
-
-}
-
-@each $tag, $name in $fonts{
-	.font-#{$tag}{
-		font-family: $name;
+		@include pseudo;
 	}
 }
 
@@ -292,7 +160,7 @@ body{
 
 .bg{
 	&-center{
-		background-position: center;
+		background-position: center center;
 	}
 	&-cover{
 		background-size: cover;
@@ -431,18 +299,6 @@ a.btn{
 	cursor: pointer;
 }
 
-.p{
-	&-r{
-		position: relative;
-	}
-	&-a{
-		position: absolute;
-	}
-	&-f{
-		position: fixed;
-	}
-}
-
 // Only for mobile
 @include mq("md", max){
 	a.btn-mobile{
@@ -460,6 +316,9 @@ a.btn{
 	.mobile-box-y{
 		padding-top: 15px;
 		padding-bottom: 15px;
+	}
+	.mobile-wrapper{
+		overflow-x: scroll
 	}
 }
 
@@ -498,7 +357,7 @@ a.btn{
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
 		// Font sizes
-		@for $i from 4 through $font-size-loops{
+		@for $i from $fs-loop-from through $fs-loop-to{
 			$size: $i * 2;
 			.fs-#{$bp-name}-#{$size}{
 				font-size: #{$size}px;
@@ -542,6 +401,15 @@ a.btn{
 		}
 		.full-#{$bp-name}-w{
 			width: 100%;
+		}
+		.h-#{$bp-name}-a{
+			height: auto;
+		}
+		@for $i from $h-loop-from through $h-loop-to{
+			$height: $i * $h-factor;
+			.h-#{$bp-name}-#{$height}{
+				height: #{$height}px;
+			}
 		}
 	}
 }

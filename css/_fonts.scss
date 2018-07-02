@@ -1,0 +1,97 @@
+$font-weights: (
+	"thin": 100,
+	"light-x": 200,
+	"light": 300,
+	"regular": 400,
+	"medium": 500,
+	"bold-s": 600,
+	"bold": 700,
+	"bold-x": 800,
+	"black": 900,
+);
+
+$fonts: (
+	"proxima": "ProximaNova",
+	"gilroy": "Gilroy",
+);
+
+$fs-loop-from: 4;
+$fs-loop-to: 40;
+
+@mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
+	@font-face {
+		font-family: $family;
+		src: url($path + $filename) format($type);
+		font-weight: $weight;
+	}
+}
+
+@include font("ProximaNova", "ProximaNova-Light.ttf", 300);
+@include font("ProximaNova", "ProximaNova-Regular.ttf", 400);
+@include font("ProximaNova", "ProximaNova-Bold.ttf", 700);
+@include font("ProximaNova", "ProximaNova-Extrabld.ttf", 800);
+@include font("ProximaNova", "ProximaNova-Black.ttf", 900);
+
+@include font("Gilroy", "Gilroy-Light.ttf", 300);
+@include font("Gilroy", "Gilroy-ExtraBold.ttf", 800);
+
+@each $name, $value in $font-weights{
+	.fw-#{$name}{
+		font-weight: $value;
+	}
+}
+
+@for $i from $fs-loop-from through $fs-loop-to{
+	$size: $i * 2;
+	.fs-#{$size}{
+		font-size: #{$size}px;
+	}
+
+}
+
+@each $tag, $name in $fonts{
+	.font-#{$tag}{
+		font-family: $name;
+	}
+}
+
+.noselect{
+	user-select: none;
+	-o-user-select: none;
+	-ms-user-select: text;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.nowrap{
+	white-space: nowrap;
+}
+.pre{
+	white-space: pre;
+}
+
+.link{
+	text-decoration: underline;
+	color: inherit !important;
+	&:hover{
+		text-decoration: none;
+		color: inherit;
+	}
+}
+
+.link-dotted{
+	text-decoration: none !important;
+	color: inherit !important;
+	border-bottom: 1px dotted;
+	&:hover{
+		border-bottom-color: transparent;
+	}
+}
+
+.link-dashed{
+	text-decoration: none !important;
+	color: inherit !important;
+	border-bottom: 1px dashed;
+	&:hover{
+		border-bottom-color: transparent;
+	}
+}
