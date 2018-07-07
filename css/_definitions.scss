@@ -1,0 +1,121 @@
+$font-weights: (
+	"thin": 100,
+	"light-x": 200,
+	"light": 300,
+	"regular": 400,
+	"medium": 500,
+	"bold-s": 600,
+	"bold": 700,
+	"bold-x": 800,
+	"black": 900,
+);
+
+$fonts: (
+	"proxima": "ProximaNova",
+	"gilroy": "Gilroy",
+);
+
+$fs-loop-from: 4;
+$fs-loop-to: 40;
+
+$colors: (
+	"gray": #777777,
+	"white": white,
+	"black": black,
+);
+
+$breakpoints: (
+	"md": 768px,
+	"lg": 992px,
+	"xl": 1200px,
+);
+
+$container-width: (
+	"md": 720px,
+	"lg": 960px,
+	"xl": 1170px,
+);
+
+$sides: (
+	"t": top,
+	"r": right,
+	"b": bottom,
+	"l": left,
+);
+
+$h-loop-from: 10;
+$h-loop-to: 30;
+$h-factor: 10;
+
+$footer-height: (
+	"default": 50px,
+	"md": 60px,
+	"lg": 70px,
+	"xl": 80px,
+);
+
+$padding-loops: 30;
+
+$backgrounds: (
+	"waves": "/img/bg_waves.jpg",
+	"waves-2": "/img/bg_waves_2.jpg",
+	"glow": "/img/bg_glow.jpg",
+);
+
+@mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
+	@font-face {
+		font-family: $family;
+		src: url($path + $filename) format($type);
+		font-weight: $weight;
+	}
+}
+
+@mixin square($dimens){
+	width: $dimens;
+	height: $dimens;
+}
+
+@mixin circle($d){
+	@include square($d);
+	border-radius: 50%;
+}
+
+// Creates shadow property
+@mixin shadow($y, $r, $color, $opacity: 1){
+	@if $opacity == 1{
+		box-shadow: 0 $y $r $color;
+	} @else {
+		box-shadow: 0 $y $r 0 rgba($color, $opacity);
+	}
+}
+
+@mixin mq($width, $type: min){
+	@if map_has_key($breakpoints, $width){
+		$width: map_get($breakpoints, $width);
+		@if $type == max {
+			$width: $width - 1px;
+		}
+		@media (#{$type}-width: $width){
+			@content;
+		}
+	}
+}
+
+@mixin pseudo($pos: absolute){
+	content: "";
+	position: $pos;
+	display: block;
+}
+
+@function get_color($name){
+	@return map_get($colors, $name);
+}
+
+@include font("ProximaNova", "ProximaNova-Light.ttf", 300);
+@include font("ProximaNova", "ProximaNova-Regular.ttf", 400);
+@include font("ProximaNova", "ProximaNova-Bold.ttf", 700);
+@include font("ProximaNova", "ProximaNova-Extrabld.ttf", 800);
+@include font("ProximaNova", "ProximaNova-Black.ttf", 900);
+
+@include font("Gilroy", "Gilroy-Light.ttf", 300);
+@include font("Gilroy", "Gilroy-ExtraBold.ttf", 800);

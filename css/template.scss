@@ -1,85 +1,4 @@
-@import "fonts";
-@import "position";
-
-$footer-height: (
-	"default": 50px,
-	"md": 60px,
-	"lg": 70px,
-	"xl": 80px,
-);
-
-// These will be used for compiling font and background colors
-$colors: (
-	"gray": #777777,
-	"white": white,
-	"black": black,
-);
-
-// Bootstrap  default breakpoints
-$breakpoints: (
-	"md": 768px,
-	"lg": 992px,
-	"xl": 1200px
-);
-
-$container-width: (
-	"md": 720px,
-	"lg": 960px,
-	"xl": 1170px,
-);
-
-$sides: (
-	"t": top,
-	"r": right,
-	"b": bottom,
-	"l": left
-);
-
-$padding-loops: 30;
-
-$backgrounds: (
-	"waves": "/img/bg_waves.jpg",
-	"waves-2": "/img/bg_waves_2.jpg",
-	"glow": "/img/bg_glow.jpg",
-);
-
-
-@mixin square($dimens){
-	width: $dimens;
-	height: $dimens;
-}
-
-@mixin circle($d){
-	@include square($d);
-	border-radius: 50%;
-}
-
-// Creates shadow property
-@mixin shadow($y, $r, $color, $opacity: 1){
-	@if $opacity == 1{
-		box-shadow: 0 $y $r $color;
-	} @else {
-		box-shadow: 0 $y $r 0 rgba($color, $opacity);
-	}
-}
-
-@mixin mq($width, $type: min){
-	@if map_has_key($breakpoints, $width){
-		$width: map_get($breakpoints, $width);
-		@if $type == max {
-			$width: $width - 1px;
-		}
-		@media (#{$type}-width: $width){
-			@content;
-		}
-	}
-}
-
-@mixin pseudo($pos: absolute){
-	content: "";
-	position: $pos;
-	display: block;
-}
+@import "definitions";
 
 *{
 	position: relative;
@@ -88,8 +7,8 @@ $backgrounds: (
 html,
 body{
 	font-size: 14px;
-	font-weight: 300;
-	color: map_get($colors, "black");
+	font-weight: 400;
+	color: get_color("black");
 	font-family: "Gilroy";
 }
 
@@ -104,14 +23,44 @@ body{
 .cp{
 	cursor: pointer;
 }
-
-.img{
-	&-max-w{
-		max-width: 100%;
+.justify{
+	display: block;
+	text-align: justify;
+	font-size: 0.1px;
+	line-height: 0;
+	& > *{
+		display: inline-block;
+		font-size: 14px;
+		line-height: 1em;
 	}
-	&-max-h{
-		max-height: 100%;
+	&::after{
+		content: "";
+		display: inline-block;
+		width: 100%;
 	}
+}
+.valign > *{
+	display: inline-block;
+	vertical-align: middle;
+}
+.center{
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	&-x{
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	&-y{
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+max-w{
+	max-width: 100%;
+}
+max-h{
+	max-height: 100%;
 }
 .full-h{
 	height: 100%;
@@ -133,6 +82,70 @@ body{
 	}
 }
 
+
+@each $name, $value in $font-weights{
+	.fw-#{$name}{
+		font-weight: $value;
+	}
+}
+
+@for $i from $fs-loop-from through $fs-loop-to{
+	$size: $i * 2;
+	.fs-#{$size}{
+		font-size: #{$size}px;
+	}
+	
+}
+
+@each $tag, $name in $fonts{
+	.font-#{$tag}{
+		font-family: $name;
+	}
+}
+
+.noselect{
+	user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.nowrap{
+	white-space: nowrap;
+}
+.pre{
+	white-space: pre;
+}
+
+.link{
+	text-decoration: underline;
+	color: inherit;
+	&:hover{
+		text-decoration: none;
+		color: inherit;
+	}
+}
+
+.link-dotted{
+	text-decoration: none !important;
+	color: inherit;
+	border-bottom: 1px dotted;
+	&:hover{
+		color: inherit;
+		border-bottom-color: transparent;
+	}
+}
+
+.link-dashed{
+	text-decoration: none !important;
+	color: inherit;
+	border-bottom: 1px dashed;
+	&:hover{
+		color: inherit;
+		border-bottom-color: transparent;
+	}
+}
+
 @each $name, $value in $colors{
 	.color-#{$name}{
 		color: $value;
@@ -145,6 +158,13 @@ body{
 @each $letter, $value in $sides{
 	.stick-#{$letter}{
 		#{map_get($sides, $letter)}: 0;
+	}
+}
+
+@for $i from $h-loop-from through $h-loop-to{
+	$height: $i * $h-factor;
+	.h-#{$height}{
+		height: #{$height}px;
 	}
 }
 
@@ -169,9 +189,13 @@ body{
 		@extend .bg-center;
 		@extend .bg-cover;
 	}
-	@each $name, $path in $backgrounds{
+	@each $name, $value in $backgrounds{
 		&-#{$name}{
-			background-image: url($path);
+			@if type_of($value) == color{
+				background-color: $value;
+			} @else {
+				background-image: url($value);
+			}
 		}
 	}
 }
@@ -196,6 +220,7 @@ body{
 		overflow: hidden !important;
 	}
 }
+
 footer.sticky{
 	position: absolute;
 	left: 0;
@@ -203,7 +228,14 @@ footer.sticky{
 	width: 100%;
 }
 
-// 100% height for all slider elements. You must specify only .slider-default height
+.delimiter-h{
+	height: 1px;
+}
+.delimiter-w{
+	height: 100%;
+	width: 1px;
+}
+
 .slider-default{
 	.slick-list,
 	.slick-track,
@@ -212,7 +244,6 @@ footer.sticky{
 	}
 }
 
-// 100% height for all slider elements. You must specify only .slider-wrapper height
 .slider-wrapper{
 	.slider,
 	.slick-list,
@@ -223,12 +254,11 @@ footer.sticky{
 	}
 }
 
-// Useful if slider buttons are out of slider view
+.crop,
 .slider-window{
 	overflow: hidden;
 }
 
-// Defaults wrapper params for slick buttons and dots
 .slider-btns,
 .slider-dots{
 	position: absolute;
@@ -236,21 +266,12 @@ footer.sticky{
 	width: 100%;
 	top: 0;
 }
+
 .slider-dots{
 	top: auto;
 	bottom: 0;
 }
 
-// Disable slick select restrictions
-.slick-slider{
-	user-select: text;
-	-o-user-select: text;
-	-ms-user-select: text;
-	-moz-user-select: text;
-	-webkit-user-select: text;
-}
-
-// Default slick button parameters
 .slick-arrow{
 	display: block;
 	left: 0;
@@ -295,8 +316,22 @@ footer.sticky{
 	}
 }
 
+.table-wrapper{
+	overflow-x: auto;
+}
+
+table{
+	border-collapse: collapse;
+}
+
 a.btn{
 	cursor: pointer;
+}
+.circle{
+	border-radius: 50%;
+}
+.transitionable{
+	transition: all .2s linear;
 }
 
 // Only for mobile
@@ -304,18 +339,8 @@ a.btn{
 	a.btn-mobile{
 		width: 100%;
 		text-align: center;
-		padding-left: 0;
-		padding-right: 0;
-	}
-	.mobile-box,
-	.mobile-box-x{
-		padding-left: 15px;
-		padding-right: 15px;
-	}
-	.mobile-box,
-	.mobile-box-y{
-		padding-top: 15px;
-		padding-bottom: 15px;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 	}
 	.mobile-wrapper{
 		overflow-x: scroll
@@ -343,10 +368,34 @@ a.btn{
 // Paddings and margins
 @for $i from 0 through $padding-loops{
 	$size: $i * 5;
+	.mr-#{$size}{
+		margin: #{$size}px;
+	}
+	.mr-x-#{$size}{
+		margin-left: #{$size}px;
+		margin-right: #{$size}px;
+	}
+	.mr-y-#{$size}{
+		margin-top: #{$size}px;
+		margin-bottom: #{$size}px;
+	}
+	.pd-#{$size}{
+		padding: #{$size}px;
+	}
+	.pd-x-#{$size}{
+		padding-left: #{$size}px;
+		padding-right: #{$size}px;
+	}
+	.pd-y-#{$size}{
+		padding-top: #{$size}px;
+		padding-bottom: #{$size}px;
+	}
 	@each $side-letter, $side-name in $sides{
+		// Margins
 		.mr-#{$side-letter}-#{$size}{
 			margin-#{$side-name}: #{$size}px;
 		}
+		// Paddings
 		.pd-#{$side-letter}-#{$size}{
 			padding-#{$side-name}: #{$size}px;
 		}
@@ -363,10 +412,33 @@ a.btn{
 				font-size: #{$size}px;
 			}
 		}
-		// Paddings
+		// Paddings and margins
 		@for $i from 0 through $padding-loops{
 			$size: $i * 5;
+			.mr-#{$bp-name}-#{$size}{
+				margin: #{$size}px;
+			}
+			.mr-x-#{$bp-name}-#{$size}{
+				margin-left: #{$size}px;
+				margin-right: #{$size}px;
+			}
+			.mr-y-#{$bp-name}-#{$size}{
+				margin-top: #{$size}px;
+				margin-bottom: #{$size}px;
+			}
+			.pd-#{$bp-name}-#{$size}{
+				padding: #{$size}px;
+			}
+			.pd-x-#{$bp-name}-#{$size}{
+				padding-left: #{$size}px;
+				padding-right: #{$size}px;
+			}
+			.pd-y-#{$bp-name}-#{$size}{
+				padding-top: #{$size}px;
+				padding-bottom: #{$size}px;
+			}
 			@each $side-letter, $side-name in $sides{
+				// Margins
 				.mr-#{$side-letter}-#{$bp-name}-#{$size}{
 					margin-#{$side-name}: #{$size}px;
 				}
@@ -374,6 +446,26 @@ a.btn{
 					padding-#{$side-name}: #{$size}px;
 				}
 			}
+		}
+		.justify-#{$bp-name}{
+			display: block;
+			text-align: justify;
+			font-size: 0.1px;
+			line-height: 0;
+			& > *{
+				display: inline-block;
+				font-size: 14px;
+				line-height: 1em;
+			}
+			&::after{
+				content: "";
+				display: inline-block;
+				width: 100%;
+			}
+		}
+		.valign-#{$bp-name} > *{
+			display: inline-block;
+			vertical-align: middle;
 		}
 		.center-#{$bp-name}{
 			left: 50%;
@@ -465,23 +557,6 @@ a.btn{
 		width: 100%;
 		border: none;
 		background-color: transparent;
-	}
-	.placeholder{
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		&.focus{
-			bottom: 100%;
-		}
-	}
-	.warn{
-		position: absolute;
-	}
-}
-.field-container{
-	@include mq("md"){
-		margin: 0 -20px;
 	}
 }
 
