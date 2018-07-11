@@ -441,7 +441,7 @@ function sformat(str){
 * @return {(string|object|undefined|boolean)} Одиночное значение | Все куки | Куки не найдено | Установлено новое значение
 * @version 1.3
 **/
-function $_COOKIE(key, value, lifetime, path){
+function $_COOKIE(key, value, path, lifetime){
 	if(!Array.prototype.find) throw new Error("This browser does not support Array.prototype.find method");
 	var cookie = document.cookie.split(";");
 	// Получить все куки массивом
@@ -457,6 +457,7 @@ function $_COOKIE(key, value, lifetime, path){
 			result.values.push(item[1]);
 		}
 		return result;
+	// Установить/удалить набор
 	} else if(value === undefined){
 		// Вернуть одно значение
 		if(typeof key === "string"){
@@ -496,24 +497,24 @@ function $_COOKIE(key, value, lifetime, path){
 		if(value === ""){
 			document.cookie = key + "=;max-age=-99999999;expires=Thu, 01 Jan 1970 00:00:01 GMT";
 			if($_COOKIE(key) !== undefined) throw new Error(sformat("Cookie with key \"%1\" cannot be removed", key));
+		// Установить одно значение
 		} else {
-			// Если был указан путь
-			if(path !== undefined){
+			path = path || "/";
+			// Если указано время жизни
+			if(lifetime !== undefined){
 				document.cookie = format("%key%=%value%;max-age=%lifetime%;path=%path%", {
 					key: key,
 					value: value,
+					path: path,
 					lifetime: lifetime,
-					path: path
 				});
-			// Если было указано время жизни
-			} else if(lifetime !== undefined){
-				document.cookie = format("%key%=%value%;max-age=%lifetime%", {
+			// Если был указан путь
+			} else {
+				document.cookie = format("%key%=%value%;path=%path%", {
 					key: key,
 					value: value,
-					lifetime: lifetime
+					path: path,
 				});
-			} else {
-				document.cookie = sformat("%1=%2", key, value);
 			}
 		}
 		return true;
