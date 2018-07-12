@@ -1,6 +1,5 @@
-function init(){
+function main(){
 	setScalable(); // Убрать зум на смартфонах
-	$(window).scroll(narrowHeader); // Изменить шапку при прокрутке
 	$(".dropdown.dropdown-tabs").each(initDropdown); // Если есть табы превращающиеся в выпадающий список
 	$("#burger").click(initBurger); // Переключение бургера
 	$(".slider").each(initSlick); // Автоматическая инициализация слайдера
@@ -10,9 +9,7 @@ function init(){
 	initMfp(); // Автоматическая инициализация попапа
 	$(window).scroll();
 	$(window).resize();
-	// GoogleMap.init(55.170777, 61.415019, "map");
 	$(".js-anchor").click(anchorView);
-	// Form.init();
 }
 
 var $body = $("body");
@@ -21,19 +18,7 @@ var $footer = $("footer");
 var $menubar = $("#menubar");
 var $sidebar = $("#sidebar");
 var $burger = $("#burger");
-
-// Изменение шапки при прокрутке
-function narrowHeader($e){
-	// Прокрутка вниз
-	if(pageYOffset > 0){
-		if(!$body.hasClass("scrolled")){
-			$body.addClass("scrolled");
-		}
-	// Прокрутка к верху
-	} else {
-		$body.removeClass("scrolled");
-	}
-}
+var $modal = $("#modal");
 
 /**
  * Автоматическая инициализация слайдера
@@ -120,10 +105,13 @@ function initMfp(){
 	});
 }
 
+/* 
+ * Плавная прокрутка
+ */
 function anchorView($e){
 	var $this = $(this);
 	var data = $this.attr("href").split("#");
-	var page = data[0];
+	var page = data[0] || location.pathname;
 	var target = data[1];
 	if(location.pathname !== page){
 		return;
@@ -138,48 +126,35 @@ function anchorView($e){
 	}
 }
 
-var GoogleMap = {
-    map: null,
-    options: {
-        zoom: 15,
-        center: null,
-        scrollwheel: false,
-        zoomControl: true,
-        streetViewControl: false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    },
-
-    init: function(x, y, target, marker, info){
-        target = document.getElementById(target);
-        if(!target) return;
-        this.options.center = new google.maps.LatLng(x, y);
-        GoogleMap.map = new google.maps.Map(target, GoogleMap.options);
-        var markerLatlng = new google.maps.LatLng(x, y);
-        var myMarker = new google.maps.Marker({
-            position: markerLatlng,
-            map: GoogleMap.map,
-            icon: marker
-        });
-
-        var contentString = info;
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-
-        google.maps.event.addListener(myMarker, 'click', function() {
-            infowindow.open(GoogleMap.map, myMarker);
-        });
-    },
-	reinit: function(x, y, targetid, marker, info){
-		var target = document.getElementById(targetid);
-		if(!target) return;
-		target.innerHTML = "";
-		GoogleMap.init(x, y, targetid, marker, info);
-	},
-    load: function(){
-        if(document.getElementById("mapWrapper")) google.maps.event.addDomListener(window, 'load', GoogleMap.init);
-    }
+function initGoogleMaps(selector){
+	selector = selector || ".gmap";
+	var $maps = $(selector);
+	$maps.each(function(){
+		var $this = $(this);
+		var data = $this.data("map");
+		data = $.extend({
+			zoom: 13,
+			center: null,
+			scrollwheel: false,
+			zoomControl: true,
+			streetViewControl: false,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		}, data);
+		var map = new google.maps.Map(this, data);
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(data.center.lat, data.center.lng),
+			map: map,
+			icon: data.icon,
+		});
+		var infowindow = new google.maps.InfoWindow({
+			content: format(data.content),
+		});
+		google.maps.event.addListener(marker, "click", function(){
+			infowindow.open(map, marker);
+		});
+	});
 }
+
 
 var Form = {
 	init: function(selector){
@@ -199,28 +174,41 @@ var Form = {
 		var $checkbox = $form.find("input[type='checkbox']");
 		var isValid = true;
 		var regexp, value, input;
-		for(var i = 0; i < $inputs.length; i++){
-			input = $inputs[i];
-			regexp = new RegExp(input.getAttribute("data-regexp"));
-			value = input.value;
+		// Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ Р С—Р С•Р В»Р ВµР в„–
+		$inputs.each(function(){
+			regexp = new RegExp(this.getAttribute("data-regexp"));
+			value = this.value;
 			var matches = regexp.test(value);
-			isValid = isValid && matches;
+			isValid &= matches;
 			if(matches){
-				Form.onSuccess(input);
+				Form.onSuccess(this);
 			} else {
-				Form.onFailure(input);
+				Form.onFailure(this);
 			}
-		}
-		// Р’Р°Р»РёРґР°С†РёСЏ С„Р»Р°Р¶РєР°
+		});
+		// Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ РЎвЂћР В»Р В°Р В¶Р С”Р В°
 		if(!$checkbox.is(":checked")){
 			Form.onFailure($checkbox.get(0));
+			isValid = false;
 		} else {
 			Form.onSuccess($checkbox.get(0));
 		}
-		// Р’Р°Р»РёРґР°С†РёСЏ РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ
-		if(isValid && $checkbox.is(":checked")){
+
+		if(isValid){
 			if($form.is(".ajax")){
-				//...
+				var data = {};
+				var $input;
+				$form.find("input:not([type='checkbox']), textarea").each(function(){
+					$input = $(this);
+					data[$input.attr("name")] = $input.val();
+				});
+				$form.find("input[type='checkbox']").each(function(){
+					$input = $(this);
+					data[$input.attr("name")] = $input.is(":checked");
+				});
+				$.post($this.attr("href"), data, function(data, status){
+					console.log(data);
+				});
 			} else {
 				$form.submit();
 			}
@@ -234,8 +222,11 @@ var Form = {
 				.next()
 				.addClass("error");
 		} else {
-			$input.addClass("error");
-			$input.next("span.warn").addClass("active");
+			$input
+				.addClass("error")
+				.removeClass("success")
+				.next("span.warn")
+				.addClass("active");
 		}
 	},
 
@@ -246,8 +237,11 @@ var Form = {
 				.next()
 				.removeClass("error");
 		} else {
-			$input.removeClass("error");
-			$input.next("span.warn").removeClass("active");
+			$input
+				.removeClass("error")
+				.addClass("success")
+				.next("span.warn")
+				.removeClass("active");
 		}
 	}
 }
@@ -609,4 +603,4 @@ function $_GET(key, value){
 	}
 }
 
-$(init);
+$(main);
