@@ -155,6 +155,41 @@ function initGoogleMaps(selector){
 	});
 }
 
+function changeFilename(wrapper, label, close){
+	wrapper = wrapper || ".file";
+	label = label || ".filename";
+	close = close || ".fileremove";
+	var defaultText = $(label).text();
+	// var maxwidth = $(label).outerWidth();
+	// $(label).css("max-width", maxwidth);
+
+	// Show filename
+	$("input[type='file']").change(function($e){
+		var $this = $(this);
+		var $wrapper = $this.closest(wrapper);
+		var $label = $wrapper.find(label);
+		var $close = $wrapper.find(close);
+		var filename = $this
+			.val()
+			.replace(/.*\\(.*)/, "$1")
+			.replace(/.*\/(.*)/, "$1");
+		$label.text(filename ? filename : defaultText);
+		$close
+			.removeClass("o-0")
+			.addClass("cp");
+	});
+	// Remove file
+	$(close).click(function($e){
+		var $this = $(this);
+		$this
+			.addClass("o-0")
+			.removeClass("cp")
+			.closest(wrapper)
+			.find(label)
+			.val("")
+			.text(defaultText)
+	})
+}
 
 var Form = {
 	init: function(selector){
@@ -174,7 +209,7 @@ var Form = {
 		var $checkbox = $form.find("input[type='checkbox']");
 		var isValid = true;
 		var regexp, value, input;
-		// Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ Р С—Р С•Р В»Р ВµР в„–
+		// Р’Р°Р»РёРґР°С†РёСЏ РїРѕР»РµР№
 		$inputs.each(function(){
 			regexp = new RegExp(this.getAttribute("data-regexp"));
 			value = this.value;
@@ -186,7 +221,7 @@ var Form = {
 				Form.onFailure(this);
 			}
 		});
-		// Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ РЎвЂћР В»Р В°Р В¶Р С”Р В°
+		// Р’Р°Р»РёРґР°С†РёСЏ С„Р»Р°Р¶РєР°
 		if(!$checkbox.is(":checked")){
 			Form.onFailure($checkbox.get(0));
 			isValid = false;
@@ -433,10 +468,9 @@ function sformat(str){
 * @param {number} [lifetime] Время жизни кук в секундах
 * @param {string} [path] Путь до куки
 * @return {(string|object|undefined|boolean)} Одиночное значение | Все куки | Куки не найдено | Установлено новое значение
-* @version 1.3
+* @version 1.5
 **/
 function $_COOKIE(key, value, path, lifetime){
-	if(!Array.prototype.find) throw new Error("This browser does not support Array.prototype.find method");
 	var cookie = document.cookie.split(";");
 	// Получить все куки массивом
 	if(key === undefined){
@@ -456,12 +490,15 @@ function $_COOKIE(key, value, path, lifetime){
 		// Вернуть одно значение
 		if(typeof key === "string"){
 			var keyName = "";
-			var result = cookie.find(function(v, i, a){
-				keyName = v.trim().split("=")[0];
-				return keyName === key;
-			});
-			if(result === undefined) return undefined;
-			else return result.split("=")[1];
+			var result = "";
+			for(var i = 0; i < cookie.length; i++){
+				var pair = cookie[i].trim().split("=");
+				keyName = pair[0];
+				if(keyName === key){
+					return pair[1];
+				}
+			}
+			return undefined;
 		// Установить набор значений или удалить все куки
 		} else {
 			// Если key - массив содержащий хотя бы один ключ
