@@ -6,7 +6,7 @@ interface FileDescriptor{
     public function exists():bool;
     public function getName():string;
     public function getPath(bool $full = false):string;
-    public function getSize(?string $path = null):int;
+    public function getSize():int;
     public function lastModified():int;
     public function move():void;
     public function remove():void;

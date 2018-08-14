@@ -1,8 +1,17 @@
 <?
 	require_once 'php/functions.php';
-	import('Math.Math');
-	use Math\Math;
-	echo Math::atan(90);
+	import('System.Path');
+	import('Math.Matrix');
+	use System\Path;
+	use Math\Matrix;
+	$mx = new Matrix([
+		[0, 1, 2],
+		[3, 4, 5],
+	]);
+	echo '<pre>';
+	var_dump($mx->getCol(1));
+	exit;
+	// var_dump(function_exists('PDF_activate_item') || class_exists('PDFlib'));
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,9 +32,6 @@
 	<meta name="keywords" content=""/>
 </head>
 <body>
-	<div style="height: 500px">
-
-	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="/js/bootstrap.min.js"></script>
@@ -37,6 +43,25 @@
 	<script src="/js/template.js?v=<?= filemtime("{$_SERVER['DOCUMENT_ROOT']}/js/template.js") ?>"></script>
 	<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript">
     </script>
-	<script></script>
+	<script>
+		function sformat(str){
+			var data = arguments;
+			var length = data.length - 1;
+			var reg = new RegExp("%\\d+", "g");
+			var formatted = str.replace(reg, function(match){
+				var pos = match.slice(1) / 1;
+				if(pos >= data.length){
+					return "";
+				}
+				var rest = "";
+				while(length < pos){
+					rest = pos.toString().slice(-1) + rest;
+					pos = Math.floor(pos / 10);
+				}
+				return data[pos] + rest;
+			});
+			return formatted;
+		}
+	</script>
 </body>
 </html>

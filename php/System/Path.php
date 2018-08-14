@@ -13,11 +13,11 @@
 		 */
 		public static function getFull(string $path):string{
 			// Полный путь
-			if(strpos($path, $_SERVER['DOCUMENT_ROOT']) === 0){
+			if(self::isFull($path)){
 				return $path;
 			}
 			// Абсолютный путь
-			if($path[0] === '/'){
+			if(self::isAbsolute($path)){
 				return $_SERVER['DOCUMENT_ROOT'].$path;
 			}
 			// Относительный путь
@@ -31,11 +31,11 @@
 		 */
 		public static function getAbsolute(string $path):string{
 			// Полный путь
-			if(strpos($path, $_SERVER['DOCUMENT_ROOT']) === 0){
+			if(self::isFull($path)){
 				return str_replace($_SERVER['DOCUMENT_ROOT'], '', $path);
 			}
 			// Абсолютный путь
-			if($path[0] === '/'){
+			if(self::isAbsolute($path)){
 				return $path;
 			}
 			// Относительный путь
@@ -48,9 +48,11 @@
 		 * @return string Путь относительно исполняемого скрипта
 		 */
 		public static function getRelative(string $path):string{
+			// Полный путь
 			if(self::isFull($path)){
 				return str_replace(dirname($_SERVER['SCRIPT_FILENAME']).'/', '', $path);
 			}
+			// Абсолютный путь
 			if(self::isAbsolute($path)){
 				return str_replace(dirname($_SERVER['SCRIPT_FILENAME']).'/', '', self::getFull($path));
 			}
