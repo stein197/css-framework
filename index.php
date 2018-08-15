@@ -2,15 +2,17 @@
 	require_once 'php/functions.php';
 	import('System.Path');
 	import('Math.Matrix');
+	import('Math.SquareMatrix');
 	use System\Path;
 	use Math\Matrix;
-	$mx = new Matrix([
-		[0, 1, 2],
-		[3, 4, 5],
-	]);
+	use Math\SquareMatrix;
 	echo '<pre>';
-	var_dump($mx->getCol(1));
-	exit;
+	$mx = new SquareMatrix([
+		[1, 0, 0],
+		[0, 1, 0],
+		[0, 0, 1],
+	]);
+	// exit;
 	// var_dump(function_exists('PDF_activate_item') || class_exists('PDFlib'));
 ?>
 <!DOCTYPE html>

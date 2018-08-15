@@ -32,10 +32,21 @@
 		}
 
 		public function __toString(){
-			// $num_size = strlen($this->getMax());
+			$char_length = strlen($this->getMax());
 			$result = '';
+
 			foreach($this->matrix as $row){
-				$result .= "| ".join(' ', $row)." |\n";
+				$result .= '| ';
+
+				foreach($row as $element){
+					$elt = $element;
+					$diff = $char_length - strlen($elt);
+					if($diff){
+						$elt .= str_repeat(' ', $diff);
+					}
+					$result .= $elt.' ';
+				}
+				$result .= "|\n";
 			}
 			return $result;
 		}
@@ -52,10 +63,20 @@
 				sizeof($this->matrix[0]) === sizeof($mx->matrix[0]);
 		}
 
+		/**
+		 * Возвращает массив элементов матрицы
+		 * @return array
+		 */
 		public function getMatrix():array{
 			return $this->matrix;
 		}
 
+		/**
+		 * Выполняет сложение двух матриц. Меняет текущую матрицу
+		 * @param Matrix $mx Слагаемая матрица
+		 * @return Matrix
+		 * @throws Exception Если матрицы разных размеров
+		 */
 		public function addition(Matrix $mx):Matrix{
 			if(!$this->hasIdenticalDimensions($mx)){
 				throw new Exception('Matrixes is not compatible');
@@ -65,6 +86,8 @@
 			}
 			return $this;
 		}
+
+		public function multiplication(Matrix $mx):Matrix{}
 
 		/**
 		 * Транспонирует текущую матрицу. Метод меняет текущий объект
@@ -126,19 +149,47 @@
 		 * @param int $row Номер строки
 		 * @param int $col Номер столбца
 		 * @param int|double $value Новое значение
-		 * @throws Exception Если тип $value не число
+		 * @return Matrix
 		 * @uses self::checkOffset()
+		 * @uses self::checkValueType()
 		 */
-		public function setElement(int $row, int $col, $value){
-			$this->checkOffset();
-			$type = gettype($value);
-			if($type !== 'integer' || $type !== 'double'){
-				throw new Exception('$value type must be a number');
-			}
+		public function setElement(int $row, int $col, $value):Matrix{
+			$this->checkOffset($row, $col);
+			$this->checkValueType($value);
 			$this->matrix[$row - 1][$col - 1] = $value;
+			return $this;
 		}
-		public function swapRows(int $from, int $to){}
-		public function swapCols(int $from, int $to){}
+
+		/**
+		 * Меняет местами строки матрицы
+		 * @param int $from Меняемая строка
+		 * @param int $to Меняемая строка
+		 * @return Matrix
+		 * @uses self::getRow()
+		 */
+		public function swapRows(int $from, int $to):Matrix{
+			$row = $this->getRow($from);
+			$this->matrix[$from - 1] = $this->getRow($to);
+			$this->matrix[$to - 1] = $row;
+			return $this;
+		}
+
+		/**
+		 * Меняет местами столбцы матрицы
+		 * @param int $from Меняемый столбец
+		 * @param int $to Меняемый столбец
+		 * @return Matrix
+		 * @uses self::getCol()
+		 */
+		public function swapCols(int $from, int $to):Matrix{
+			$col1 = $this->getCol($from);
+			$col2 = $this->getCol($to);
+			foreach($this->matrix as $index => &$row){
+				$row[$from - 1] = $col2[$index];
+				$row[$to - 1] = $col1[$index];
+			}
+			return $this;
+		}
 
 		/**
 		 * Функция для обхода элементов матрицы в цикле foreach. В качестве ключа возвращается массив с номерами строки и столбца. Нкмерация начинается с 1
@@ -152,6 +203,10 @@
 			}
 		}
 
+		/**
+		 * Возвращает наибольшее значение в матрице
+		 * @return int|double
+		 */
 		public function getMax(){
 			$max = -INF;
 			foreach($this->every() as $num){
@@ -173,9 +228,22 @@
 		}
 
 		/**
+		 * Проверяет тип вводимых значений
+		 * @param int|double $value Проверяемое значение
+		 * @throws Exception Если тип не число
+		 */
+		protected function checkValueType($value){
+			$type = gettype($value);
+			if($type !== 'integer' && $type !== 'double'){
+				throw new Exception('Value type must be a number');
+			}
+		}
+
+		/**
 		 * Проверяет элементы и строки матрицы на соответствие
-		 * @throws Exception Если есть строка с отличающимся количеством элементов, или есть элемент не число
 		 * @return void
+		 * @throws Exception Если есть строки с разными длинами
+		 * @uses self::checkValueType()
 		 */
 		protected function validateDimensions(array $matrix):void{
 			$this->rows = sizeof($matrix);
@@ -188,10 +256,7 @@
 				}
 
 				foreach($row as $idx => $element){
-					$type = gettype($element);
-					if($type !== 'integer' && $type !== 'double'){
-						throw new Exception(sformat('Invalid element type at position %1:%2', $index + 1, $idx + 1));
-					}
+					$this->checkValueType($element);
 				}
 			}
 		}

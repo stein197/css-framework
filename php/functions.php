@@ -1,5 +1,7 @@
 <?php
 	const ROOT_DIRECTORY = __DIR__;
+	$_CLASSES = [];
+
 	/**
 	 * Импортирует класс/интерфейс. Возвращает 1, если файл был подключен и 0, если файл уже был подключен
 	 * @param string $path Строка, содержащая пространство имен и имя класса/интерфейса
@@ -7,17 +9,17 @@
 	 * @todo Сделать поддержку импорта пространства имен целиком (т.е. import('System.*'))
 	**/
 	function import(string $path, bool $useRelativePath = true):int{
-		static $classes = [];
+		global $_CLASSES;
 		$nc = str_replace('.', '\\', $path);
 		// Подключить только если класса/интерфейса/трейта не существует
-		if(!class_exists($nc) && !interface_exists($nc) && !trait_exists($nc)){
-			if($useRelativePath){
-				require_once str_replace('.', DIRECTORY_SEPARATOR, $path).'.php';
-			} else {
-				require_once ROOT_DIRECTORY.DIRECTORY_SEPARATOR.str_replace('.', DIRECTORY_SEPARATOR, $path).'.php';
-			}
+		// if(!class_exists($nc) && !interface_exists($nc) && !trait_exists($nc)){
+		if($useRelativePath){
+			return require_once str_replace('.', DIRECTORY_SEPARATOR, $path).'.php';
+		} else {
+			return require_once ROOT_DIRECTORY.DIRECTORY_SEPARATOR.str_replace('.', DIRECTORY_SEPARATOR, $path).'.php';
 		}
-		return @++$classes[$path];
+		// }
+		return @++$_CLASSES[$path];
 	}
 
 	/**

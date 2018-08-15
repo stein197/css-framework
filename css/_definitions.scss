@@ -43,8 +43,15 @@ $sides: (
 	"l": left,
 );
 
+$positions: (
+	static,
+	relative,
+	absolute,
+	fixed,
+);
+
 $h-loop-from: 10;
-$h-loop-to: 30;
+$h-loop-to: 50;
 $h-factor: 10;
 
 $footer-height: (
@@ -58,7 +65,6 @@ $padding-loops: 30;
 
 $backgrounds: (
 	"waves": "/img/bg_waves.jpg",
-	"waves-2": "/img/bg_waves_2.jpg",
 	"glow": "/img/bg_glow.jpg",
 );
 

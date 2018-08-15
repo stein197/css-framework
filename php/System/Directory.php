@@ -2,8 +2,10 @@
 	namespace System;
 	use \Exception;
 	use \Iterator;
+	
 	import('System.FileDescriptor');
 	import('System.Path');
+
 	/**
 	 * Класс для работы с папками
 	 * Class Directory
