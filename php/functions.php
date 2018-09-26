@@ -55,7 +55,7 @@
 	 * @return string
 	 * @version 1.0
 	 */
-	function format(string $format, array $data = null, string $delimiter = '%', string $lvlDelimiter = '.'){
+	function format(string $format, array $data = null, string $delimiter = '%', string $lvlDelimiter = '.'):string{
 		if(!$data){
 			$data = $GLOBALS;
 		}

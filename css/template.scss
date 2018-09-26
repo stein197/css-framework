@@ -212,8 +212,11 @@ body{
 }
 
 @each $letter, $value in $sides{
-	.stick-#{$letter}{
-		#{map_get($sides, $letter)}: 0;
+	@for $i from 0 through $offset-loops{
+		$val: $i * 5;
+		.#{$letter}-#{$i}{
+			#{map_get($sides, $letter)}: #{$val}px;
+		}
 	}
 }
 
@@ -256,7 +259,8 @@ body{
 	}
 }
 
-header{
+header,
+#header{
 	&.fixed{
 		position: fixed;
 		left: 0;
@@ -277,7 +281,8 @@ body{
 	}
 }
 
-footer.sticky{
+footer.sticky,
+#footer.sticky{
 	position: absolute;
 	left: 0;
 	top: 100%;
@@ -556,8 +561,11 @@ a.btn{
 			height: auto;
 		}
 		@each $side-letter, $side-name in $sides{
-			.stick-#{$bp-name}-#{$side-name}{
-				#{map_get($sides, $letter)}: 0;
+			@for $i from 0 through $offset-loops{
+				$val: $i * 5;
+				.#{$side-letter}-#{$bp-name}-#{$val}{
+					#{map_get($sides, $side-letter)}: #{$val}px;
+				}
 			}
 		}
 		@for $i from $h-loop-from through $h-loop-to{
