@@ -51,19 +51,3 @@ Class.extend = function(classname, proto, body, stat){
 	for(var m in methods) classname.prototype[m] = methods[m];
 	for(var s in statMethods) classname[s] = statMethods[s];
 }
-
-/**
-* @param {string} message Сообщение об ошибке
-* @param {number} [code] Код ошибки
-**/
-function Exception(message, code){
-	this.message = message;
-	if(code !== undefined) this.code = code;
-}
-Class.extend(Exception, {
-	message: null,
-	code: -1,
-	toString: function(){
-		return sformat("%1: %2", this.classname, this.message);
-	}
-});
