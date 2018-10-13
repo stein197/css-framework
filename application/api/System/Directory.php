@@ -97,18 +97,6 @@
 			}
 			rename($this->fullPath, $newname);
 			$this->name = $name;
-			// $info = pathinfo($this->path);
-			// // Если папка лежит в корне
-			// if($info['dirname'] === '/' || $info['dirname'] === '\\'){
-			// 	rename($this->fullPath, "{$_SERVER['DOCUMENT_ROOT']}/{$name}/");
-			// 	$this->path = "/{$name}/";
-			// 	$this->fullPath = "{$_SERVER['DOCUMENT_ROOT']}/{$name}/";
-			// } else {
-			// 	rename($this->fullPath, "{$_SERVER['DOCUMENT_ROOT']}{$info['dirname']}/{$name}/");
-			// 	$this->path = "{$info['dirname']}/{$name}/";
-			// 	$this->fullPath = "{$_SERVER['DOCUMENT_ROOT']}{$info['dirname']}/{$name}/";
-			// }
-			// $this->name = $name;
 		}
 
 		/**

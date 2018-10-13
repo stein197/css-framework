@@ -2,6 +2,9 @@
 	namespace Math;
 	use \Exception;
 
+	/**
+	 * Класс для манипуляций с квадратными математическими матрицами
+	 */
 	class SquareMatrix extends Matrix{
 		
 		/** @var int $dt Детерминант */
