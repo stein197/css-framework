@@ -3,7 +3,8 @@
 	use \Exception;
 	use \Generator;
 	/**
-	 * 
+	 * Класс для работы с математическими матрицами
+	 * @todo Ранг матрицы
 	 */
 	class Matrix{
 		/** @var int $rows Количество строк */
@@ -110,6 +111,12 @@
 			return new self($result, false);
 		}
 
+		/**
+		 * Умножает матрицу на число. Возвращает новую матрицу
+		 * @param int|double $number Число, на которое нужно умножить число
+		 * @return Matrix Новую матрицу, помноженное на число <code>$number</code>
+		 * @uses self::checkValueType
+		 */
 		public function multiplyByNumber($number):Matrix{
 			$this->checkValueType($number);
 			$mx = clone $this;
@@ -187,7 +194,8 @@
 				$result[] = $r;
 			}
 			$this->matrix = $result;
-			$this->updateDimensionCount();
+			$this->rows--;
+			// $this->updateDimensionCount();
 			return $this;
 		}
 
@@ -207,7 +215,8 @@
 				$result[$pos['ROW'] - 1][] = $value;
 			}
 			$this->matrix = $result;
-			$this->updateDimensionCount();
+			$this->cols--;
+			// $this->updateDimensionCount();
 			return $this;
 		}
 
@@ -223,7 +232,8 @@
 				throw new Exception("Passed row has {$size} columns. It should be {$this->cols}");
 			}
 			$this->matrix[] = $row;
-			$this->updateDimensionCount();
+			$this->rows++;
+			// $this->updateDimensionCount();
 			return $this;
 		}
 
@@ -241,7 +251,8 @@
 			foreach($this->matrix as $i => &$row){
 				$row[] = $col[$i];
 			}
-			$this->updateDimensionCount();
+			$this->cols++;
+			// $this->updateDimensionCount();
 			return $this;
 		}
 		
@@ -293,7 +304,7 @@
 		}
 
 		/**
-		 * Функция для обхода элементов матрицы в цикле foreach. В качестве ключа возвращается массив с номерами строки и столбца. Нкмерация начинается с 1
+		 * Функция для обхода элементов матрицы в цикле foreach. В качестве ключа возвращается массив с номерами строки и столбца. Нумерация начинается с 1
 		 * @return Generator Объект генератора
 		 */
 		public function &every():Generator{
