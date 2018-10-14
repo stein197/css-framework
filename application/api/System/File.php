@@ -1,30 +1,16 @@
 <?php
 	namespace System;
-	import('System.FileDescriptor');
-	import('System.Path');
 	use \Exception;
 
 	/**
-	 * Класс для работы с файлами.
+	 * Класс для работы с файлами, т.е. такие операции, как чтение, запись, удаление и т.п.
 	 * @todo запись в файл только при закрытии/завершении работы скрипта. Сохранение всех изменений во внутренний буфер перед записью
+	 * @property-read string $path
+	 * @property-read string $name
 	 */
 	class File implements FileDescriptor{
 
-
-		/** @var string $path Абсолютный путь до файла */
-		private $path;
-		/** @var string $fullPath Полный путь до файла */
-		private $fullPath;
-		/** @var string $name Имя директории */
-		private $name;
-		/** @var bool $opened Открыт ли файл для чтения/записи */
-		private $opened = false;
-		/** @var resource $file Ссылка на файловый дескриптор */
-		private $file;
-		/** @var int $length Длина файла в байтах */
-		private $length = 0;
-		/** @var int $instances Общее количество незакрытых файлов */
-		public static $instances = 0;
+		use PropertyAccess;
 
 		/** @var int MODE_READ Флаг режима чтения файла */
 		public const MODE_READ = 0b01;
@@ -36,12 +22,27 @@
 		/** @var int CURSOR_END Флаг установки указателя в конец файла */
 		public const CURSOR_END = 1;
 
+		/** @var string $path Абсолютный путь до файла */
+		protected $path;
+		/** @var string $fullPath Полный путь до файла */
+		protected $fullPath;
+		/** @var string $name Имя файла */
+		protected $name;
+		/** @var bool $opened Открыт ли файл для чтения/записи */
+		protected $opened = false;
+		/** @var resource $file Ссылка на файловый дескриптор */
+		protected $file;
+		/** @var int $length Длина файла в байтах */
+		protected $length = 0;
+		/** @var int $instances Общее количество незакрытых файлов */
+		public static $instances = 0;
+
 		/**
 		 * @param string $path Путь до файла
 		 * @throws Exception Если не передан параметр пути
 		 */
 		public function __construct(string $path){
-			if(!strlen($path)){
+			if(!$path){
 				throw new Exception('Empty filename');
 			}
 			$this->path = Path::getAbsolute($path);

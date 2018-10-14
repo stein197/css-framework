@@ -4,9 +4,8 @@
 	use \Iterator;
 
 	/**
-	 * Класс для работы с папками
-	 * Class Directory
-	 * @package System
+	 * Класс для работы с папками внутри директории <code>$_SERVER['DOCUMENT_ROOT']</code>
+	 * Позволяет создавать, удалять и изменять директории и их содержимое
 	 * @version 1.0
 	 */
 	class Directory implements FileDescriptor, Iterator{

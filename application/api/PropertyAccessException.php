@@ -8,11 +8,10 @@
 		public const M_WRITE = 'write-only';
 
 		public function __construct(string $propname, string $modificator, string $classname, string $mode){
-			var_dump($mode);
 			if($mode === self::M_READ){
-				$this->message = "Cannot write to {$mode} {$modificator} {$classname}::{$propname}";
+				$this->message = "Cannot write to {$mode} {$modificator} {$classname}::\${$propname}";
 			} else {
-				$this->message = "Cannot read from {$mode} {$modificator} {$classname}::{$propname}";
+				$this->message = "Cannot read from {$mode} {$modificator} {$classname}::\${$propname}";
 			}
 		}
 	}

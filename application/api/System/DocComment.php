@@ -6,8 +6,12 @@
 	 * Предназначен прежде всего для документирования и рефлексии
 	 * Описание может быть многострочным и обязательно в начале блока. Возможны пустые строки до, внутри и после блока описания
 	 * Также возможно наличие/отсутствие точек и пустых пробельных символом в конце каждой строки блока описания и пробельных символов вокруг блока комментария
-	 * Описание к аннотацием только однострочное, новые строки не допускаются
+	 * Каждая новая строка doc-описания является новым предложением, за исключением, когда в конце строки стоит запятая,
+	 * как здесь. В таком случае новое предложение не создается
+	 * Описание к аннотациям только однострочное, новые строки не допускаются
 	 * @property-read string $description
+	 * @property-read string $doc
+	 * @version 1.1
 	 */
 	class DocComment{
 
@@ -25,13 +29,14 @@
 			'property-write' =>['pattern' => 'TYPE NAME',		'multiple' => true],
 			'var' => ['pattern' => 'TYPE NAME',					'multiple' => false],
 			'param' => ['pattern' => 'TYPE NAME',				'multiple' => true],
-			'throws' => ['pattern' => 'TYPE',					'multiple' => false],
+			'throws' => ['pattern' => 'TYPE',					'multiple' => true],
 			'return' => ['pattern' => 'TYPE',					'multiple' => false],
 			'link' => ['pattern' => 'URL',						'multiple' => false],
 			'see' => ['pattern' => 'URL',						'multiple' => false],
 			'uses' => ['pattern' => 'FQSEN',					'multiple' => true],
 			'since' => ['pattern' => 'VERSION',					'multiple' => false],
-			'source' => ['pattern' => 'START COUNT',			'multiple' => false]
+			'source' => ['pattern' => 'START COUNT',			'multiple' => false],
+			'todo' => ['pattern' => '',							'multiple' => true]
 		];
 
 		/** @var string $doc Первоначальная строка комментария (без обрамляющих слешэй) */
@@ -48,7 +53,7 @@
 		 * @param string $doc Блок doc-комментария
 		 */
 		public function __construct(string $doc){
-			$trimmed = preg_replace('/(?:^\s*\/\*+\s*|\s*\*+\/\s*)/', '', trim($doc));
+			$trimmed = preg_replace('/(?:^\/\*+\s*|\s*\*+\/)/', '', trim($doc));
 			$this->doc = $trimmed;
 			$this->lines = new Collection(\string::class, preg_split('/\s*\*\s*/', $this->doc, -1, PREG_SPLIT_NO_EMPTY));
 			$this->parse();
@@ -76,15 +81,8 @@
 		}
 
 		/**
-		 * Возвращает блок описания
-		 * @return string
-		 */
-		public function getDescription():string{
-			return $this->description;
-		}
-
-		/**
 		 * Парсит и обрабатывает блок комментария. Основная логика класса
+		 * Здесь происходит парсинг описания и аннотаций
 		 * @return void
 		 */
 		protected function parse():void{
@@ -102,10 +100,11 @@
 					}
 					$annotation['DESCRIPTION'] = join(' ', $fragments);
 				} else {
-					$descLines[] = preg_replace('/\.\s*$/', '', $line);
+					$descLines[] = trim($line, "\x20\t\n\r\0\x0B.");
+					// $descLines[] = preg_replace('/\.\s*$/', '', $line);
 				}
 			}
-			$this->description = join('. ', $descLines);
+			$this->description = str_replace(',.', ', ', join('. ', $descLines));
 		}
 
 		/**

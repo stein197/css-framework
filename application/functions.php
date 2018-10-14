@@ -1,5 +1,6 @@
 <?php
-	const API_DIRECTORY = __DIR__;
+	const APP_DIRECTORY = __DIR__;
+	const API_DIRECTORY = __DIR__.DIRECTORY_SEPARATOR.'api';
 	/** @var string[] $_CLASSES Массив всех загруженных классов */
 	$_CLASSES = [];
 
@@ -77,15 +78,40 @@
 	 * Используется внутри файлов классов
 	 * @param string $name Имя расширения
 	 * @return void
-	 * @throws System\ExtensionException
+	 * @throws ExtensionException
 	 */
 	function checkExtension(string $name):void{
 		if(!extension_loaded($name)){
-			throw new ExtensionException("Extension '{$name}' does not exists or does not loaded");
+			$apiDir = \System\Path::normalizeSeparators(API_DIRECTORY, '\\');
+			$classDir = \System\Path::normalizeSeparators(debug_backtrace()[0]['file'], '\\');
+			throw new ExtensionException($name, '\\'.ltrim(str_replace($apiDir, '\\', $classDir), '\\'));
 		}
 	}
 
-	function typeof($object, string $type):bool{
+	/**
+	 * Возвращает тип аргумента. Для объектов возвращает его класс
+	 * @param mixed $object Аргумент, тип которого нужно выяснить
+	 * @param bool $fullName Если аргумент имеет тип объекта, то возвращать полное имя класса, включая пространства имен, иначе только имя класса
+	 * @return string
+	 */
+	function typeof($object, bool $fullName = true):string{
+		$type = gettype($object);
+		if($type === 'object'){
+			if($fullName){
+				return '\\'.get_class($object);
+			}
+			return array_pop(explode('\\', get_class($object)));
+		}
+		return $type;
+	}
+
+	/**
+	 * Проверяет, является аргумент <code>$object</code> типом <code>$type</code>
+	 * @param mixed $object Переменная, тип которой нужно проверить на соответствие
+	 * @param string $type Какой тип должна иметь переменная. Если это класс, то имя класса должно быть полным, т.е. включать в себя название пространства имён
+	 * @return bool <code>true</code>, если переменная <code>$object</code> имеент тип <code>$type</code>
+	 */
+	function typeEqualsTo($object, string $type):bool{
 		if($type === 'mixed'){
 			return true;
 		}
@@ -98,16 +124,13 @@
 			case 'double':
 				return $type === 'double' || $type === 'float';
 			case 'array':
-				return $type === 'array' || preg_match('/^\w+\[\]$/', $type) || preg_match('/Collection(?:<.+>)?$/', $type);
+				return $type === 'array' || preg_match('/^.+\[\]$/', $type) === 1;
 			case 'NULL':
 				return strtoupper($type) === 'NULL';
 			case 'string':
 			case 'resource':
 				return $type === $oType;
 			case 'object':
-				if($object instanceof \System\Collection && $type === 'array'){
-					return true;
-				}
 				return $object instanceof $type;
 		}
 	}
@@ -117,7 +140,7 @@
 		global $_CLASSES;
 		$_CLASSES[] = $ns;
 		$path = str_replace('\\', DIRECTORY_SEPARATOR, $ns);
-		require_once API_DIRECTORY.DIRECTORY_SEPARATOR.'api'.DIRECTORY_SEPARATOR.$path.'.php';
+		require_once API_DIRECTORY.DIRECTORY_SEPARATOR.$path.'.php';
 	});
 
 	// Бросать исключения при каждой ошибке уровня E_WARNING

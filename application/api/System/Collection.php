@@ -8,10 +8,14 @@
 
 	/**
 	 * Класс для работы с массивом объектов определенного типа.
-	 * То есть, в такой массив нельзя будет сложить объекты иного типа, кроме как обэекты типа, указанного в конструкторе
+	 * То есть, в такой массив нельзя будет сложить объекты иного типа, кроме как объекты типа, указанного в конструкторе
 	 * Работает как с классами, так и с примитивными типами
+	 * @property-read string $type
 	 */
 	class Collection implements Iterator, ArrayAccess, Countable{
+		
+		use PropertyAccess;
+
 		/** @var string $type Тип массива */
 		protected $type;
 		/** @var array $data Массив с объектами указанного типа */
@@ -22,6 +26,7 @@
 		/**
 		 * Создает новую коллекцию с объектами указанного типа
 		 * @param string $type Имя класса, объекты которого будут содержаться в коллекции
+		 * @param array $data Объекты, которые будут добавлены в коллекцию
 		 */
 		public function __construct(string $type, array $data = []){
 			$this->type = $type;
@@ -47,10 +52,9 @@
 			}
 		}
 
-		// Реализация интерфейса Iterator
-
 		/**
 		 * Возвращает текущий элемент коллекции
+		 * @return mixed
 		 */
 		public function current(){
 			return $this->data[$this->cursor];
@@ -88,7 +92,6 @@
 			return isset($this->data[$this->cursor]);
 		}
 
-		// Реализация интерфейса ArrayAccess
 		/**
 		 * Проверяет, существует ли элемент с указанным ключом
 		 * @return bool
@@ -99,6 +102,7 @@
 
 		/**
 		 * Возвращает элемент с указанным ключом
+		 * @return mixed
 		 */
 		public function offsetGet($offset){
 			return $this->data[$offset];
@@ -140,10 +144,8 @@
 			$this->data[$offset] = null;
 		}
 
-		// Реализация интерфейса Countable
-
 		/**
-		 * Возвращает размер коллекции
+		 * Возвращает количество элементов коллекции
 		 * @return int
 		 */
 		public function count():int{

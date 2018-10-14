@@ -75,4 +75,14 @@
 		public static function isRelative(string $path):bool{
 			return !self::isFull($path) && !self::isAbsolute($path);
 		}
+
+		/**
+		 * Нормализует путь. Т.е. приводит все слеэши в пути (прямые и обратные) к единому формату
+		 * @param string $path Путь, который нужно нормализовать
+		 * @param string $ds Слэш, который будет разделять директории в возвращаемом значении
+		 * @return string
+		 */
+		public static function normalizeSeparators(string $path, string $ds = DIRECTORY_SEPARATOR):string{
+			return preg_replace('#[\\\/]#', $ds, $path);
+		}
 	}
