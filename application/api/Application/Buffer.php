@@ -10,8 +10,8 @@
 	 * Использование методов класса имеет смысл только после вызова <code>self::start()</code> и до вызова <code>self::end()</code>
 	 * Свойства и секции имеют схожий механизм работы, за исключением, что свойства это небольшие порции данных (обычно строковые),
 	 * а секции - раздельные куски выводимого контента, заключенные между вызовами методов <code>self::startSection()</code> и <code>self::endSection()</code>
-	 * @todo Некорректная работа вложенных секций
-	 * @version 1.0
+	 * Секции могут быть вложены друг в друга, при этом уроведь буферизации всегда будет равен 2
+	 * @version 1.1
 	 */
 	abstract class Buffer{
 
@@ -23,6 +23,8 @@
 		private static $stack = [];
 		/** @var bool $hasRun Внутренняя переменная, показывающая, запущен ли механизм буферизации */
 		private static $hasRun = false;
+		/** @var string[] $sectionDepth Массив, показывающий текущий уровень вложенности секций. Содержит имена секций */
+		private static $sectionDepth = [];
 
 		/**
 		 * Запускает процесс буферизации. Вложенные запуски (т.е. несколько подряд идущих вызовов без соответствующих <code>self::end()</code>) не допускаются,
@@ -40,25 +42,33 @@
 		/**
 		 * Завершает процесс буферизации и очищает все содержимое внутренних массивов. После вызова возможно повторное использование <code>self::start()</code>
 		 * Обычно используется единственный раз за весь цикл жизни приложения
-		 * @return void
+		 * @param bool $print Если <code>true</code>, то результат выведется в браузер, иначе вернется содержимое буфера в виде строки
+		 * @return string|null
 		 * @uses self::clear()
 		 */
-		final public static function end():void{
+		final public static function end(bool $print = true):?string{
 			self::$hasRun = false;
 			self::$stack[] = ob_get_clean();
+			$result = '';
 			foreach(self::$stack as $k => $piece){
 				switch($k{0}){
 					case 'p':
-						echo @self::$properties[substr($k, 2)];
+						$result .= @self::$properties[substr($k, 2)];
 						break;
 					case 's':
-						echo @self::$sections[substr($k, 2)];
+						$result .= @self::$sections[substr($k, 2)];
 						break;
 					default:
-						echo $piece;
+						$result .= $piece;
 				}
 			}
 			self::clear();
+			if($print){
+				echo $result;
+				return null;
+			} else {
+				return $result;
+			}
 		}
 
 		/**
@@ -101,7 +111,11 @@
 		 */
 		final public static function startSection(string $name):void{
 			self::checkBufferRunning();
-			self::$stack[] = ob_get_clean();
+			if($depth = sizeof(self::$sectionDepth)){
+				$parentName = self::$sectionDepth[$depth - 1];
+				self::$sections[$parentName] .= ob_get_clean();
+			}
+			self::$sectionDepth[] = $name;
 			self::$sections[$name] = '';
 			ob_start();
 		}
@@ -113,8 +127,13 @@
 		 */
 		final public static function endSection(string $name):void{
 			self::checkBufferRunning();
-			self::$sections[$name] = ob_get_clean();
-			ob_start();
+			array_pop(self::$sectionDepth);
+			self::$sections[$name] .= ob_get_clean();
+			if($depth = sizeof(self::$sectionDepth)){
+				$last = self::$sectionDepth[$depth - 1];
+				self::$sections[$last] .= self::$sections[$name];
+				ob_start();
+			}
 		}
 
 		/**
@@ -149,6 +168,10 @@
 			self::$sections = [];
 		}
 
+		final public static function getSectionChain():array{
+			return self::$sectionDepth;
+		}
+
 		/**
 		 * Проверяет, запущен ли процесс буферизации
 		 * @return void
@@ -160,5 +183,4 @@
 				throw new Exception('Cannot call \\'.self::class."::{$fName}".' method before starting bufferization');
 			}
 		}
-
 	}
