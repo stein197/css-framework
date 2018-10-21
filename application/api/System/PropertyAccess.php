@@ -88,7 +88,7 @@
 									return $this->{$name} = $value;
 								}
 							}
-							throw new InvalidArgumentException('Cannot set \%1::$%2 property. Expected type(-s) %3, %4 supplied', format(static::class, $p->getName(), join('|', $fullTypeNames), typeof($value)));
+							throw new InvalidArgumentException(sformat('Cannot set \%1::$%2 property. Expected type(-s) %3, %4 supplied', static::class, $p->getName(), join('|', $fullTypeNames), typeof($value)));
 						}
 					}
 				}

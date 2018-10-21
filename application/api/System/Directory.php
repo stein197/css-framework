@@ -6,35 +6,41 @@
 	/**
 	 * Класс для работы с папками внутри директории <code>$_SERVER['DOCUMENT_ROOT']</code>
 	 * Позволяет создавать, удалять и изменять директории и их содержимое
+	 * @property-read string $path
+	 * @property-read string $fullPath
+	 * @property-write string $fullPath
 	 * @version 1.0
 	 */
 	class Directory implements FileDescriptor, Iterator{
-		/** @var string $path Абсолютный путь до директории */
+
+		use PropertyAccess;
+		
+		/** @var string $path Абсолютный путь до директории. Последний слэш обрезается */
 		private $path;
-		/** @var string $fullPath Полный путь до директории */
+		/** @var string $fullPath Полный путь до директории. Последний слэш обрезается */
 		private $fullPath;
 		/** @var string $name Имя директории */
 		private $name;
+		/** @var string $dir Имя директории, в которой находится скрипт, инстанциировавший объект */
+		private $dir = null;
 		/** @var array $files Файлы и папки, хранящиеся внутри текущей папки. Данные кэшируются */
 		private $files = [];
 		/** @var int $cursor Указатель на текущий элемент массива $name для обхода директории в foreach */
 		private $cursor = 0;
-
-		//TODO Метод нормализации путей. Замена ".." на родителя
 		
 		/**
 		 * @param string $path Относительный (относительно директории скрипта, выполняющего инициализацию объекта) или абсолютный путь до папки
 		 * @param bool $normalize Нормализовать ли путь (замена '..' на родителя)
 		 * @throws Exception Если передана пустая строка
 		 */
-		public function __construct(string $path, bool $normalize = true){
-			if(!strlen($path)) throw new Exception('Type Directory name/path');
-			// Добавть в конец '/'
-			if($path{strlen($path) - 1} !== '/') $path .= '/';
-			$this->name = pathinfo($path)['filename'];
-			$this->path = Path::getAbsolute($path);
-			$this->fullPath = Path::getFull($path);
-			if($normalize) $this->normalize();
+		public function __construct(string $path, string $dir = null){
+			if(!strlen($path))
+				throw new Exception('Directory path is not specified');
+			$path = Path::getFull($path, '/', $dir);
+			$this->dir = $dir;
+			$this->name = pathinfo($path, PATHINFO_FILENAME);
+			$this->path = Path::getAbsolute($path, '/', $dir);
+			$this->fullPath = $path;
 		}
 
 		public function __clone(){
@@ -58,11 +64,10 @@
 		 * @param $p int Режим доступа
 		 * @return void
 		 * @throws Exception Если директория уже существует
-		**/
+		 */
 		public function create(int $p = 0777):void{
-			if($this->exists()){
+			if($this->exists())
 				throw new Exception("Directory '{$this->path}' already exists");
-			}
 			mkdir($this->fullPath, $p, true);
 		}
 
@@ -72,39 +77,29 @@
 		 * @throws Exception Если директории не существует
 		 **/
 		public function remove():void{
-			if($this->exists()){
-				rmdir($this->fullPath);
-				return;
-			}
-			throw new Exception("Directory '{'$this->path}' not found");
+			if(!$this->exists())
+				throw new Exception("Directory '{'$this->path}' not found");
+			rmdir($this->fullPath);
 		}
 
 		/**
 		 * Переименовывает папку
 		 * @param $name string Новое имя папки. Не включает в себя путь
 		 * @return void
-		 * @throws Exception Если папки не существует
+		 * @throws Exception Если папки не существует, или есть папка с таким же именем
 		 **/
 		public function rename(string $name):void{
-			if(!$this->exists()){
+			if($this->name === $name)
+				return;
+			if(!$this->exists())
 				throw new Exception("Directory '{$this->path}' not found");
-			}
-			$parent = dirname($this->fullPath);
-			$newname = $parent.'/'.$name;
-			if(file_exists($newname) && is_dir($newname)){
+			$newname = dirname($this->fullPath).'/'.$name;
+			if(file_exists($newname) && is_dir($newname))
 				throw new Exception("Directory with name '{$name}' already exists");
-			}
 			rename($this->fullPath, $newname);
+			$this->fullPath = $newname;
+			$this->path = Path::getAbsolute($this->fullPath, '/', $this->dir);
 			$this->name = $name;
-		}
-
-		/**
-		 * Возвращает путь до папки (относительно корня сайта либо абсолютный)
-		 * @param bool $full Выводить абсолютный путь
-		 * @return string
-		 */
-		public function getPath(bool $full = false):string{
-			return $full ? $this->fullPath : $this->path;
 		}
 
 		/**
@@ -113,18 +108,8 @@
 		 * @throws Exception Если папка уже корень сайта
 		 **/
 		public function getParent():Directory{
-			if($this->path === '/') throw new Exception('This Directory is already root');
-			return new Directory(preg_replace('/[^\/]+\/?$/', '', $this->path));
+			return new static(preg_replace('/[^\/]+$/', '', $this->path));
 		}
-
-		/**
-		 * Возвращает имя папки
-		 * @return string
-		 */
-		public function getName():string{
-			return $this->name;
-		}
-
 
 		/**
 		 * Возвращает размер папки в байтах
@@ -150,8 +135,15 @@
 		 * @throws Exception Если папки не существует
 		 */
 		public function lastModified():int{
-			if(!$this->exists()) throw new Exception("Directory '{$this->getPath()}' does not exists");
+			if(!$this->exists())
+				throw new Exception("Directory '{$this->getPath()}' does not exists");
 			return filemtime($this->fullPath);
+		}
+
+		public function lastAccess():int{
+			if(!$this->exists())
+				throw new Exception("Directory '{$this->getPath()}' does not exists");
+			return fileatime($this->fullPath);
 		}
 
 		/**
@@ -171,17 +163,11 @@
 			
 		}
 
-		public function move():void{
+		public function move(string $dir):void{
+
 			// TODO: Implement move() method.
 		}
 
-		// TODO: Проверка на выход за пределы DOCUMENT_ROOT
-		private function normalize():void{
-			while(preg_match('/\/[^\/]+\/\.\./', $this->path)){
-				$this->path = preg_replace('/\/[^\/]+\/\.\./', '', $this->path, 1);
-				$this->fullPath = preg_replace('/\/[^\/]+\/\.\./', '', $this->fullPath, 1);
-			}
-		}
 		public function rewind(){
 			if(!sizeof($this->files)){
 				$this->cacheList();
