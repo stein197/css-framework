@@ -1,0 +1,32 @@
+.center{
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	&-x{
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	&-y{
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+@each $letter, $value in $sides{
+	@for $i from 0 through $offset-loops{
+		$val: $i * 5;
+		.#{$letter}-#{$val}{
+			#{map_get($sides, $letter)}: #{$val}px;
+		}
+	}
+}
+@for $i from 0 through 10{
+	$size: $i * 5;
+	.z-#{$size}{
+		z-index: $size;
+	}
+}
+@each $pos in $positions{
+	.p-#{$pos}{
+		position: $pos;
+	}
+}

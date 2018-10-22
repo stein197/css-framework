@@ -1,0 +1,117 @@
+// Font-weight
+@each $name, $value in $font-weight{
+	.fw-#{$name}{
+		font-weight: $value;
+	}
+}
+// Font-size
+@for $i from $fs-loop-from through $fs-loop-to{
+	$size: $i * 2;
+	.fs-#{$size}{
+		font-size: #{$size}px;
+	}
+	
+}
+@include mq("md"){
+	@for $i from $fs-loop-from through $fs-loop-to{
+		$size: $i * 2;
+		.fs-md-#{$size}{
+			font-size: #{$size}px;
+		}
+	}
+}
+// Font-family
+@each $tag, $name in $fonts{
+	.ff-#{$tag}{
+		font-family: $name;
+	}
+}
+
+.text-crop{
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.link{
+	text-decoration: underline;
+	&:hover{
+		text-decoration: none !important;
+	}
+}
+
+.link-dotted{
+	text-decoration: none !important;
+	border-bottom: 1px dotted;
+	&:hover{
+		border-bottom-color: transparent;
+	}
+}
+
+.link-dashed{
+	text-decoration: none !important;
+	border-bottom: 1px dashed;
+	&:hover{
+		border-bottom-color: transparent;
+	}
+}
+
+.link-thin{
+	text-decoration: none !important;
+	&:hover{
+		border-bottom-color: transparent !important;
+	}
+}
+.link-wrapper:hover{
+	.link{
+		text-decoration: none;
+	}
+	.link-thin,
+	.link-dashed,
+	.link-dotted{
+		border-bottom-color: transparent;
+	}
+}
+.underline{
+	&-solid,
+	&-dotted,
+	&-dashed{
+		line-height: 1em;
+		white-space: nowrap;
+		overflow: hidden;
+		&::after{
+			content: "";
+			display: inline-block;
+			width: 100%;
+		}
+	}
+	&-solid::after{
+		border-bottom: 1px solid;
+	}
+	&-dotted::after{
+		border-bottom: 1px dotted;
+	}
+	&-dashed::after{
+		border-bottom: 1px dashed;
+	}
+}
+.nowrap{
+	white-space: nowrap;
+}
+.pre{
+	white-space: pre;
+}
+@for $i from 0 through $line-height-max{
+	$value: $i / 10;
+	$strval: "";
+	@if $i < 10 {
+		$strval: "0" + $i;
+	} @else {
+		$strval: $i;
+	}
+	.lh-#{$strval}{
+		line-height: #{$value}em;
+	}
+	.ls-#{$strval}{
+		letter-spacing: #{$value}em;
+	}
+}

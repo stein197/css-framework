@@ -1,6 +1,13 @@
 @import "definitions";
+@import "slick-default";
+@import "font";
+@import "spacing";
+@import "positioning";
+@import "bs-reset";
 
-*{
+*,
+*::before,
+*::after{
 	position: relative;
 	background-repeat: no-repeat;
 }
@@ -8,10 +15,8 @@ html,
 body{
 	font-size: 14px;
 	font-weight: 400;
-	color: get_color("black");
-	font-family: "Gilroy";
+	font-family: "Open Sans";
 }
-
 .float::after{
 	content: "";
 	display: block;
@@ -27,38 +32,18 @@ body{
 	cursor: pointer;
 }
 .justify{
-	display: block;
-	text-align: justify;
-	font-size: 0.1px;
-	line-height: 0;
-	& > *{
-		display: inline-block;
-		font-size: 14px;
-		line-height: 1em;
-	}
-	&::after{
-		content: "";
-		display: inline-block;
-		width: 100%;
-	}
+	display: -webkit-flex;
+	display: -ms-flex;
+	display: flex;
+	justify-content: space-between;
 }
-.valign > *{
-	display: inline-block;
-	vertical-align: middle;
+.valign{
+	display: -webkit-flex;
+	display: -ms-flex;
+	display: flex;
+	align-items: center;
 }
-.center{
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	&-x{
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	&-y{
-		top: 50%;
-		transform: translateY(-50%);
-	}
-}
+
 
 .max-w{
 	max-width: 100%;
@@ -72,7 +57,6 @@ body{
 .min-h{
 	min-height: 100%;
 }
-
 .full-h{
 	height: 100%;
 }
@@ -100,107 +84,20 @@ body{
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.nowrap{
-	white-space: nowrap;
-}
+
 .noresize{
 	resize: none;
 }
-.pre{
-	white-space: pre;
-}
+
 .crop{
 	overflow: hidden;
-}
-.text-crop{
-	@extend .crop;
-	text-overflow: ellipsis;
-}
-
-
-@each $name, $value in $font-weights{
-	.fw-#{$name}{
-		font-weight: $value;
-	}
-}
-
-@for $i from $fs-loop-from through $fs-loop-to{
-	$size: $i * 2;
-	.fs-#{$size}{
-		font-size: #{$size}px;
-	}
-	
-}
-
-@each $tag, $name in $fonts{
-	.font-#{$tag}{
-		font-family: $name;
-	}
-}
-
-.noselect{
-	user-select: none;
-	-o-user-select: none;
-	-ms-user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-}
-.nowrap{
-	white-space: nowrap;
-}
-.pre{
-	white-space: pre;
-}
-
-.link{
-	text-decoration: underline;
-	color: inherit;
-	&:hover{
-		text-decoration: none;
-		color: inherit;
-	}
-}
-
-.link-dotted{
-	text-decoration: none !important;
-	color: inherit;
-	border-bottom: 1px dotted;
-	&:hover{
-		border-bottom-color: transparent;
-	}
-}
-
-.link-dashed{
-	text-decoration: none !important;
-	color: inherit;
-	border-bottom: 1px dashed;
-	&:hover{
-		border-bottom-color: transparent;
-	}
-}
-.link-thin{
-	text-decoration: none !important;
-	&:hover{
-		border-bottom-color: transparent !important;
-	}
-}
-
-.link-wrapper:hover{
-	.link{
-		text-decoration: none;
-	}
-	.link-thin,
-	.link-dashed,
-	.link-dotted{
-		border-bottom-color: transparent;
-	}
 }
 
 @each $name, $value in $colors{
 	.color-#{$name}{
 		color: $value;
 		&.link-thin{
-			border-bottom-color: 1px solid rgba($value, 0.4);
+			border-bottom: 1px solid rgba($value, 0.4);
 		}
 	}
 	.color-#{$name}_hover:hover{
@@ -210,13 +107,38 @@ body{
 		background-color: $value;
 	}
 }
+.color-inherit{
+	color: inherit;
+}
 
-@each $letter, $value in $sides{
-	@for $i from 0 through $offset-loops{
-		$val: $i * 5;
-		.#{$letter}-#{$i}{
-			#{map_get($sides, $letter)}: #{$val}px;
-		}
+.bg-pos{
+	&-center{
+		background-position: center;
+	}
+	&-center-y{
+		background-position-y: center;
+	}
+	&-center-x{
+		background-position-x: center;
+	}
+	&-top{
+		background-position-y: top;
+	}
+	&-right{
+		background-position-x: right;
+	}
+	&-bottom{
+		background-position-y: bottom;
+	}
+	&-left{
+		background-position-x: left;
+	}
+}
+
+@for $i from 0 through $square-loops{
+	$size: $i * 5;
+	.square-#{$size}{
+		@include square(#{$size}px);
 	}
 }
 
@@ -226,17 +148,6 @@ body{
 		height: #{$height}px;
 	}
 }
-
-.container{
-	@include mq("xl"){
-		max-width: 1170px;
-	}
-}
-
-.container-half{
-	padding: 0 15px;
-}
-
 .bg{
 	&-center{
 		background-position: center center;
@@ -244,41 +155,30 @@ body{
 	&-cover{
 		background-size: cover;
 	}
+	&-stretch{
+		background-size: 100% 100%;
+	}
 	&-default{
 		@extend .bg-center;
 		@extend .bg-cover;
 	}
 	@each $name, $value in $backgrounds{
 		&-#{$name}{
-			@if type_of($value) == color{
-				background-color: $value;
-			} @else {
-				background-image: url($value);
-			}
+			background-image: url($value);
 		}
 	}
 }
 
-header,
-#header{
-	&.fixed{
-		position: fixed;
-		left: 0;
-		top: 0;
-		width: 100%;
-	}
+header.fixed,
+#header.fixed{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
 }
 
-body{
-	&.stick-footer{
-		min-height: calc(100vh - map_get($footer-height, "default"));
-		@each $bp-name, $bp-value in $breakpoints{
-			min-height: calc(100vh - map_get($footer-height, $bp-name));
-		}
-	}
-	&.fixed{
-		overflow: hidden !important;
-	}
+body.fixed{
+	overflow: hidden !important;
 }
 
 footer.sticky,
@@ -297,98 +197,43 @@ footer.sticky,
 	width: 1px;
 }
 
-.slider-fullheight{
-	.slider,
-	.slick-list,
-	.slick-track,
-	.slick-slide{
-		height: 100%;
-	}
-}
-.slider-fullwidth{
-	@include mq("xl"){
-		.slick-prev{
-			left: calc((100% - 1170px) / 4);
-			transform: translateX(-50%);
-		}
-		.slick-next{
-			right: calc((100% - 1170px) / 4);
-			transform: translateX(-50%) scale(-1);
-		}
-	}
-}
-
-.slider-btns,
-.slider-dots{
-	position: absolute;
-	height: 100%;
-	width: 100%;
-	top: 0;
-}
-
-.slider-dots{
-	top: auto;
-	bottom: 0;
-}
-
-.slick-arrow{
-	display: block;
-	left: 0;
-	top: 0;
-	padding: 0;
-	border: 0;
-	background-color: transparent;
-	height: 100%;
-	position: absolute;
-	font-size: 0;
-	cursor: pointer;
-	z-index: 10;
-	// Reset left parameter for next button
-	&.slick-next{
-		left: auto;
-		right: 0;
-		transform: scaleX(-1);
-	}
-	&::before{
-		content: "";
-		position: absolute;
-		display: block;
-	}
-}
-
-.slick-dots{
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	& > li{
-		display: inline-block;
-	}
-	button{
-		display: block;
-		padding: 0;
-		font-size: 0;
-		background-color: transparent;
-		cursor: pointer;
-	}
-}
-
-.table-wrapper{
-	overflow-x: auto;
-}
-
 table{
 	border-collapse: collapse;
 }
+.table-wrapper{
+	overflow-x: auto;
+	& > table{
+		min-width: 100%;
+	}
+}
+.table-unstyled{
+	background-color: transparent !important;
+	border: none !important;
+	padding: 0 !important;
+	tr,
+	th,
+	td,
+	thead,
+	tbody{
+		@extend .table-unstyled;
+	}
+}
+.table-fixed{
+	table-layout: fixed;
+}
 
-a.btn{
+
+.btn{
 	display: inline-block;
 	cursor: pointer;
-}
-.circle{
-	border-radius: 50%;
+	line-height: 1em;
+	white-space: nowrap;
+	&-soft-rounded{
+		border-radius: 5px;
+	}
+	&-rounded{
+		border-radius: 50px;
+	}
 }
 .transitionable{
 	transition: all .2s linear;
@@ -396,7 +241,7 @@ a.btn{
 
 // Only for mobile
 @include mq("md", max){
-	a.btn-mobile{
+	.btn-mobile{
 		width: 100%;
 		text-align: center;
 		padding-left: 0 !important;
@@ -408,62 +253,21 @@ a.btn{
 }
 
 @for $i from 0 through 10{
-	$size: $i * 5;
-	.z-#{$size}{
-		z-index: $size;
-	}
-	$size: 1 + ($i / 10);
-	.lh-#{$i}{
-		line-height: #{$size}em;
-	}
-	$size: $i / 10;
 	.o-#{$i}{
-		opacity: $size;
+		opacity: $i / 10;
 	}
-	.block-ratio-#{$i}{
-		padding-top: percentage($size);
-	}
-	.ls-#{$i}{
-		letter-spacing: #{$size}em;
+	.brd-rd-#{$i}{
+		border-radius: #{$i}px;
 	}
 }
 
-// Paddings and margins
-@for $i from 0 through $padding-loops{
-	$size: $i * 5;
-	.mr-#{$size}{
-		margin: #{$size}px;
-	}
-	.mr-x-#{$size}{
-		margin-left: #{$size}px;
-		margin-right: #{$size}px;
-	}
-	.mr-y-#{$size}{
-		margin-top: #{$size}px;
-		margin-bottom: #{$size}px;
-	}
-	.pd-#{$size}{
-		padding: #{$size}px;
-	}
-	.pd-x-#{$size}{
-		padding-left: #{$size}px;
-		padding-right: #{$size}px;
-	}
-	.pd-y-#{$size}{
-		padding-top: #{$size}px;
-		padding-bottom: #{$size}px;
-	}
-	@each $side-letter, $side-name in $sides{
-		// Margins
-		.mr-#{$side-letter}-#{$size}{
-			margin-#{$side-name}: #{$size}px;
-		}
-		// Paddings
-		.pd-#{$side-letter}-#{$size}{
-			padding-#{$side-name}: #{$size}px;
-		}
+@for $i from 0 through 20{
+	$width: $i * 5;
+	.w-#{$width}{
+		width: percentage($width / 100);
 	}
 }
+
 
 // Main breakpoint loop
 @each $bp-name, $bp-value in $breakpoints{
@@ -475,60 +279,17 @@ a.btn{
 				font-size: #{$size}px;
 			}
 		}
-		// Paddings and margins
-		@for $i from 0 through $padding-loops{
-			$size: $i * 5;
-			.mr-#{$bp-name}-#{$size}{
-				margin: #{$size}px;
-			}
-			.mr-x-#{$bp-name}-#{$size}{
-				margin-left: #{$size}px;
-				margin-right: #{$size}px;
-			}
-			.mr-y-#{$bp-name}-#{$size}{
-				margin-top: #{$size}px;
-				margin-bottom: #{$size}px;
-			}
-			.pd-#{$bp-name}-#{$size}{
-				padding: #{$size}px;
-			}
-			.pd-x-#{$bp-name}-#{$size}{
-				padding-left: #{$size}px;
-				padding-right: #{$size}px;
-			}
-			.pd-y-#{$bp-name}-#{$size}{
-				padding-top: #{$size}px;
-				padding-bottom: #{$size}px;
-			}
-			@each $side-letter, $side-name in $sides{
-				// Margins
-				.mr-#{$side-letter}-#{$bp-name}-#{$size}{
-					margin-#{$side-name}: #{$size}px;
-				}
-				.pd-#{$side-letter}-#{$bp-name}-#{$size}{
-					padding-#{$side-name}: #{$size}px;
-				}
-			}
-		}
 		.justify-#{$bp-name}{
-			display: block;
-			text-align: justify;
-			font-size: 0.1px;
-			line-height: 0;
-			& > *{
-				display: inline-block;
-				font-size: 14px;
-				line-height: 1em;
-			}
-			&::after{
-				content: "";
-				display: inline-block;
-				width: 100%;
-			}
+			display: -webkit-flex;
+			display: -ms-flex;
+			display: flex;
+			justify-content: space-between;
 		}
-		.valign-#{$bp-name} > *{
-			display: inline-block;
-			vertical-align: middle;
+		.valign-#{$bp-name}{
+			display: -webkit-flex;
+			display: -ms-flex;
+			display: flex;
+			align-items: center;
 		}
 		.center-#{$bp-name}{
 			left: 50%;
@@ -560,7 +321,19 @@ a.btn{
 		.h-#{$bp-name}-a{
 			height: auto;
 		}
+		.w-#{$bp-name}-a{
+			width: auto;
+		}
+		@for $i from 0 through 20{
+			$width: $i * 5;
+			.w-#{$bp-name}-#{$width}{
+				width: percentage($width / 100);
+			}
+		}
 		@each $side-letter, $side-name in $sides{
+			.#{$side-letter}-#{$bp-name}-a{
+				#{map_get($sides, $side-letter)}: auto;
+			}
 			@for $i from 0 through $offset-loops{
 				$val: $i * 5;
 				.#{$side-letter}-#{$bp-name}-#{$val}{
@@ -579,88 +352,5 @@ a.btn{
 				position: $pos;
 			}
 		}
-	}
-}
-
-// Reset default bootstrap 4 styles
-.modal-dialog{
-	max-width: none;
-}
-.modal-content{
-	background-color: transparent;
-	border-radius: 0;
-	border: none;
-}
-
-
-#burger{
-	position: absolute;
-	right: 15px;
-	& > hr{
-		display: block;
-		height: 4px;
-		border: none;
-		margin: 0;
-		border-radius: 2px;
-		margin-bottom: 5px;
-	}
-}
-
-#menubar{
-	@include mq("xl", max){
-		width: 100vw;
-		height: 100vh;
-		left: 0;
-		top: 0;
-		overflow-y: scroll;
-		position: fixed;
-		display: none;
-		opacity: 0;
-	}
-}
-
-#sc{
-	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAARCAYAAAAougcOAAAFO0lEQVQ4jS2Ua2yddQHGf///ez+39fS0W0d7uko3JobNTEsEWQYbyTBxl26MGB1ThM2IIsQgEadmftEoRo1L/OA9gAoGL6zI0oEog1lIBLaxarpbykbX9azn/r7n8l7/fqgfnjxfnye/J4/409RJijLirlo/e1dYqef+Pfv7a101Sj7jo0m0lK1My1R53UiNZO0z23udz4yLeT44YOP/6uDXrLf/9iC5WMeRAYGbYfRjU+09T98d6b1o3gI4NjoKcrZGoBLx65cvH+s23I0U09AJIWUTBwkdCR0J8115Uzkw0vc25x/g9e8+ZL01eYgrBvQBeggp4M0Tuy1/34Q2/tMdSaOMWnE9ssdUGIagfaoy2Z3zNyKWgS8hpQGAFCCXfEhELCRix7cqyTTPTh6iAiQF8BzoZKGVAcNEe/PEdus3u581L74CSiGPtc2+hyfd5znX2IqIodGBsx240oIkgUhBFAEGc/kCTU3y5NimFbd85wJX66NwvgJ1HeoCykDVBGHC9KVP8fbfX9NFWNBPBdk9L+vWzp5NClNKEhRGLPCE4KYBjhRk8uKU6B0etZLM3ad/sp/AywipszBc5NLWu95d+bPfTeA6JuiCdLzUOgG0QGjT74wwc2KtOH3pWv4J1f+jVyr+50dtjZQUdJTiv15I0auf3D+cu92Vlrvt+I9Zd/zr8whWkgE8YMudhzm35hF++RwM5uF6DYSCWEAYQ17hfvb76K0wrt3Xy/2Gm8R/LHX3LzcF82FI6PtUvWDDN5uV2cdvHly3rie+ShcDi6W0JmDaOb56D8Qe/PU1CDQwJCiACIQOhoneY+h4GnzpOvOAH4Y8M9/aj1QQBUBIs9IqHHwj9cbq3tt23NPWL+PFfSgDZABnLkHzGHwgDzfkISiB6YAARAxSkKQz6EdKHv16D8M9Oo8Mpw+0u4E8cr56PzYQhaAJWLi86r5y/tVb26v9ofIMmBlIBXBqOuHFacgCvRqwFtwsEC6NZi7EnDmL9vodn+Of75eohAk52+bbN+YmlIoHT5y5+lE0IAgh6BBGpnOkcEvm0xdeIl2ugOaAmT2plvdP4BiI9grwByCREOuQ2OAlGN1FtOLer7DgtTi1UOWlUg1b6hxav/wFoYmBV6evjJHEEMXglan1jvDn4mbufesoqcUG9A+cZGVxgu51iGYWtABksgRfKFAhFAeQShOQS0EhS0vFPP7ue+z+1yx3rO1/8CNr+h6V5XqXxSo0OzB7mlmzwMe3HuZiNADz79cFZUQEaAosA8z/y7JA1yHookfNzmMs1teSsUooJZaZBi+cq3B8rtMu5rM1c82Q220Htpmy6dE1slHMuW37eLRP4/ln9m5CV9+gU7JxEXhi6SU0Cb4vlesOi5s3/FBfnrX/451vPdF4rwI5h4ZpQtqh2o6p+jH0FyCdQtg2qzMpShmN0dJVvvyPp2lkUmPLLp8d41oOtShRgQJdQuhDqYX45O3HauN752Q6ax+9c+MNNzp96SphBI4Bpg62AYa2BL7VxW+1eKfSYs7C+8UPHr64fmoSt28lBCnwLRQmOBagUOUWcs/4z8X4rk9EMqnJK25AWekzqz48uhnD8nC7oBRECcQJJGppjonATxIOL2PXlsce2DA/OHQhnrkIrkDVQwgC6HRRpRpy57bfsnP8i1SryHYHbccXHmJ7LmBLn1EaG8wcnar4t0WaDmmrjGnWDENvpEzdTSNaB0cy39uXN55qDgwFufUf+otz4fStTr1tInLXcMwaofLl5i1/ELt2HaBag45LZ9UI/wMIpFDoxtP5kAAAAABJRU5ErkJggg==");
-	background-position: left center;
-}
-
-.field{
-	@include mq("md"){
-		float: left;
-	}
-	& > input,
-	& > textarea{
-		width: 100%;
-		border: none;
-		background-color: transparent;
-	}
-}
-
-.agreement{
-	$checkbox-size: 25px;
-	& > input,
-	& > span::before{
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	& > input{
-		@include square($checkbox-size);
-		opacity: 0;
-		cursor: pointer;
-		z-index: 5;
-	}
-	& > span{
-		position: static;
-	}
-	& > span::before{
-		content: "";
-		display: block;
-		@include square($checkbox-size);
-		background-repeat: no-repeat;
-		background-position: center center;
-	}
-	& > span.error::before{
-		border: 1px solid red;
 	}
 }

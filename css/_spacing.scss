@@ -1,0 +1,77 @@
+// Negative x-axis margins
+@for $i from 1 through $n-mr-loops{
+	$margin: $i * 5;
+	.n-mr-#{$margin}{
+		margin-left: -#{$margin}px;
+		margin-right: -#{$margin}px;
+	}
+}
+// Exact spacing, i.e. 1-9 pixels precision
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@each $side-letter, $side-name in $sides{
+			@for $i from 1 through 9{
+				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
+					margin-#{$side-name}: #{$i}px;
+				}
+				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
+					padding-#{$side-name}: #{$i}px;
+				}
+			}
+		}
+	}
+}
+// Same spacing for every 4 box sides
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@for $i from 0 through $padding-loops{
+			$size: $i * 10;
+			.mr-#{$bp-name}-#{$size}{
+				margin: #{$size}px;
+			}
+			.pd-#{$bp-name}-#{$size}{
+				padding: #{$size}px;
+			}
+		}
+	}
+}
+// Spacing for every x- and y- axis
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@for $i from 0 through $padding-loops{
+			$size: $i * 10;
+			.mr-x-#{$bp-name}-#{$size}{
+				margin-left: #{$size}px;
+				margin-right: #{$size}px;
+			}
+			.mr-y-#{$bp-name}-#{$size}{
+				margin-top: #{$size}px;
+				margin-bottom: #{$size}px;
+			}
+			.pd-x-#{$bp-name}-#{$size}{
+				padding-left: #{$size}px;
+				padding-right: #{$size}px;
+			}
+			.pd-y-#{$bp-name}-#{$size}{
+				padding-top: #{$size}px;
+				padding-bottom: #{$size}px;
+			}
+		}
+	}
+}
+// Spacing for every 4 box sides
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@for $i from 0 through $padding-loops{
+			$size: $i * 10;
+			@each $side-letter, $side-name in $sides{
+				.mr-#{$side-letter}-#{$bp-name}-#{$size}{
+					margin-#{$side-name}: #{$size}px;
+				}
+				.pd-#{$side-letter}-#{$bp-name}-#{$size}{
+					padding-#{$side-name}: #{$size}px;
+				}
+			}
+		}
+	}
+}

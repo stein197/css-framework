@@ -1,4 +1,4 @@
-$font-weights: (
+$font-weight: (
 	"thin": 100,
 	"light-x": 200,
 	"light": 300,
@@ -9,26 +9,27 @@ $font-weights: (
 	"bold-x": 800,
 	"black": 900,
 );
-
+// List of using fonts
 $fonts: (
-	"proxima": "ProximaNova",
-	"gilroy": "Gilroy",
+	"opensans": "Open Sans",
 );
-
+// Font-size smallest and biggest value
 $fs-loop-from: 4;
 $fs-loop-to: 40;
 
 $colors: (
 	"gray": #777777,
 	"white": white,
-	"black": black,
+	"black": black
 );
 
 $breakpoints: (
 	"md": 768px,
 	"lg": 992px,
-	"xl": 1200px,
+	"xl": 1200px
 );
+
+$cols: 12;
 
 $container-width: (
 	"md": 720px,
@@ -50,24 +51,21 @@ $positions: (
 	fixed,
 );
 
-$h-loop-from: 10;
-$h-loop-to: 50;
+$h-loop-from: 0;
+$h-loop-to: 60;
 $h-factor: 10;
 
-$offset-loops: 6;
+$offset-loops: 10;
+$square-loops: 20;
 
-$footer-height: (
-	"default": 50px,
-	"md": 60px,
-	"lg": 70px,
-	"xl": 80px,
-);
+$n-mr-loops: 6;
 
-$padding-loops: 30;
+$padding-loops: 20;
+
+$line-height-max: 30;
 
 $backgrounds: (
-	"waves": "/img/bg_waves.jpg",
-	"glow": "/img/bg_glow.jpg",
+	"stub": "/img/bg_stub.jpg",
 );
 
 @mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
@@ -98,8 +96,19 @@ $backgrounds: (
 }
 
 @mixin mq($width, $type: min){
-	@if map_has_key($breakpoints, $width){
-		$width: map_get($breakpoints, $width);
+	@if type-of($width) == string {
+		@if map_has_key($breakpoints, $width) {
+			$width: map_get($breakpoints, $width);
+			@if $type == max {
+				$width: $width - 1px;
+			}
+			@media (#{$type}-width: $width){
+				@content;
+			}
+		} @else {
+			@error "There is no breakpoint with $width name";
+		}
+	} @else {
 		@if $type == max {
 			$width: $width - 1px;
 		}
@@ -114,16 +123,3 @@ $backgrounds: (
 	position: $pos;
 	display: block;
 }
-
-@function get_color($name){
-	@return map_get($colors, $name);
-}
-
-@include font("ProximaNova", "ProximaNova-Light.ttf", 300);
-@include font("ProximaNova", "ProximaNova-Regular.ttf", 400);
-@include font("ProximaNova", "ProximaNova-Bold.ttf", 700);
-@include font("ProximaNova", "ProximaNova-Extrabld.ttf", 800);
-@include font("ProximaNova", "ProximaNova-Black.ttf", 900);
-
-@include font("Gilroy", "Gilroy-Light.ttf", 300);
-@include font("Gilroy", "Gilroy-ExtraBold.ttf", 800);
