@@ -7,17 +7,13 @@
 	}
 }
 // Exact spacing, i.e. 1-9 pixels precision
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
-		@each $side-letter, $side-name in $sides{
-			@for $i from 1 through 9{
-				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
-					margin-#{$side-name}: #{$i}px;
-				}
-				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
-					padding-#{$side-name}: #{$i}px;
-				}
-			}
+@each $side-letter, $side-name in $sides{
+	@for $i from 1 through 9{
+		.mr-#{$side-letter}-#{$i}{
+			margin-#{$side-name}: #{$i}px;
+		}
+		.pd-#{$side-letter}-#{$i}{
+			padding-#{$side-name}: #{$i}px;
 		}
 	}
 }

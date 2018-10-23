@@ -51,3 +51,10 @@
 		background-color: transparent;
 	}
 }
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		.container-half{
+			width: map_get($bs-container-width, $bp-name) / 2;
+		}
+	}
+}

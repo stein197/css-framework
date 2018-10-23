@@ -11,6 +11,19 @@
 		transform: translateY(-50%);
 	}
 }
+.justify{
+	display: -webkit-flex;
+	display: -ms-flex;
+	display: flex;
+	justify-content: space-between;
+}
+.valign{
+	display: -webkit-flex;
+	display: -ms-flex;
+	display: flex;
+	align-items: center;
+}
+// Offsets
 @each $letter, $value in $sides{
 	@for $i from 0 through $offset-loops{
 		$val: $i * 5;
@@ -28,5 +41,55 @@
 @each $pos in $positions{
 	.p-#{$pos}{
 		position: $pos;
+	}
+}
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		.center-#{$bp-name}{
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			&-x{
+				left: 50%;
+				transform: translateX(-50%);
+			}
+			&-y{
+				top: 50%;
+				transform: translateY(-50%);
+			}
+			&-none{
+				top: auto;
+				left: auto;
+				transform: none;
+			}
+		}
+		.justify-#{$bp-name}{
+			display: -webkit-flex;
+			display: -ms-flex;
+			display: flex;
+			justify-content: space-between;
+		}
+		.valign-#{$bp-name}{
+			display: -webkit-flex;
+			display: -ms-flex;
+			display: flex;
+			align-items: center;
+		}
+		@each $pos in $positions{
+			.p-#{$bp-name}-#{$pos}{
+				position: $pos;
+			}
+		}
+		@each $side-letter, $side-name in $sides{
+			.#{$side-letter}-#{$bp-name}-a{
+				#{map_get($sides, $side-letter)}: auto;
+			}
+			@for $i from 0 through $offset-loops{
+				$val: $i * 5;
+				.#{$side-letter}-#{$bp-name}-#{$val}{
+					#{map_get($sides, $side-letter)}: #{$val}px;
+				}
+			}
+		}
 	}
 }

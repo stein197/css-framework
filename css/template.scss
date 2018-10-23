@@ -1,8 +1,9 @@
 @import "definitions";
-@import "slick-default";
 @import "font";
 @import "spacing";
 @import "positioning";
+@import "dimensions";
+@import "slick-default";
 @import "bs-reset";
 
 *,
@@ -30,38 +31,6 @@ body{
 }
 .cp{
 	cursor: pointer;
-}
-.justify{
-	display: -webkit-flex;
-	display: -ms-flex;
-	display: flex;
-	justify-content: space-between;
-}
-.valign{
-	display: -webkit-flex;
-	display: -ms-flex;
-	display: flex;
-	align-items: center;
-}
-
-
-.max-w{
-	max-width: 100%;
-}
-.max-h{
-	max-height: 100%;
-}
-.min-w{
-	min-width: 100%;
-}
-.min-h{
-	min-height: 100%;
-}
-.full-h{
-	height: 100%;
-}
-.full-w{
-	width: 100%;
 }
 
 .pseudo{
@@ -132,20 +101,6 @@ body{
 	}
 	&-left{
 		background-position-x: left;
-	}
-}
-
-@for $i from 0 through $square-loops{
-	$size: $i * 5;
-	.square-#{$size}{
-		@include square(#{$size}px);
-	}
-}
-
-@for $i from $h-loop-from through $h-loop-to{
-	$height: $i * $h-factor;
-	.h-#{$height}{
-		height: #{$height}px;
 	}
 }
 .bg{
@@ -222,7 +177,6 @@ table{
 	table-layout: fixed;
 }
 
-
 .btn{
 	display: inline-block;
 	cursor: pointer;
@@ -258,99 +212,5 @@ table{
 	}
 	.brd-rd-#{$i}{
 		border-radius: #{$i}px;
-	}
-}
-
-@for $i from 0 through 20{
-	$width: $i * 5;
-	.w-#{$width}{
-		width: percentage($width / 100);
-	}
-}
-
-
-// Main breakpoint loop
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
-		// Font sizes
-		@for $i from $fs-loop-from through $fs-loop-to{
-			$size: $i * 2;
-			.fs-#{$bp-name}-#{$size}{
-				font-size: #{$size}px;
-			}
-		}
-		.justify-#{$bp-name}{
-			display: -webkit-flex;
-			display: -ms-flex;
-			display: flex;
-			justify-content: space-between;
-		}
-		.valign-#{$bp-name}{
-			display: -webkit-flex;
-			display: -ms-flex;
-			display: flex;
-			align-items: center;
-		}
-		.center-#{$bp-name}{
-			left: 50%;
-			top: 50%;
-			transform: translate(-50%, -50%);
-			&-x{
-				left: 50%;
-				transform: translateX(-50%);
-			}
-			&-y{
-				top: 50%;
-				transform: translateY(-50%);
-			}
-			&-none{
-				top: auto;
-				left: auto;
-				transform: none;
-			}
-		}
-		.container-half{
-			width: map_get($container-width, $bp-name) / 2;
-		}
-		.full-#{$bp-name}-h{
-			height: 100%;
-		}
-		.full-#{$bp-name}-w{
-			width: 100%;
-		}
-		.h-#{$bp-name}-a{
-			height: auto;
-		}
-		.w-#{$bp-name}-a{
-			width: auto;
-		}
-		@for $i from 0 through 20{
-			$width: $i * 5;
-			.w-#{$bp-name}-#{$width}{
-				width: percentage($width / 100);
-			}
-		}
-		@each $side-letter, $side-name in $sides{
-			.#{$side-letter}-#{$bp-name}-a{
-				#{map_get($sides, $side-letter)}: auto;
-			}
-			@for $i from 0 through $offset-loops{
-				$val: $i * 5;
-				.#{$side-letter}-#{$bp-name}-#{$val}{
-					#{map_get($sides, $side-letter)}: #{$val}px;
-				}
-			}
-		}
-		@for $i from $h-loop-from through $h-loop-to{
-			$height: $i * $h-factor;
-			.h-#{$bp-name}-#{$height}{
-				height: #{$height}px;
-			}
-		}
-		@each $pos in $positions{
-			.p-#{$bp-name}-#{$pos}{
-				position: $pos;
-			}
-		}
 	}
 }

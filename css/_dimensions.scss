@@ -1,0 +1,65 @@
+.max-w{
+	max-width: 100%;
+}
+.max-h{
+	max-height: 100%;
+}
+.min-w{
+	min-width: 100%;
+}
+.min-h{
+	min-height: 100%;
+}
+.full-h{
+	height: 100%;
+}
+.full-w{
+	width: 100%;
+}
+
+@for $i from $h-loop-from through $h-loop-to{
+	$height: $i * $h-factor;
+	.h-#{$height}{
+		height: #{$height}px;
+	}
+}
+@for $i from 0 through 20{
+	$width: $i * 5;
+	.w-#{$width}{
+		width: percentage($width / 100);
+	}
+}
+@for $i from 0 through $square-loops{
+	$size: $i * 5;
+	.square-#{$size}{
+		@include square(#{$size}px);
+	}
+}
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		.full-#{$bp-name}-h{
+			height: 100%;
+		}
+		.full-#{$bp-name}-w{
+			width: 100%;
+		}
+		.h-#{$bp-name}-a{
+			height: auto;
+		}
+		.w-#{$bp-name}-a{
+			width: auto;
+		}
+		@for $i from $h-loop-from through $h-loop-to{
+			$height: $i * $h-factor;
+			.h-#{$bp-name}-#{$height}{
+				height: #{$height}px;
+			}
+		}
+		@for $i from 0 through 20{
+			$width: $i * 5;
+			.w-#{$bp-name}-#{$width}{
+				width: percentage($width / 100);
+			}
+		}
+	}
+}
