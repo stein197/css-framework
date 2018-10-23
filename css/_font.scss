@@ -20,6 +20,12 @@
 		}
 	}
 }
+.fs-decrease{
+	font-size: calc(1em - 1px);
+}
+.fs-increase{
+	font-size: calc(1em + 1px);
+}
 // Font-family
 @each $tag, $name in $fonts{
 	.ff-#{$tag}{

@@ -17,6 +17,45 @@
 		}
 	}
 }
+@for $i from 0 through $padding-loops{
+	$size: $i * 10;
+	.mr-#{$size}{
+		margin: #{$size}px;
+	}
+	.pd-#{$size}{
+		padding: #{$size}px;
+	}
+}
+@for $i from 0 through $padding-loops{
+	$size: $i * 10;
+	.mr-x-#{$size}{
+		margin-left: #{$size}px;
+		margin-right: #{$size}px;
+	}
+	.mr-y-#{$size}{
+		margin-top: #{$size}px;
+		margin-bottom: #{$size}px;
+	}
+	.pd-x-#{$size}{
+		padding-left: #{$size}px;
+		padding-right: #{$size}px;
+	}
+	.pd-y-#{$size}{
+		padding-top: #{$size}px;
+		padding-bottom: #{$size}px;
+	}
+}
+@for $i from 0 through $padding-loops{
+	$size: $i * 10;
+	@each $side-letter, $side-name in $sides{
+		.mr-#{$side-letter}-#{$size}{
+			margin-#{$side-name}: #{$size}px;
+		}
+		.pd-#{$side-letter}-#{$size}{
+			padding-#{$side-name}: #{$size}px;
+		}
+	}
+}
 // Same spacing for every 4 box sides
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
