@@ -5,6 +5,7 @@
 	use \System\PropertyAccess;
 
 	/**
+	 * Представляет собой полноценный класс-синглтон, который может играть роль сущности "сайт"
 	 * @property-read string $title
 	 */
 	class Application extends Singleton{
@@ -21,7 +22,6 @@
 		protected $title;
 
 		protected function __construct(){
-			$GLOBALS['_APPLICATION'] = $this;
 			Buffer::start();
 		}
 
