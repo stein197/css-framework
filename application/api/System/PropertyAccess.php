@@ -34,14 +34,11 @@
 				$p = $c->getProperty($name);
 				$doc = new DocComment($c->getDocComment());
 
-				if($doc->getAnnotation('property-read')){
+				if($doc->getAnnotation('property-read'))
 					// Проверить на существование аннотации @property-read с таким именем
-					foreach($doc->getAnnotation('property-read') as $annotation){
-						if($annotation['NAME'] === '$'.$name){
+					foreach($doc->getAnnotation('property-read') as $annotation)
+						if($annotation['NAME'] === '$'.$name)
 							return $this->{$name};
-						}
-					}
-				}
 				throw new PropertyAccessException($p->getName(), $p->isPrivate() ? 'private' : 'protected', static::class, PropertyAccessException::M_WRITE);
 			// Если нет, просто возвращаем произвольное свойство
 			} else {
@@ -78,15 +75,12 @@
 
 							// Цикл по всем типам, указанным в @property-write
 							foreach($types as &$type){
-								if(!in_array($type, ['bool', 'boolean', 'int', 'integer', 'double', 'float', 'string', 'resource', 'null', 'array', 'mixed']) && !preg_match('/^.+\[\]$/', $type)){
-									if($type{0} !== '\\'){
+								if(!in_array($type, ['bool', 'boolean', 'int', 'integer', 'double', 'float', 'string', 'resource', 'null', 'array', 'mixed']) && !preg_match('/^.+\[\]$/', $type))
+									if($type{0} !== '\\')
 										$type = $ns.$type;
-									}
-								}
 								$fullTypeNames[] = $type;
-								if(typeEqualsTo($value, $type)){
+								if(typeEqualsTo($value, $type))
 									return $this->{$name} = $value;
-								}
 							}
 							throw new InvalidArgumentException(sformat('Cannot set \%1::$%2 property. Expected type(-s) %3, %4 supplied', static::class, $p->getName(), join('|', $fullTypeNames), typeof($value)));
 						}

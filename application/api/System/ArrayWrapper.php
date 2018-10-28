@@ -7,41 +7,51 @@
 
 	/**
 	 * Обертка над типом <code>array</code>
-	 * Возможно использование методов на массивоподобном объекте вместо функций <code>array_pop()</code> и подобных
+	 * Является тем же массивом, с тем лишь отличием, что для манипуляций над массивом используются методы класса, а не функции
+	 * По сути, класс объединяет все функции и операции над массивом
+	 * Если массив многомерный или содержит вложенные массивы, то они будут рекурсивно обёрнуты в <code>ArrayWrapper</code>
 	 * @todo Рекурсивное добавление ArrayWrapper если массив многомерный
+	 * @todo Реализовать быстрый доступ к первому и последнему ключу/значению массива
+	 * @property-read mixed $firstKey
+	 * @property-read mixed $lastKey
+	 * @property-read mixed $firstValue
+	 * @property-read mixed $lastValue
 	 */
 	class ArrayWrapper implements ArrayAccess, Iterator, Countable{
 
+		use PropertyAccess;
+
 		/** @var array $data Внутренний массив, содержащий данные */
 		protected $data = [];
+		/** @var mixed $offset Текущий ключ массива, на который указывает указатель */
 		protected $offset;
-
-		protected $recursive = false;
 		protected $firstKey;
 		protected $lastKey;
 		protected $firstValue;
 		protected $lastValue;
+		/** @var int $innerArrays Внутренний счётчик для подсчёта количества внутренних массивов. Нужен для оптимизации методов, которые могут иметь рекурсивную природу */
+		protected $innerArrays = 0;
 
 		/**
 		 * Создает объект с внутренним массивом
 		 * @param array $data Необязательный массив с данными, над котором будет установлена обёртка
-		 * @param bool $recursive Делать ли объект рекурсивным. Если да, то внутренние массивы многомерного ассива будут превращены в объекты <code>ArrayWrapper</code>
 		 */
-		public function __construct(?array $data = null, bool $recursive = false){
-			$data = $data ?: [];
-			$this->recursive = $recursive;
-			if($recursive)
-				foreach($data as $k => $v){
-					if(is_array($v))
-						$this->data[$k] = new self($v, true);
-					else
-						$this->data[$k] = $v;
+		public function __construct(array $data = []){
+			foreach($data as $k => $v){
+				if(is_array($v)){
+					$this->data[$k] = new self($v);
+					$this->innerArrays++;
+				} else {
+					$this->data[$k] = $v;
 				}
-			else
-				$this->data = $data;
-			$this->offset = key($this->data);
+			}
+			$this->updateBoudaryElements(2);
 		}
 
+		/**
+		 * Возвращает JSON-представление внутреннего массива
+		 * @return string
+		 */
 		public function __toString():string{
 			return json_encode($this->data, JSON_UNESCAPED_UNICODE);
 		}
@@ -65,26 +75,30 @@
 		}
 
 		/**
-		 * Присваивает значение по заданному ключу
+		 * Присваивает значение по заданному ключу. Если передан массив, то увеличивает внутренний счётчик количества вложенных массивов
 		 * @param mixed $offset По какому смещению присваивать значение
 		 * @param mixed $value Присваемое значение
 		 * @return void
 		 */
 		public function offsetSet($offset, $value):void{
+			if(is_array($value)){
+				$this->innerArrays++;
+				$value = new self($value);
+			}
 			if($offset === null)
 				$this->data[] = $value;
-			elseif(is_array($value) && $this->recursive)
-				$this->data[$offset] = new self($value, true);
 			else
 				$this->data[$offset] = $value;
 		}
 
 		/**
-		 * Удаляет значение по указанному ключу
+		 * Удаляет значение по указанному ключу и уменьшает внутренний счётчик количества вложенных массивов, если удаляемое значение - массив
 		 * @param mixed $offset Ключ
 		 * @return void
 		 */
 		public function offsetUnset($offset):void{
+			if($this->data[$offset] instanceof self)
+				$this->innerArrays--;
 			unset($this->data[$offset]);
 		}
 
@@ -139,22 +153,33 @@
 			return sizeof($this->data);
 		}
 
-		public function push(...$value):int{
-			if($this->recursive){
-				foreach($value as $v){
-					$this[] = is_array($v) ? new self($v, true) : $v;
+		// Вместо цикла по всем элементам можно просто хранить ключи внутренних массивов в другом списке
+		public function changeKeyCase(int $case = CASE_UPPER, bool $recursive = true):self{
+			$this->data = array_change_key_case($this->data, $case);
+			if($this->innerArrays && $recursive)
+				foreach($this->data as $k => &$v)
+					if($v instanceof self)
+						$v = $v->changeKeyCase($case, true);
+			return $this;
+		}
+
+		protected function updateBoudaryElements($currentKey = null):void{
+			$this->firstKey = key($this->data);
+			$this->firstValue = $this->data[$this->firstKey];
+			end($this->data);
+			$this->lastKey = key($this->data);
+			$this->lastValue = $this->data[$this->lastKey];
+			reset($this->data);
+			if($currentKey !== null){
+				$keyMatches = false;
+				$hasNext = true;
+				while(!$keyMatches && $hasNext){
+					if(key($this->data) === $currentKey){
+						$keyMatches = true;
+					} else {
+						$hasNext = next($this->data);
+					}
 				}
-				return sizeof($this);
-			} else {
-				return array_push($this->data, $value);
 			}
-		}
-
-		public function pop(){
-			return array_pop($this->data);
-		}
-
-		public function getFirstKey(){
-
 		}
 	}

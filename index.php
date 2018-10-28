@@ -6,13 +6,15 @@
 		'css/styles.css',
 		'/js/app.js'
 	];
-	$ar = new ArrayWrapper([[3]], true);
-	$ar->push(1);
-	$ar->push(5);
-	$ar->push([2]);
-	$ar->pop();
-	foreach($ar as $v){
-		var_dump($v);
+	$ar = new ArrayWrapper([
+		1, 2, 6, [2, 'k' => 1], 'j' => 1
+	]);
+	foreach($ar as $k => $v){
+		Log::println("$k => $v");
+	}
+	$ar->changeKeyCase();
+	foreach($ar as $k => $v){
+		Log::println("$k => $v");
 	}
 ?>
 <html>
