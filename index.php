@@ -7,22 +7,26 @@
 		'/js/app.js'
 	];
 	$ar = new ArrayWrapper([
-		1, 2, 6, [2, 'k' => 1], 'j' => 1
+		1, 2, 6, [2, 'k' => 1], 'K' => 1, 'S' => [22]
 	]);
-	foreach($ar as $k => $v){
-		Log::println("$k => $v");
-	}
-	$ar->changeKeyCase();
-	foreach($ar as $k => $v){
-		Log::println("$k => $v");
-	}
+	// Log::println($ar);
+	// Log::println();
+	// $ar->changeKeyCase()->chunk(2, true);
+	// foreach($ar as $k => $v){
+	// 	Log::println("$k => $v");
+	// }
+	// phpinfo();
+	Log::dump(get_loaded_extensions());
 ?>
-<html>
+<!-- <html>
 	<head>
 		<link rel="stylesheet" href="/css/template.min.css">
 	</head>
 <body>
 	<div></div>
 	<p>LARGE TEXT <span>small text</span></p>
+	<script src="/js/functions.js"></script>
+	<script src="/js/Class.js"></script>
+	<script src="/js/BackendAPI.js"></script>
 </body>
-</html>
+</html> -->

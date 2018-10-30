@@ -9,9 +9,9 @@ $font-weight: (
 	"bold-x": 800,
 	"black": 900,
 );
-// List of using fonts
+// List of used fonts
 $fonts: (
-	"opensans": "Open Sans",
+	"open_sans": "Open Sans",
 );
 // Font-size smallest and biggest value
 $fs-loop-from: 4;
@@ -63,10 +63,6 @@ $n-mr-loops: 6;
 $padding-loops: 20;
 
 $line-height-max: 30;
-
-$backgrounds: (
-	"stub": "/img/bg_stub.jpg",
-);
 
 @mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
 	@font-face {

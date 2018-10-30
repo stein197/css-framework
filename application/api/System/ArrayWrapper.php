@@ -53,7 +53,16 @@
 		 * @return string
 		 */
 		public function __toString():string{
-			return json_encode($this->data, JSON_UNESCAPED_UNICODE);
+			// if($this->innerArrays){
+			// 	$result = '';
+			// 	foreach($this->data as $k => $v){
+			// 		if($v instanceof self)
+			// 			$result .= (string) $v;
+			// 		else 
+			// 	}
+			// } else {
+				return json_encode($this->data, JSON_UNESCAPED_UNICODE);
+			// }
 		}
 
 		/**
@@ -153,13 +162,21 @@
 			return sizeof($this->data);
 		}
 
-		// Вместо цикла по всем элементам можно просто хранить ключи внутренних массивов в другом списке
 		public function changeKeyCase(int $case = CASE_UPPER, bool $recursive = true):self{
 			$this->data = array_change_key_case($this->data, $case);
 			if($this->innerArrays && $recursive)
 				foreach($this->data as $k => &$v)
 					if($v instanceof self)
 						$v = $v->changeKeyCase($case, true);
+			return $this;
+		}
+
+		public function chunk(int $size, bool $preserveKeys = false):self{
+			$this->data = array_chunk($this->data, $size, $preserveKeys);
+			foreach($this->data as $k => &$v)
+				$v = new self($v);
+			$this->innerArrays = $k + 1;
+			$this->updateBoudaryElements();
 			return $this;
 		}
 

@@ -39,34 +39,52 @@
 }
 
 .link{
-	text-decoration: underline;
-	&:hover{
+	text-decoration: underline !important;
+	&:hover,
+	&-dotted,
+	&-dashed,
+	&-thin,
+	&-invert,
+	&-invert_dotted,
+	&-invert_dashed{
 		text-decoration: none !important;
 	}
-}
-
-.link-dotted{
-	text-decoration: none !important;
-	border-bottom: 1px dotted;
-	&:hover{
-		border-bottom-color: transparent;
+	&-dotted{
+		border-bottom: 1px dotted;
+		&:hover{
+			border-bottom-color: transparent;
+		}
+	}
+	&-dashed{
+		border-bottom: 1px dashed;
+		&:hover{
+			border-bottom-color: transparent;
+		}
+	}
+	&-thin{
+		&:hover{
+			border-bottom-color: transparent;
+		}
+	}
+	&-invert{
+		&:hover{
+			text-decoration: underline !important;
+		}
+	}
+	&-invert_dotted{
+		border-bottom: 1px dotted transparent;
+		&:hover{
+			border-bottom: 1px dotted;
+		}
+	}
+	&-invert_dashed{
+		border-bottom: 1px dashed transparent;
+		&:hover{
+			border-bottom: 1px dashed;
+		}
 	}
 }
 
-.link-dashed{
-	text-decoration: none !important;
-	border-bottom: 1px dashed;
-	&:hover{
-		border-bottom-color: transparent;
-	}
-}
-
-.link-thin{
-	text-decoration: none !important;
-	&:hover{
-		border-bottom-color: transparent !important;
-	}
-}
 .link-wrapper:hover{
 	.link{
 		text-decoration: none;

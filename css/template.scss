@@ -11,12 +11,12 @@
 *::after{
 	position: relative;
 	background-repeat: no-repeat;
+	box-sizing: border-box;
 }
 html,
 body{
 	font-size: 14px;
 	font-weight: 400;
-	font-family: "Open Sans";
 }
 .float::after{
 	content: "";
@@ -104,9 +104,6 @@ body{
 	}
 }
 .bg{
-	&-center{
-		background-position: center center;
-	}
 	&-cover{
 		background-size: cover;
 	}
@@ -114,13 +111,8 @@ body{
 		background-size: 100% 100%;
 	}
 	&-default{
-		@extend .bg-center;
-		@extend .bg-cover;
-	}
-	@each $name, $value in $backgrounds{
-		&-#{$name}{
-			background-image: url($value);
-		}
+		background-position: center;
+		background-size: cover;
 	}
 }
 
@@ -182,9 +174,6 @@ table{
 	cursor: pointer;
 	line-height: 1em;
 	white-space: nowrap;
-	&-soft-rounded{
-		border-radius: 5px;
-	}
 	&-rounded{
 		border-radius: 50px;
 	}
@@ -196,8 +185,8 @@ table{
 // Only for mobile
 @include mq("md", max){
 	.btn-mobile{
-		width: 100%;
-		text-align: center;
+		width: 100% !important;
+		text-align: center !important;
 		padding-left: 0 !important;
 		padding-right: 0 !important;
 	}

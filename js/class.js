@@ -1,7 +1,7 @@
 /**
-* суперкласс для всех классов
-* @class
-**/
+ * суперкласс для всех классов
+ * @class
+ */
 function Class(){}
 Class.prototype = {
 	constructor: Class,
@@ -26,13 +26,13 @@ Class.prototype = {
 	}
 }
 /**
-* Наследование классов
-* @param {function} classname Наследующий класс
-* @param {(function|object)} proto Наследуемый класс или собственные методы, если класс наследует только Class
-* @param {object} [body] Собственные методы или (если не указан наследуемый класс) статические свойства
-* @param {object} [stat] Статические методы, если указан наследуемый класс
-* @return void
-**/
+ * Наследование классов
+ * @param {function} classname Наследующий класс
+ * @param {(function|object)} proto Наследуемый класс или собственные методы, если класс наследует только Class
+ * @param {object} [body] Собственные методы или (если не указан наследуемый класс) статические свойства
+ * @param {object} [stat] Статические методы, если указан наследуемый класс
+ * @return {void}
+ */
 Class.extend = function(classname, proto, body, stat){
 	var parent;
 	var methods;
@@ -48,6 +48,8 @@ Class.extend = function(classname, proto, body, stat){
 	}
 	classname.prototype = Object.create(parent.prototype);
 	classname.prototype.constructor = classname;
-	for(var m in methods) classname.prototype[m] = methods[m];
-	for(var s in statMethods) classname[s] = statMethods[s];
+	for(var m in methods)
+		classname.prototype[m] = methods[m];
+	for(var s in statMethods)
+		classname[s] = statMethods[s];
 }

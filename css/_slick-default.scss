@@ -1,4 +1,3 @@
-
 .slider-fullheight{
 	.slider,
 	.slick-list,
@@ -139,11 +138,6 @@
 	&_square{
 		.slick-arrow::before{
 			border-radius: 0;
-		}
-	}
-	&_transparent{
-		.slick-arrow{
-			background-color: transparent;
 		}
 	}
 }
