@@ -20,6 +20,7 @@
 	class ArrayWrapper implements ArrayAccess, Iterator, Countable{
 
 		use PropertyAccess;
+		use ObjectDump;
 
 		/** @var array $data Внутренний массив, содержащий данные */
 		protected $data = [];

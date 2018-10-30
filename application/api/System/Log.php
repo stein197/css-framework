@@ -1,6 +1,10 @@
 <?php
 	namespace System;
 
+	use \ReflectionClass;
+
+	checkExtension('Reflection');
+
 	/**
 	 * Набор статичных методов для упрощения отладки переменных и вывода данных на странице в браузере
 	 */
@@ -41,6 +45,20 @@
 			foreach($data as $item){
 				if(is_array($item) || $item instanceof stdClass){
 					echo json_encode($item, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				} elseif(is_object($item)){
+					$r = new ReflectionClass(get_class($item));
+					$hasTrait = false;
+					foreach($r->getTraits() as $trait){
+						if($trait->name === ObjectDump::class){
+							$hasTrait = true;
+							break;
+						}
+					}
+					if($hasTrait){
+						echo json_encode($item->dump(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					} else {
+						var_dump($item);
+					}
 				} else {
 					var_dump($item);
 				}
