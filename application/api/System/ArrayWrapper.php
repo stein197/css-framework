@@ -10,17 +10,22 @@
 	 * Является тем же массивом, с тем лишь отличием, что для манипуляций над массивом используются методы класса, а не функции
 	 * По сути, класс объединяет все функции и операции над массивом
 	 * Если массив многомерный или содержит вложенные массивы, то они будут рекурсивно обёрнуты в <code>ArrayWrapper</code>
-	 * @todo Рекурсивное добавление ArrayWrapper если массив многомерный
 	 * @todo Реализовать быстрый доступ к первому и последнему ключу/значению массива
 	 * @property-read mixed $firstKey
 	 * @property-read mixed $lastKey
 	 * @property-read mixed $firstValue
 	 * @property-read mixed $lastValue
+	 * @property-read array $data
+	 * @property-read int $innerArrays
 	 */
 	class ArrayWrapper implements ArrayAccess, Iterator, Countable{
 
 		use PropertyAccess;
 		use ObjectDump;
+
+		public const U_FIRST = 0b01;
+		public const U_LAST = 0b10;
+		public const U_BOTH = 0b11;
 
 		/** @var array $data Внутренний массив, содержащий данные */
 		protected $data = [];
@@ -39,14 +44,11 @@
 		 */
 		public function __construct(array $data = []){
 			foreach($data as $k => $v){
-				if(is_array($v)){
-					$this->data[$k] = new self($v);
+				if(is_array($v))
 					$this->innerArrays++;
-				} else {
-					$this->data[$k] = $v;
-				}
+				$this->data[$k] = $v;
 			}
-			$this->updateBoudaryElements(2);
+			$this->updateBoudaryElements();
 		}
 
 		/**
@@ -54,16 +56,7 @@
 		 * @return string
 		 */
 		public function __toString():string{
-			// if($this->innerArrays){
-			// 	$result = '';
-			// 	foreach($this->data as $k => $v){
-			// 		if($v instanceof self)
-			// 			$result .= (string) $v;
-			// 		else 
-			// 	}
-			// } else {
-				return json_encode($this->data, JSON_UNESCAPED_UNICODE);
-			// }
+			return json_encode($this->data, JSON_UNESCAPED_UNICODE);
 		}
 
 		/**
@@ -91,10 +84,8 @@
 		 * @return void
 		 */
 		public function offsetSet($offset, $value):void{
-			if(is_array($value)){
+			if(is_array($value))
 				$this->innerArrays++;
-				$value = new self($value);
-			}
 			if($offset === null)
 				$this->data[] = $value;
 			else
@@ -107,7 +98,7 @@
 		 * @return void
 		 */
 		public function offsetUnset($offset):void{
-			if($this->data[$offset] instanceof self)
+			if(is_array($this->data[$offset]))
 				$this->innerArrays--;
 			unset($this->data[$offset]);
 		}
@@ -167,27 +158,32 @@
 			$this->data = array_change_key_case($this->data, $case);
 			if($this->innerArrays && $recursive)
 				foreach($this->data as $k => &$v)
-					if($v instanceof self)
-						$v = $v->changeKeyCase($case, true);
+					if(is_array($v))
+						$v = (new static($v))
+							->changeKeyCase($case, true)
+							->data;
 			return $this;
 		}
 
 		public function chunk(int $size, bool $preserveKeys = false):self{
+			$curLen = sizeof($this->data);
 			$this->data = array_chunk($this->data, $size, $preserveKeys);
-			foreach($this->data as $k => &$v)
-				$v = new self($v);
-			$this->innerArrays = $k + 1;
+			$this->innerArrays = ceil($curLen / $size);
 			$this->updateBoudaryElements();
 			return $this;
 		}
 
-		protected function updateBoudaryElements($currentKey = null):void{
-			$this->firstKey = key($this->data);
-			$this->firstValue = $this->data[$this->firstKey];
-			end($this->data);
-			$this->lastKey = key($this->data);
-			$this->lastValue = $this->data[$this->lastKey];
-			reset($this->data);
+		protected function updateBoudaryElements(int $mode = self::U_BOTH, $currentKey = null):void{
+			if($mode & self::U_FIRST){
+				$this->firstKey = key($this->data);
+				$this->firstValue = $this->data[$this->firstKey];
+			}
+			if($mode & self::U_LAST){
+				end($this->data);
+				$this->lastKey = key($this->data);
+				$this->lastValue = $this->data[$this->lastKey];
+				reset($this->data);
+			}
 			if($currentKey !== null){
 				$keyMatches = false;
 				$hasNext = true;
@@ -199,5 +195,9 @@
 					}
 				}
 			}
+		}
+
+		public static function combine(array $k, array $v):self{
+			return new static(array_combine($k, $v));
 		}
 	}

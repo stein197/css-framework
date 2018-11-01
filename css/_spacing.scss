@@ -17,6 +17,20 @@
 		}
 	}
 }
+@each $side-letter, $side-name in $sides{
+	@each $bp-name, $bp-value in $breakpoints{
+		@include mq($bp-name){
+			@for $i from 1 through 9{
+				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
+					margin-#{$side-name}: #{$i}px;
+				}
+				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
+					padding-#{$side-name}: #{$i}px;
+				}
+			}
+		}
+	}
+}
 @for $i from 0 through $padding-loops{
 	$size: $i * 10;
 	.mr-#{$size}{

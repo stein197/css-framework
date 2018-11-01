@@ -7,11 +7,11 @@
 		'/js/app.js'
 	];
 	$ar = new ArrayWrapper([
-		1, 2, 6, [2, 'k' => 1], 'K' => 1, 'S' => [22]
+		1, new stdClass
 	]);
 	// Log::dump((new ReflectionClass(ArrayWrapper::class))->getTraits());
-	// Log::dump($ar);
-	var_dump($ar);
+	$ar->changeKeyCase(CASE_UPPER, 1)->chunk(2, true);
+	Log::dump($ar);
 ?>
 <!-- <html>
 	<head>
