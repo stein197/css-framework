@@ -2,13 +2,14 @@
 	namespace System;
 	use \Exception;
 	use \Iterator;
+	use \DateTime;
 
 	/**
 	 * Класс для работы с папками внутри директории <code>$_SERVER['DOCUMENT_ROOT']</code>
 	 * Позволяет создавать, удалять и изменять директории и их содержимое
 	 * @property-read string $path
 	 * @property-read string $fullPath
-	 * @property-write string $fullPath
+	 * @property-read string $name
 	 * @version 1.0
 	 */
 	class Directory implements FileDescriptor, Iterator{
@@ -128,23 +129,9 @@
 			return $size;
 		}
 
+		public function lastModified():DateTime{}
 
-		/**
-		 * Дата последнего времени модификации папки
-		 * @return int
-		 * @throws Exception Если папки не существует
-		 */
-		public function lastModified():int{
-			if(!$this->exists())
-				throw new Exception("Directory '{$this->getPath()}' does not exists");
-			return filemtime($this->fullPath);
-		}
-
-		public function lastAccess():int{
-			if(!$this->exists())
-				throw new Exception("Directory '{$this->getPath()}' does not exists");
-			return fileatime($this->fullPath);
-		}
+		public function lastAccess():DateTime{}
 
 		/**
 		 * Возвращает массив файлов, лежащих в директории
@@ -158,12 +145,12 @@
 			return $this->files;
 		}
 
-		public function copy():void{
+		public function copy(Directory $dir, string $name = null):Directory{
 			// TODO: Implement copy() method.
 			
 		}
 
-		public function move(string $dir):void{
+		public function move(Directory $dir):void{
 
 			// TODO: Implement move() method.
 		}
@@ -192,4 +179,9 @@
 		public function valid(){
 			return isset($this->files[$this->cursor]);
 		}
+		public function getInfo():array{}
+		public function getOwner():array{}
+		public function chmod(int $mode):void{}
+		public function chown(int $mode, int $uID):void{}
+		public function chgrp(int $mode, int $gID):void{}
 	}

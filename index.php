@@ -1,17 +1,12 @@
 <?php
 	require_once 'application/functions.php';
-	use \System\{Directory, Path, Log, ArrayWrapper};
-	$paths = [
-		$_SERVER['DOCUMENT_ROOT'].'/css/styles.css',
-		'css/styles.css',
-		'/js/app.js'
-	];
-	$ar = new ArrayWrapper([
-		1, new stdClass
-	]);
-	// Log::dump((new ReflectionClass(ArrayWrapper::class))->getTraits());
-	$ar->changeKeyCase(CASE_UPPER, 1)->chunk(2, true);
-	Log::dump($ar);
+	use \System\{Path, Log, ArrayWrapper, File, Directory};
+	$f = new File('/test/test2.txt');
+	$d = new Directory('/test2');
+	$f->copy($d, 'test_2.txt');
+	// Log::dump($f->lastModified());
+	// Log::dump($f->lastAccess());
+	Log::println(php_uname());
 ?>
 <!-- <html>
 	<head>
