@@ -1,1 +1,0 @@
-Access to file <b><?= explode('?', $_SERVER['REQUEST_URI'])[0] ?></b> is forbidden

@@ -1,22 +1,73 @@
 <?php
 	require_once 'application/functions.php';
 	use \System\{Path, Log, ArrayWrapper, File, Directory};
-	$f = new File('/test/test2.txt');
-	$d = new Directory('/test2');
-	$f->copy($d, 'test_2.txt');
-	// Log::dump($f->lastModified());
-	// Log::dump($f->lastAccess());
-	Log::println(php_uname());
-?>
-<!-- <html>
+
+	?>
+<html>
 	<head>
 		<link rel="stylesheet" href="/css/template.min.css">
 	</head>
 <body>
-	<div></div>
-	<p>LARGE TEXT <span>small text</span></p>
-	<script src="/js/functions.js"></script>
-	<script src="/js/Class.js"></script>
-	<script src="/js/BackendAPI.js"></script>
+	<style>
+		.wrapper{
+			height: 400px;
+			width: 33.33333%;
+			float: left;
+			overflow: hidden;
+		}
+		.lazyload{
+			opacity: 0
+		}
+	</style>
+	<div>
+		<div class="wrapper">
+			<img src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class=" lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class=" lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class=" lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img src="" data-src="http://ppu.azpt.ru/img/wm/netcat_files/53/106/DSC_6767_332_.jpg" alt="" class="js-lazyload lazyload js-cover"/>
+		</div>
+		<div class="wrapper">
+			<img data-src="http://gfsnt.no/oen/foto/Haegefjell_Jan_2013_Large.jpg" alt="" class="js-lazyload js-cover lazyload"/>
+		</div>
+		<div style="clear: both"></div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/js/template.js"></script>
 </body>
-</html> -->
+</html>

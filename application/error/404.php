@@ -1,1 +1,0 @@
-File <b><?= explode('?', $_SERVER['REQUEST_URI'])[0] ?></b> not found

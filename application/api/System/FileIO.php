@@ -8,7 +8,7 @@
 		public function open(int $mode, int $seek):void;
 		public function close():void;
 		public function truncate(int $size = -1):void;
-		public function lock(int $op = \LOCK_EX):void;
+		public function lock(int $op = \LOCK_EX, int $wouldblock = null):void;
 		public function unlock():void;
 		
 		public function read(int $length):?string;

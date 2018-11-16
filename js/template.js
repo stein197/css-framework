@@ -3,9 +3,7 @@ function main(){
 	$(".dropdown.dropdown-tabs").each(initDropdown); // Если есть табы превращающиеся в выпадающий список
 	$("#burger").click(initBurger); // Переключение бургера
 	$(".slider").each(initSlick); // Автоматическая инициализация слайдера
-	$("img.img-cover").cover({
-		position: "absolute"
-	}); // Центрировать изображения
+	$.lz();
 	initMfp(); // Автоматическая инициализация попапа
 	$(window).scroll();
 	$(window).resize();
@@ -292,110 +290,117 @@ function setScalable(){
 }
 
 !function($){
-	$.fn.cover = function(opts){
-		options = $.extend({
-			position: "relative",
-			adaptive: true,
-			center: true,
-			setOverflow: true,
-			logs: false
-		}, opts);
-		var cssObj;
-		var $selector = this;
-		if(options.center){
-			cssObj = {
-				position: options.position,
-				top: "50%",
-				left: "50%",
-				"transform": "translate(-50%, -50%)",
-				"o-transform": "translate(-50%, -50%)",
-				"ms-transform": "translate(-50%, -50%)",
-				"moz-transform": "translate(-50%, -50%)",
-				"webkit-transform": "translate(-50%, -50%)",
-			};
-		} else {
-			cssObj = {
-				"position": options.position
-			};
+	var opts = {
+		cover: {
+			class: "js-cover",
+			adaptive: true
+		},
+		lazyload: {
+			class: "js-lazyload",
 		}
-		// @this <img>
-		this.each(function(idx){
+	};
+	var fn = {
+		isInViewport: function(element){
+			var box = element.getBoundingClientRect();
+			var isInViewportT = 0 <= box.top && box.top <= innerHeight;
+			var isInViewportB = 0 <= box.bottom && box.bottom <= innerHeight;
+			return isInViewportT || isInViewportB;
+		},
+		showImage: function($image){
+			var covered = $image.is("." + opts.cover.class) ? $image.is(".covered") : true;
+			var loaded = $image.is("." + opts.lazyload.class) ? $image.is(".loaded") : true;
+			if(covered && loaded)
+				$image.animate({
+					opacity: 1
+				}, 500)
+		},
+		onLoadCover: function(idx){
+			if(!this.width && !this.height)
+				return;
+			var $image = $(this);
+			var $parent = $image.parent();
+			$image.addClass("center");
+			$parent.addClass("crop");
+			var dimens = {
+				parent: {
+					x: $parent.outerWidth(),
+					y: $parent.outerHeight(),
+				},
+				image: {
+					x: $image.width(),
+					y: $image.height(),
+				}
+			}
+			var ratio = {
+				parent: dimens.parent.x / dimens.parent.y,
+				image: dimens.image.x / dimens.image.y
+			}
+			$image.data("ratio", ratio.image);
+			fn.setCover($image, ratio);
+			$image.addClass("covered");
+			fn.showImage($image);
+		},
+		onWindowScroll: function($e){
+			var $list = $("img." + opts.lazyload.class + ":not(.loaded)");
+			$list.each(function(){
+				var $image = $(this);
+				if(fn.isInViewport(this))
+					$image.attr("src", $image.data("src"));
+			});
+		},
+		loadLazy: function(i){
+			if(!this.width && !this.height)
+				return;
 			var $this = $(this);
-			$this.css(cssObj);
-			var $parent = $this.parent();
-			if(options.setOverflow){
-				$parent.css("overflow", "hidden");
+			var box = $this.is("." + opts.cover.class) ? $this.parent() : $this;
+			box = box[0];
+			if(fn.isInViewport(box)){
+				$this.on("load", function(){
+					$this.addClass("loaded");
+					fn.showImage($this);
+				});
+				$this.attr("src", $this.data("src"));
 			}
-			var dimens_parent = {
-				x: $parent.innerWidth(),
-				y: $parent.innerHeight(),
+		},
+		onLoadLazy: function($e){
+			var $image = $(this);
+			$image.addClass("loaded");
+			fn.showImage($image);
+		},
+		coverOnResize: function(i){
+			var $image = $(this);
+			var $parent = $image.parent();
+			var imageRatio = $image.data("ratio");
+			ratio = {
+				parent: $parent.outerWidth() / $parent.outerHeight(),
+				image: imageRatio
 			}
-			var dimens_img = {
-				x: $this.width(),
-				y: $this.height(),
-			}
-			if(dimens_parent.x / dimens_parent.y > dimens_img.x / dimens_img.y){
-				$this.css({
+			fn.setCover($image, ratio);
+		},
+		setCover: function($image, ratio){
+			if(ratio.parent > ratio.image){
+				$image.css({
 					width: "100%",
 					height: "auto"
 				});
 			} else {
-				$this.css({
+				$image.css({
 					width: "auto",
 					height: "100%"
 				});
 			}
-			if(options.logs){
-				console.log(sformat("Item %1:\n\tWidth: %2px\n\tHeight: %3px", idx, dimens_parent.x, dimens_parent.y))
-			}
-		});
-		if(options.adaptive){
-			var $window = $(window);
-			$window.resize(function(){
-				$selector.css({
-					width: "auto",
-					height: "auto",
-					position: "relative"
-				});
-				$selector.cover({
-					position: options.position,
-					adaptive: false,
-					center: options.center,
-					setOverflow: options.setOverflow,
-					logs: options.logs
-				});
-			});
 		}
-		return this;
-	}
-}(jQuery);
-
-!function($){
-	$.fn.justifyItemsHeight = function(options){
-		var $this = this;
-		options = $.extend({
-			adaptive: false
-		}, options);
-		var maxHeight = 1;
-		this.each(function(){
-			var curHeight = $(this).outerHeight();
-			if(curHeight > maxHeight){
-				maxHeight = curHeight;
-			}
-		});
-		this.css("height", maxHeight);
-		if(options.adaptive){
-			$(window).resize(function(){
-				var innerMaxHeight = 0;
-				$this.each(function(){
-					console.log(1);
-					$(this).attr("style", "");
-					var curHeight = $(this).outerHeight();
-					if(curHeight > innerMaxHeight){
-						innerMaxHeight = curHeight;
-					}
-				});
-				$this.css("height", maxHeight);
+	};
+	$.lz = function(options){
+		opts = $.extend(opts, options);
+		var $window = $(window);
+		$("img." + opts.cover.class).on("load", fn.onLoadCover);
+		$("img." + opts.cover.class).trigger("load");
+		$("img." + opts.lazyload.class).on("load", fn.onLoadLazy);
+		$window.on("scroll load", fn.onWindowScroll);
+		if(opts.cover.adaptive){
+			$window.resize(function(){
+				$("img." + opts.cover.class).each(fn.coverOnResize);
 			});
 		}
 	}

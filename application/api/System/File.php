@@ -41,8 +41,8 @@
 		protected $length = 0;
 		/** @var int $mode Режим доступа к файлу */
 		protected $mode;
-		/** @var int $instances Общее количество незакрытых файлов */
-		public static $instances = 0;
+		/** @var bool $locked Флаг, указывающий на то, стоит ли блокировка на файле */
+		protected $locked = false;
 
 		/**
 		 * Возвращает эксземпляр <code>File</code>. По возможности открывает файл сразу для чтения/записи
@@ -51,7 +51,7 @@
 		 * @param string $path Путь до файла
 		 * @param bool $autoopen Если <code>true</code>, то файл сразу откроется для взаимодействия
 		 * @param string $dir Директория того скрипта (<code>__DIR__</code>), в котором инстанциируется объект <code>File</code>. Имеет эффект только в том случае, елс если предоставлен относительный путь до файла
-		 * @throws Exception Если не передан параметр пути
+		 * @throws \Exception Если не передан параметр пути
 		 */
 		public function __construct(string $path, bool $autoopen = false, string $dir = null){
 			if(!$path)
@@ -69,8 +69,8 @@
 
 		/**
 		 * Создает новый файл, но не открывает его
-		 * @throws Exception Если файл уже создан
 		 * @return void
+		 * @throws \Exception Если файл уже создан
 		 */
 		public function create():void{
 			if($this->exists())
@@ -80,21 +80,59 @@
 
 		/**
 		 * Открывает файл для чтения/записи
-		 * @param int $mode Режим доступа. Одна из констант <code>self::MODE_READ</code> или <code>self::MODE_WRITe</code>, или битовой маской этих констант
+		 * @param int $mode Режим доступа. Одна из констант <code>self::MODE_READ</code> или <code>self::MODE_WRITe</code>, или битовая маска этих констант
 		 * @param int $seek Куда ставить курсор при открытии. <code>self::CURSOR_END</code> в конец файла или <code>self::CURSOR_START</code> в начало
 		 * @param bool $truncate обрезать ли файл после открытия
 		 */
 		public function open(int $mode = self::MODE_READ | self::MODE_WRITE, int $seek = self::CURSOR_END):void{
 			if(!$this->exists())
 				throw new Exception("Can't open not existing file '{$this->path}'");
-			if($mode === self::MODE_READ){
-				$this->file = fopen('r');
-				
-			}
+			$this->mode = $mode;
+
+			if($mode === self::MODE_READ | self::MODE_WRITE)
+				$this->file = fopen($this->fullPath, 'r+');
+			elseif($mode === self::MODE_WRITE)
+				$this->file = fopen($this->fullPath, 'c');
+			else
+				$this->file = fopen($this->fullPath, 'r');
+
+			if($seek === self::CURSOR_END)
+				fseek($this->file, 0, \SEEK_END);
+			else
+				fseek($this->file, 0, \SEEK_SET);
 		}
 
+		/**
+		 * Закрывает файл
+		 * @return void
+		 * @throws \Exception Если не удаётся закрыть файл
+		 */
 		public function close():void{
+			if(!fclose($this->file))
+				throw new Exception("Can't close file '{$this->path}'");
+		}
 
+		/**
+		 * Обрезает файл до длины <code>$size</code>. По умолчанию полностью обрезает файл
+		 * Если <code>$size</code> больше нуля, то файл обрезается/дополняется до указанной длины
+		 * @param int $size Количество байт, до которого нужно обрезать файл
+		 * @return void
+		 * @throws \Exception Если не получается обрезать файл
+		 */
+		public function truncate(int $size = 0):void{
+			if(!ftruncate($this->file, $size))
+				throw new Exception("Can't truncate file '{$this->path}'");
+		}
+
+		// -------------------------
+		public function lock(int $op = \LOCK_EX, int $wouldblock = null):void{
+			if($wouldblock === null)
+				$lock = flock($this->file, $op);
+			else
+				$lock = flock($this->file, $op, $wouldblock);
+			if(!$lock)
+				throw new Exception("Can't lock file '{$this->path}'");
+			$this->locked = true;
 		}
 
 		/**
@@ -203,8 +241,6 @@
 
 		}
 
-		public function truncate(int $size = -1):void{}
-		public function lock(int $op = \LOCK_EX):void{}
 		public function unlock():void{}
 		
 		public function read(int $length):?string{}

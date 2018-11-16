@@ -32,12 +32,13 @@
 		}
 	}
 }
+// .z-35
 @for $i from 0 through 10{
-	$size: $i * 5;
 	.z-#{$size}{
-		z-index: $size;
+		z-index: $i * 5;
 	}
 }
+// .p-relative
 @each $pos in $positions{
 	.p-#{$pos}{
 		position: $pos;

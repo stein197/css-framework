@@ -34,6 +34,11 @@
 			Buffer::showProperty(self::NAMES['TITLE']);
 		}
 
+		public function addHeadScript(string $url):void{}
+		public function addHeadStylesheet(string $url):void{}
+		public function addHeadLink(string $href, array $atts):void{}
+		public function addHeadMeta(array $atts):void{}
+
 		protected function __destruct(){
 			Buffer::end();
 		}

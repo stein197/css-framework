@@ -9,11 +9,6 @@ $font-weight: (
 	"bold-x": 800,
 	"black": 900,
 );
-// List of used fonts
-$fonts: (
-	"open_sans": "Open Sans",
-);
-// Font-size smallest and biggest value
 $fs-loop-from: 4;
 $fs-loop-to: 40;
 
@@ -64,14 +59,6 @@ $padding-loops: 20;
 
 $line-height-max: 30;
 
-@mixin font($family, $filename, $weight, $type: "truetype", $path: "/css/fonts/"){
-	@font-face {
-		font-family: $family;
-		src: url($path + $filename) format($type);
-		font-weight: $weight;
-	}
-}
-
 @mixin square($dimens){
 	width: $dimens;
 	height: $dimens;
@@ -80,15 +67,6 @@ $line-height-max: 30;
 @mixin circle($d){
 	@include square($d);
 	border-radius: 50%;
-}
-
-// Creates shadow property
-@mixin shadow($y, $r, $color, $opacity: 1){
-	@if $opacity == 1{
-		box-shadow: 0 $y $r $color;
-	} @else {
-		box-shadow: 0 $y $r 0 rgba($color, $opacity);
-	}
 }
 
 @mixin mq($width, $type: min){
@@ -112,10 +90,4 @@ $line-height-max: 30;
 			@content;
 		}
 	}
-}
-
-@mixin pseudo($pos: absolute){
-	content: "";
-	position: $pos;
-	display: block;
 }

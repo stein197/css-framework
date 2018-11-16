@@ -1,4 +1,4 @@
-// Negative x-axis margins
+// Отрицательный отступ. Значения 0, 5, 10...
 @for $i from 1 through $n-mr-loops{
 	$margin: $i * 5;
 	.n-mr-#{$margin}{
@@ -6,31 +6,8 @@
 		margin-right: -#{$margin}px;
 	}
 }
-// Exact spacing, i.e. 1-9 pixels precision
-@each $side-letter, $side-name in $sides{
-	@for $i from 1 through 9{
-		.mr-#{$side-letter}-#{$i}{
-			margin-#{$side-name}: #{$i}px;
-		}
-		.pd-#{$side-letter}-#{$i}{
-			padding-#{$side-name}: #{$i}px;
-		}
-	}
-}
-@each $side-letter, $side-name in $sides{
-	@each $bp-name, $bp-value in $breakpoints{
-		@include mq($bp-name){
-			@for $i from 1 through 9{
-				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
-					margin-#{$side-name}: #{$i}px;
-				}
-				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
-					padding-#{$side-name}: #{$i}px;
-				}
-			}
-		}
-	}
-}
+
+// .mr-30, .pd-0
 @for $i from 0 through $padding-loops{
 	$size: $i * 10;
 	.mr-#{$size}{
@@ -40,6 +17,8 @@
 		padding: #{$size}px;
 	}
 }
+
+// .pd-x-30, mr-y-100
 @for $i from 0 through $padding-loops{
 	$size: $i * 10;
 	.mr-x-#{$size}{
@@ -59,6 +38,8 @@
 		padding-bottom: #{$size}px;
 	}
 }
+
+// .pd-t-40, .mr-b-50
 @for $i from 0 through $padding-loops{
 	$size: $i * 10;
 	@each $side-letter, $side-name in $sides{
@@ -70,9 +51,22 @@
 		}
 	}
 }
-// Same spacing for every 4 box sides
+
+// .pd-t-2, .mr-b-7
+@each $side-letter, $side-name in $sides{
+	@for $i from 1 through 9{
+		.mr-#{$side-letter}-#{$i}{
+			margin-#{$side-name}: #{$i}px;
+		}
+		.pd-#{$side-letter}-#{$i}{
+			padding-#{$side-name}: #{$i}px;
+		}
+	}
+}
+
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
+		// .mr-lg-30
 		@for $i from 0 through $padding-loops{
 			$size: $i * 10;
 			.mr-#{$bp-name}-#{$size}{
@@ -82,11 +76,7 @@
 				padding: #{$size}px;
 			}
 		}
-	}
-}
-// Spacing for every x- and y- axis
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
+		// .pd-x-50
 		@for $i from 0 through $padding-loops{
 			$size: $i * 10;
 			.mr-x-#{$bp-name}-#{$size}{
@@ -106,11 +96,7 @@
 				padding-bottom: #{$size}px;
 			}
 		}
-	}
-}
-// Spacing for every 4 box sides
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
+		// .mr-b-lg-50
 		@for $i from 0 through $padding-loops{
 			$size: $i * 10;
 			@each $side-letter, $side-name in $sides{
@@ -119,6 +105,17 @@
 				}
 				.pd-#{$side-letter}-#{$bp-name}-#{$size}{
 					padding-#{$side-name}: #{$size}px;
+				}
+			}
+		}
+		// .pd-b-lg-5
+		@for $i from 1 through 9{
+			@each $side-letter, $side-name in $sides{
+				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
+					margin-#{$side-name}: #{$i}px;
+				}
+				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
+					padding-#{$side-name}: #{$i}px;
 				}
 			}
 		}

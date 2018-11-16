@@ -1,10 +1,11 @@
-@import "definitions";
-@import "font";
-@import "spacing";
-@import "positioning";
-@import "dimensions";
-@import "slick-default";
-@import "bs-reset";
+@import "definitions";	// Переменные
+@import "font";			// Настройки шрифтов
+@import "spacing";		// Настройки для управления расстояниями
+@import "positioning";	// Настройки позиционирования
+@import "dimensions";	// Настройки размеров
+@import "slick-default";// Настройки слайдера slick по умолчанию
+// @import "bs";		// Стандартные классы Bootstrap 4, если его нет
+@import "bs-reset";		// Сброс стилей Bootstrap 4
 
 *,
 *::before,
@@ -18,6 +19,7 @@ body{
 	font-size: 14px;
 	font-weight: 400;
 }
+// Предотвратить схлопывание высоты родителя с плавающими элементами
 .float::after{
 	content: "";
 	display: block;
@@ -32,17 +34,15 @@ body{
 .cp{
 	cursor: pointer;
 }
-
+// Настройки псевдоэлементов по умолчанию
 .pseudo{
 	&::before,
-	&::after{
-		@include pseudo;
-	}
-	&-before::before{
-		@include pseudo;
-	}
+	&::after,
+	&-before::before,
 	&-after::after{
-		@include pseudo;
+		content: "";
+		position: absolute;
+		display: block;
 	}
 }
 
@@ -53,15 +53,13 @@ body{
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-
 .noresize{
 	resize: none;
 }
-
 .crop{
 	overflow: hidden;
 }
-
+// Базовые цвета шрифтов и фонов
 @each $name, $value in $colors{
 	.color-#{$name}{
 		color: $value;
@@ -115,7 +113,7 @@ body{
 		background-size: cover;
 	}
 }
-
+// Фиксированная шапка
 header.fixed,
 #header.fixed{
 	position: fixed;
@@ -123,11 +121,11 @@ header.fixed,
 	top: 0;
 	width: 100%;
 }
-
+// Убрать прокрутку контента
 body.fixed{
 	overflow: hidden !important;
 }
-
+// Прижимать подвал к низу (если известна высота подвала)
 footer.sticky,
 #footer.sticky{
 	position: absolute;
@@ -143,7 +141,6 @@ footer.sticky,
 	height: 100%;
 	width: 1px;
 }
-
 table{
 	border-collapse: collapse;
 }
@@ -153,7 +150,7 @@ table{
 		min-width: 100%;
 	}
 }
-.table-unstyled{
+table.unstyled{
 	background-color: transparent !important;
 	border: none !important;
 	padding: 0 !important;
@@ -162,10 +159,12 @@ table{
 	td,
 	thead,
 	tbody{
-		@extend .table-unstyled;
+		background-color: transparent !important;
+		border: none !important;
+		padding: 0 !important;
 	}
 }
-.table-fixed{
+table.fixed{
 	table-layout: fixed;
 }
 
@@ -175,7 +174,7 @@ table{
 	line-height: 1em;
 	white-space: nowrap;
 	&-rounded{
-		border-radius: 50px;
+		border-radius: 100px;
 	}
 }
 .transitionable{
