@@ -34,7 +34,7 @@
 }
 // .z-35
 @for $i from 0 through 10{
-	.z-#{$size}{
+	.z-#{$i}{
 		z-index: $i * 5;
 	}
 }

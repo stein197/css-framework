@@ -147,3 +147,38 @@
 	set_error_handler(function($errno, $errstr, $errfile, $errline){
 		throw new WarningException($errstr, $errno, $errfile, $errline);
 	}, E_WARNING);
+
+	// Форматированный вывод сообщений об исключениях
+	set_exception_handler(function(Exception $ex){
+		?>
+		<div style="font-size: 14px">
+			<code>
+				<b><?= get_class($ex) ?> :</b> <?= $ex->getMessage() ?><br/>
+				<b>Code :</b> <?= $ex->getCode() ?><br/>
+				<b>File :</b> <?= $ex->getFile() ?><br/>
+				<b>Line :</b> <?= $ex->getLine() ?><br/>
+				<b>Stack trace:</b><br/>
+				<b>
+					<?
+						foreach(array_reverse($ex->getTrace()) as $depth => $call):
+							$prefix = str_repeat('&nbsp;', $depth ? $depth - 1 : 0).($depth ? '&#9492;' : '').'&#183';
+							$args = '';
+							// foreach($call['args'] as &$arg){
+							// 	if(gettype($arg) === 'object')
+							// 		$arg = print_r($arg, true);
+							// 	else
+							// 		$arg = typeof($arg).' '.$arg;
+								
+							// }
+							// $args = join(', ', $call['args']);
+							$func = (@$call['class'] ? $call['class'].$call['type'] : '').$call['function']."({$args})";
+							?>
+							<span><?= $prefix.$func ?> at file "<?= $call['file'] ?>" on line <?= $call['line'] ?></span><br/>
+							<?
+						endforeach
+					?>
+				</b>
+			</code>
+		</div>
+		<?
+	});

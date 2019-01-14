@@ -31,7 +31,7 @@
 		
 		/**
 		 * @param string $path Относительный (относительно директории скрипта, выполняющего инициализацию объекта) или абсолютный путь до папки
-		 * @param bool $normalize Нормализовать ли путь (замена '..' на родителя)
+		 * 
 		 * @throws Exception Если передана пустая строка
 		 */
 		public function __construct(string $path, string $dir = null){
@@ -44,24 +44,20 @@
 			$this->fullPath = $path;
 		}
 
-		public function __clone(){
-			return new Directory($this->path);
-		}
-
 		public function __toString(){
 			return $this->path;
 		}
 
 		/**
 		 * Проверяет, существует ли указанная папка
-		 * @return bool
+		 * @return bool Возвращает <code>true</code>, если директория существует
 		 */
 		public function exists():bool{
 			return file_exists($this->fullPath) && is_dir($this->fullPath);
 		}
 
 		/**
-		 * Создает папку
+		 * Создает папку, при этом вне зависимости от уровня вложенности, создание папки всегда идёт рекурсивно
 		 * @param $p int Режим доступа
 		 * @return void
 		 * @throws Exception Если директория уже существует
@@ -104,12 +100,15 @@
 		}
 
 		/**
-		 * Возвращает родительскую папку
-		 * @return Directory
-		 * @throws Exception Если папка уже корень сайта
+		 * Возвращает родительскую папку. Если это корневая папка, то возвращается текущий объект
+		 * @return \System\Directory
+		 * @todo Проверить, работает ли метод с корневыми папками
 		 **/
-		public function getParent():Directory{
-			return new static(preg_replace('/[^\/]+$/', '', $this->path));
+		public function getParent():self{
+			$newPath = dirname($this->fullPath);
+			if($newPath === '.' || $newPath === $this->fullPath)
+				return $this;
+			return new static($newPath);
 		}
 
 		/**

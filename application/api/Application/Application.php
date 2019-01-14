@@ -18,8 +18,9 @@
 			'KEYWORDS' => 'pageKeywords',
 			'H1' => 'pageH1',
 		];
-
 		protected $title;
+		// $_SITE, $_HEAD, $_BODY
+		public $globals = [];
 
 		protected function __construct(){
 			Buffer::start();

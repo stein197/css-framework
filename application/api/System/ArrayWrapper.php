@@ -8,9 +8,7 @@
 	/**
 	 * Обертка над типом <code>array</code>
 	 * Является тем же массивом, с тем лишь отличием, что для манипуляций над массивом используются методы класса, а не функции
-	 * По сути, класс объединяет все функции и операции над массивом
-	 * Если массив многомерный или содержит вложенные массивы, то они будут рекурсивно обёрнуты в <code>ArrayWrapper</code>
-	 * @todo Реализовать быстрый доступ к первому и последнему ключу/значению массива
+	 * То есть, объекты этого класса представляют собой массив
 	 * @property-read mixed $firstKey
 	 * @property-read mixed $lastKey
 	 * @property-read mixed $firstValue
@@ -86,10 +84,13 @@
 		public function offsetSet($offset, $value):void{
 			if(is_array($value))
 				$this->innerArrays++;
-			if($offset === null)
+			if($offset === null){
 				$this->data[] = $value;
-			else
+				$this->updateBoudaryElements(self::U_LAST);
+			} else {
 				$this->data[$offset] = $value;
+				$this->updateBoundaryElements();
+			}
 		}
 
 		/**
@@ -101,6 +102,7 @@
 			if(is_array($this->data[$offset]))
 				$this->innerArrays--;
 			unset($this->data[$offset]);
+			$this->updateBoudaryElements();
 		}
 
 		/**
@@ -173,7 +175,21 @@
 			return $this;
 		}
 
-		protected function updateBoudaryElements(int $mode = self::U_BOTH, $currentKey = null):void{
+		public function column($colKey, $iKey = null):self{
+			$this->data = array_column($this->data, $colKey, $iKey);
+			$this->updateBoudaryElements();
+			return $this;
+		}
+
+		public function countValues():array{
+			return array_count_values($this->data);
+		}
+
+		public function diff(ArrayWrapper ...$ar):array{
+			return array_diff($this->data, $ar);
+		}
+
+		protected function updateBoudaryElements(int $mode = self::U_BOTH):void{
 			if($mode & self::U_FIRST){
 				$this->firstKey = key($this->data);
 				$this->firstValue = $this->data[$this->firstKey];
@@ -183,17 +199,6 @@
 				$this->lastKey = key($this->data);
 				$this->lastValue = $this->data[$this->lastKey];
 				reset($this->data);
-			}
-			if($currentKey !== null){
-				$keyMatches = false;
-				$hasNext = true;
-				while(!$keyMatches && $hasNext){
-					if(key($this->data) === $currentKey){
-						$keyMatches = true;
-					} else {
-						$hasNext = next($this->data);
-					}
-				}
 			}
 		}
 
