@@ -12,15 +12,15 @@
 		public function unlock():void;
 		public function hasLock():bool;
 		
-		public function read(int $length):?string;
-		public function readChar():?string;
-		public function readLine():?string;
-		public function getContents():string;
+		// public function read(int $length):?string;
+		public function readByte():?int;
+		// public function readLine(int $length):?string;
+		// public function getContents():string;
 
-		public function write(string $data):int;
-		public function writeChar(int $char):void;
-		public function writeLine(string $line):int;
-		public function putContents(string $data);
+		// public function write(string $data):int;
+		public function writeByte(int $byte):void;
+		// public function writeLine(string $line):int;
+		// public function putContents(string $data);
 
 		public function isReadable():bool;
 		public function isWritable():bool;

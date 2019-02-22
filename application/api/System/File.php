@@ -4,18 +4,17 @@
 	use \DateTime;
 
 	/**
-	 * Класс для работы с файлами
-	 * Здесь определены такие операции, как чтение, запись, удаление и т.п.
-	 * @todo Реализовать блокировку
-	 * @todo запись в файл только при закрытии/завершении работы скрипта. Сохранение всех изменений во внутренний буфер перед записью
-	 * @property-read string $path
-	 * @property-read string $fullPath
+	 * Класс для работы с локальными файлами.
+	 * Позволяет совершать любые операции с файлом, кроме чтения и записи
+	 * Для этих целей существуют другие классы
+	 * Несмотря на невозможность чтения/записи в файл, есть методы self::open() и self::close(), наследуемые другими классами
+	 * Важно - для большинства функций, перед их использованием должен быть вызван метод <code>self::open()</code>
+	 * @property-read Path $path
 	 * @property-read string $name
 	 */
-	class File implements FileDescriptor, FileIO{
+	class File implements FileDescriptor{
 
 		use PropertyAccess;
-		use ObjectDump;
 
 		/** @var int MODE_READ Флаг режима чтения файла */
 		public const MODE_READ = 0b01;
@@ -27,10 +26,8 @@
 		/** @var int CURSOR_END Флаг установки указателя в конец файла */
 		public const CURSOR_END = 1;
 
-		/** @var string $path Абсолютный путь до файла от корня сайта */
-		protected $path = '';
-		/** @var string $fullPath Полный путь до файла относительно корня ОС */
-		protected $fullPath = '';
+		/** @var Path $path Путь до файла */
+		protected $path;
 		/** @var string $name Имя файла вместе с расширением */
 		protected $name = '';
 		/** @var bool $opened <code>true</code>, если файл открыт (т.е. был вызван метод <code>File::open()</code>) */
@@ -53,12 +50,9 @@
 		 * @param string $dir Директория того скрипта (<code>__DIR__</code>), в котором инстанциируется объект <code>File</code>. Имеет эффект только в том случае, если предоставлен относительный путь до файла
 		 * @throws \Exception Если не передан параметр пути
 		 */
-		public function __construct(string $path, bool $autoopen = false, string $dir = null){
-			if(!$path)
-				throw new Exception('Empty filename');
-			$this->path = Path::getAbsolute($path, '/', $dir);
-			$this->fullPath = Path::getFull($path, '/', $dir);
-			$this->name = pathinfo($path, PATHINFO_BASENAME);
+		public function __construct(Path $path, bool $autoopen = false, ?string $dir = null){
+			$this->path = $path;
+			$this->name = pathinfo((string) $path, PATHINFO_BASENAME);
 			if($autoopen)
 				$this->open();
 		}
@@ -69,6 +63,14 @@
 		}
 
 		/**
+		 * Возвращает полный путь до файла
+		 * @return string
+		 */
+		public function __toString():string{
+			return (string) $this->path;
+		}
+
+		/**
 		 * Создает новый файл, но не открывает его
 		 * @return void
 		 * @throws \Exception Если файл уже создан
@@ -76,7 +78,7 @@
 		public function create():void{
 			if($this->exists())
 				throw new Exception("Can't create file. File '{$this->path}' already exists");
-			touch($this->fullPath);
+			touch((string) $this->path);
 		}
 
 		/**
@@ -91,12 +93,19 @@
 			$this->mode = $mode;
 			$this->opened = true;
 
-			if($mode === self::MODE_READ | self::MODE_WRITE)
-				$this->file = fopen($this->fullPath, 'r+');
+			// if($mode === (self::MODE_READ | self::MODE_WRITE))
+			// 	$this->file = fopen((string) $this->path, 'r+');
+			// elseif($mode === self::MODE_WRITE)
+			// 	$this->file = fopen((string) $this->path, 'c');
+			// else
+			// 	$this->file = fopen((string) $this->path, 'r');
+			if($mode === (self::MODE_READ | self::MODE_WRITE))
+				$m = 'r+';
 			elseif($mode === self::MODE_WRITE)
-				$this->file = fopen($this->fullPath, 'c');
+				$m = 'c';
 			else
-				$this->file = fopen($this->fullPath, 'r');
+				$m = 'r';
+			$this->file = fopen((string) $this->path, $m);
 
 			if($seek === self::CURSOR_END)
 				fseek($this->file, 0, \SEEK_END);
@@ -190,7 +199,7 @@
 		 */
 		public function resetPointer(int $mode = self::CURSOR_START):void{
 			if(fseek($this->file, 0, $mode === self::CURSOR_START ? \SEEK_SET : \SEEK_END) < 0)
-				throw new Exception('Can\'t reset file pointer to the '.($mode === self::CURSOR_START ? 'start' : 'end').' of file');
+				throw new Exception('Can\'t reset file pointer at the '.($mode === self::CURSOR_START ? 'start' : 'end').' of file');
 		}
 
 		/**
@@ -249,7 +258,7 @@
 		 * @return bool Возвращает <code>true</code> если файл существует, иначе false
 		 */
 		public function exists():bool{
-			return file_exists($this->fullPath) && is_file($this->fullPath);
+			return file_exists((string) $this->path) && is_file((string) $this->path);
 		}
 
 		/**
@@ -335,23 +344,44 @@
 		public static function glob(string $pattern):array{
 
 		}
-		
-		
-		public function read(int $length):?string{}
-		public function readChar():?string{}
-		public function readLine():?string{}
-		public function getContents():string{}
 
-		public function write(string $data):int{}
-		public function writeLine(string $line):int{}
-		public function writeChar(int $char):void{}
-		public function putContents(string $data){}
+		/**
+		 * Считывает один байт из файла
+		 * @return int|null Число от 0 до 255, или <code>null</code>, если достингут конец файла
+		 * @throws \Exception Если нельзя прочесть файл
+		 */
+		public function readByte():?int{
+			$char = $this->read(1);
+			return $char === null ? null : ord($char);
+		}
 
-		public function isReadable():bool{}
-		public function isWritable():bool{}
+
+
+		public function writeByte(int $char):void{}
+
+		public function insert(string $data){}
+		public function insertByte(int $byte){}
+
+		/**
+		 * Проверяет, доступен ли файл для чтения
+		 * @return bool <code>true</code>, если файл доступен для чтения
+		 */
+		public function isReadable():bool{
+			return is_readable($this->fullPath);
+		}
+
+		/**
+		 * Проверяет, доступен ли файл для записи
+		 * @return bool <code>true</code>, если файл доступен для записи
+		 */
+		public function isWritable():bool{
+			return is_writable($this->fullPath);
+		}
 		public function isExecutable():bool{}
 
-		public function hasEOF():bool{}
+		public function hasEOF():bool{
+			return feof($this->file);
+		}
 
 		public function getInfo():array{}
 		
@@ -359,4 +389,24 @@
 		public function chmod(int $mode):void{}
 		public function chown(int $mode, int $uID):void{}
 		public function chgrp(int $mode, int $gID):void{}
+
+		/**
+		 * Проверяет атрибуты файла перед такими операциями как чтение/запись
+		 * Если есть попытка прочесть/записать в файл, который нельзя прочесть/записать, будет выброшено исключение
+		 * Исключение будет выброшено и в том случае, если есть попытка манипуляции с файлом до его открытия
+		 * @param int $perm Проверяемое разрешение. Одна из констант <code>self::MODE_READ</code> или <code>self::MODE_WRITE</code>
+		 * @return void
+		 * @throws \Exception
+		 */
+		protected function checkPermission(int $perm):void{
+			if(!$this->opened)
+				throw new Exception("File '{$this->fullPath}' does not opened");
+			$isPermitted = $this->mode & $perm;
+			if($perm === self::MODE_READ)
+				if(!$isPermitted || !$this->isReadable())
+					throw new Exception("File reading operation have been denied. File '{$this->fullPath}' is not readable or is allowed to write only", 1);
+			else
+				if(!$isPermitted || !$this->isWritable())
+					throw new Exception("File writing operation have been denied. File '{$this->fullPath}' is not writable or is allowed to read only", 1);
+		}
 	}

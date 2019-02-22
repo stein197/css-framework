@@ -5,6 +5,7 @@
 @import "dimensions";	// Настройки размеров
 @import "slick-default";// Настройки слайдера slick по умолчанию
 // @import "bs";		// Стандартные классы Bootstrap 4, если его нет
+// @import "grid";
 @import "bs-reset";		// Сброс стилей Bootstrap 4
 
 *,
@@ -34,6 +35,20 @@ body{
 .cp{
 	cursor: pointer;
 }
+.box{
+	&-content{
+		box-sizing: content-box;
+	}
+	&-border{
+		box-sizing: border-box;
+	}
+}
+
+.nolink,
+.nolink:hover{
+	text-decoration: none;
+}
+
 // Настройки псевдоэлементов по умолчанию
 .pseudo{
 	&::before,
@@ -179,6 +194,22 @@ table.fixed{
 }
 .transitionable{
 	transition: all .2s linear;
+}
+
+@for $i from 1 through $cols{
+	.columns-#{$i}{
+		column-count: $i;
+	}
+}
+
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@for $i from 1 through $cols{
+			.columns-#{$bp-name}-#{$i}{
+				column-count: $i;
+			}
+		}
+	}
 }
 
 // Only for mobile

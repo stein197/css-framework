@@ -5,7 +5,7 @@
 	use \DateTime;
 
 	/**
-	 * Класс для работы с папками внутри директории <code>$_SERVER['DOCUMENT_ROOT']</code>
+	 * Класс для работы с директориями локальной машины
 	 * Позволяет создавать, удалять и изменять директории и их содержимое
 	 * @property-read string $path
 	 * @property-read string $fullPath

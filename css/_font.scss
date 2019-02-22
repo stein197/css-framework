@@ -127,7 +127,7 @@
 		$strval: $i;
 	}
 	.lh-#{$strval}{
-		line-height: #{$value}em;
+		line-height: #{$value};
 	}
 	.ls-#{$strval}{
 		letter-spacing: #{$value}em;

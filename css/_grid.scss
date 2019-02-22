@@ -1,0 +1,10 @@
+.d-grid{
+	display: grid;
+}
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		.d-#{$bp-name}-grid{
+			display: grid;
+		}
+	}
+}

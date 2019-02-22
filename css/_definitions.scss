@@ -21,7 +21,8 @@ $colors: (
 $breakpoints: (
 	"md": 768px,
 	"lg": 992px,
-	"xl": 1200px
+	"xl": 1200px,
+	"xxl": 1280px
 );
 
 $cols: 12;
@@ -30,6 +31,7 @@ $bs-container-width: (
 	"md": 720px,
 	"lg": 960px,
 	"xl": 1170px,
+	"xxl": 1260px
 );
 
 $sides: (

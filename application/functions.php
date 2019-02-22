@@ -1,6 +1,7 @@
 <?php
 	const APP_DIRECTORY = __DIR__;
 	const API_DIRECTORY = __DIR__.DIRECTORY_SEPARATOR.'api';
+	const MODULES_DIRECTORY = __DIR__.DIRECTORY_SEPARATOR.'modules';
 	/** @var string[] $_CLASSES Массив всех загруженных классов */
 	$_CLASSES = [];
 
@@ -140,7 +141,10 @@
 		global $_CLASSES;
 		$_CLASSES[] = $ns;
 		$path = str_replace('\\', DIRECTORY_SEPARATOR, $ns);
-		require_once API_DIRECTORY.DIRECTORY_SEPARATOR.$path.'.php';
+		if(file_exists(API_DIRECTORY.DIRECTORY_SEPARATOR.$path.'.php'))
+			require_once API_DIRECTORY.DIRECTORY_SEPARATOR.$path.'.php';
+		else
+			require_once MODULES_DIRECTORY.DIRECTORY_SEPARATOR.$path.'.php';
 	});
 
 	// Бросать исключения при каждой ошибке уровня E_WARNING
@@ -149,7 +153,7 @@
 	}, E_WARNING);
 
 	// Форматированный вывод сообщений об исключениях
-	set_exception_handler(function(Exception $ex){
+	set_exception_handler(function(Throwable $ex){
 		?>
 		<div style="font-size: 14px">
 			<code>
@@ -163,14 +167,28 @@
 						foreach(array_reverse($ex->getTrace()) as $depth => $call):
 							$prefix = str_repeat('&nbsp;', $depth ? $depth - 1 : 0).($depth ? '&#9492;' : '').'&#183';
 							$args = '';
-							// foreach($call['args'] as &$arg){
-							// 	if(gettype($arg) === 'object')
-							// 		$arg = print_r($arg, true);
-							// 	else
-							// 		$arg = typeof($arg).' '.$arg;
-								
-							// }
-							// $args = join(', ', $call['args']);
+							foreach($call['args'] as &$arg){
+								switch(strtolower(gettype($arg))){
+									case 'string':
+										$arg = "\"{$arg}\"";
+										break;
+									case 'boolean':
+										$arg = $arg ? 'true' : 'false';
+										break;
+									case 'object':
+										$arg = get_class($arg);
+										break;
+									case 'array':
+										$arg = 'Array['.sizeof($arg).']';
+										break;
+									case 'null':
+										$arg = 'NULL';
+										break;
+									default:
+										break;
+								}
+							}
+							$args = join(', ', $call['args']);
 							$func = (@$call['class'] ? $call['class'].$call['type'] : '').$call['function']."({$args})";
 							?>
 							<span><?= $prefix.$func ?> at file "<?= $call['file'] ?>" on line <?= $call['line'] ?></span><br/>
