@@ -17,6 +17,26 @@
 	width: 100%;
 }
 
+.b-ratio{
+	height: 0;
+}
+
+@for $i from 1 through $cols {
+	.b-ratio-#{$i}{
+		padding-top: percentage($i / $cols);
+	}
+}
+
+@each $bp-name, $bp-value in $breakpoints {
+	@include mq($bp-name){
+		@for $i from 1 through $cols {
+			.b-ratio-#{$bp-name}-#{$i}{
+				padding-top: percentage($i / $cols);
+			}
+		}
+	}
+}
+
 @for $i from $h-loop-from through $h-loop-to{
 	$height: $i * $h-factor;
 	.h-#{$height}{

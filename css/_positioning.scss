@@ -34,8 +34,9 @@
 }
 // .z-35
 @for $i from 0 through 10{
-	.z-#{$i}{
-		z-index: $i * 5;
+	$amount: $i * 5;
+	.z-#{$amount}{
+		z-index: $amount;
 	}
 }
 // .p-relative

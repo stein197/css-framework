@@ -11,12 +11,13 @@
 		font-size: #{$size}px;
 	}
 }
-// Шрифт только для планшетов и больше. Нет смысла делать по размеру шрифта на каждый брейкпоинт
-@include mq("md"){
-	@for $i from $fs-loop-from through $fs-loop-to{
-		$size: $i * 2;
-		.fs-md-#{$size}{
-			font-size: #{$size}px;
+@each $bp-name, $bp-value in $breakpoints{
+	@include mq($bp-name){
+		@for $i from $fs-loop-from through $fs-loop-to{
+			$size: $i * 2;
+			.fs-#{$bp-name}-#{$size}{
+				font-size: #{$size}px;
+			}
 		}
 	}
 }
