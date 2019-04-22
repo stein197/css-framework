@@ -95,35 +95,46 @@ class Point {
 }
 document.addEventListener("DOMContentLoaded", e => {
 	Path.init();
-	Path.animateCustom([
-		{x: 0, y: 0},
-		{x: 500, y: 0},
-		{x: 500, y: 500},
-		{x: 0, y: 500},
-		{x: 0, y: 0},
-		{x: 500, y: 0},
-		{x: 500, y: 500},
-		{x: 0, y: 500},
-		{x: 0, y: 0},
-		{x: 500, y: 0},
-	], 1000, 10000);
-	let c = new Canvas("canvas");
-	let line = new Canvas.Shape.Line(new Canvas.Point(0,0), new Canvas.Point(100, 200));
-	line.style = new Canvas.Style(new Canvas.Color.RGBa(255,0,0, 127));
-	let curve = new Canvas.Shape.BezierCurve([
-		{x: 0, y: 0},
-		{x: 500, y: 0},
-		{x: 500, y: 500},
-		{x: 0, y: 500},
-		{x: 0, y: 0},
-		{x: 500, y: 0},
-		{x: 500, y: 500},
-		{x: 0, y: 500},
-		{x: 0, y: 0},
-		{x: 500, y: 0},
+	// Path.animateCustom([
+	// 	{x: 0, y: 0},
+	// 	{x: 500, y: 0},
+	// 	{x: 500, y: 500},
+	// 	{x: 0, y: 500},
+	// 	{x: 0, y: 0},
+	// 	{x: 500, y: 0},
+	// 	{x: 500, y: 500},
+	// 	{x: 0, y: 500},
+	// 	{x: 0, y: 0},
+	// 	{x: 500, y: 0},
+	// ], 1000, 10000);
+	c = new Canvas("canvas");
+	let rect = new Canvas.Shape.Rect(new Point(100,100), 400, 300);
+	rect.style.fill = new Canvas.Color(0xFF, 0, 0, 0x80);
+	rect.style.lineWidth = 2;
+	
+	let rect2 = new Canvas.Shape.Rect(new Point(400,300), 400, 300);
+	rect2.style.fill = new Canvas.Color(0, 0xFF, 0, 0xA0);
+	rect2.style.lineWidth = 12;
+	rect2.style.stroke = new Canvas.Color(0, 0xFF, 0xFF);
+
+	let pl = new Canvas.Shape.Polyline();
+	pl.style = new Canvas.Style(new Canvas.Color(255, 0, 0), new Canvas.Color(255, 0, 255, 0x80), 5);
+	pl.points.push(new Canvas.Point(500, 500));
+	pl.points.push(new Canvas.Point(35, 567));
+	pl.points.push(new Canvas.Point(1000, 700));
+	pl.points.push(new Canvas.Point(0,0));
+
+	let arc = new Canvas.Shape.BezierCurve([
+		new Point(1000, 0),
+		new Point(300, 0),
+		new Point(300, 700),
+		new Point(1000, 700),
 	], 100);
-	c.drawShape(curve);
-	c.drawShape(line);
+	c.addShape(rect);
+	c.addShape(rect2);
+	c.addShape(arc);
+	c.addShape(pl);
+	// c.render();
 });
 
 function getBezierPoint(t, vertices){
@@ -140,17 +151,13 @@ function getBezierPoint(t, vertices){
 }
 
 function fac(n){
-	if(n === 0)
-		return 1;
-	n = Math.abs(n);
-	var result = n;
-	for(var i = n - 1; i > 0; i--)
-		result *= i;
+	let result = 1;
+	while(n > 0)
+		result *= n--;
 	return result;
 }
 
 class Canvas {
-
 	constructor(canv){
 		let c;
 		if(typeof canv === "string"){
@@ -162,28 +169,68 @@ class Canvas {
 		} else if(canv instanceof CanvasRenderingContext2D) {
 			c = canv.canvas;
 		} else {
-			throw new Error("First argument must be a string or instance of canvas element");
+			throw new Error("First argument must be a string or instance of canvas element or instance of context class");
 		}
 		this.ctx = c.getContext("2d");
 		this.width = c.width;
 		this.height = c.height;
+		this.shapes = [];
 	}
 
-	drawShape(shape){
+	addShape(shape, render = true){
+		if(shape instanceof Canvas.Shape){
+			if(!shape.z)
+				shape.z = this.shapes.length;
+			this.shapes.push(shape);
+			if(render)
+				this.renderShape(shape);
+		}
+	}
+
+	removeShape(shape){
+		for(let i in this.shapes)
+			if(shape === this.shapes[i]){
+				delete this.shapes[i];
+				this.render();
+				return;
+			}
+	}
+
+	renderShape(shape){
 		this.begin(shape);
 		shape.render(this);
 		this.end();
 	}
 
+	render(){
+		this.clear();
+		for(var i in this.shapes)
+			this.renderShape(this.shapes[i]);
+	}
+
+	reorder(){
+		this.shapes = this.shapes.sort((a, b) => {
+			return a.z > b.z ? 1 : -1;
+		});
+		this.render();
+	}
+
 	begin(shape){
 		this.ctx.beginPath();
-		this.ctx.strokeStyle = shape.style.stroke.toString();
-		this.ctx.lineWidth = shape.style.lineWidth;
-		this.ctx.stroke();
+		let stroke = shape.style.stroke.toString();
+		stroke === this.ctx.strokeStyle ? null : this.ctx.strokeStyle = stroke;
+		shape.style.lineWidth === this.ctx.lineWidth ? null : this.ctx.lineWidth = shape.style.lineWidth;
+		let fill = shape.style.fill.toString();
+		fill === this.ctx.fillStyle ? null : this.ctx.fillStyle = fill;
 	}
 
 	end(){
+		this.ctx.fill();
 		this.ctx.stroke();
+	}
+
+	clear(){
+		this.ctx.clearRect(0, 0, this.width, this.height);
 	}
 
 	static Color = class Color {
@@ -193,49 +240,47 @@ class Canvas {
 		static COMPONENT_B = 0
 		static COMPONENT_A = -1
 
-		static RGBa = class RGBa {
+		constructor(r, g, b, a = 0xFF){
+			this.color = (r << 16) | (g << 8) | b;
+			this.alpha = a;
+		}
 
-			constructor(r, g, b, a = 0xFF){
-				this.color = (r << 16) | (g << 8) | b;
-				this.alpha = a;
-			}
+		getComponent(component){
+			if(component === Canvas.Color.COMPONENT_A)
+				return this.alpha;
+			return (this.color >> component) & 0xFF;
+		}
 
-			getComponent(component){
-				if(component === Canvas.Color.COMPONENT_A)
-					return this.alpha;
-				return (this.color >> component) & 0xFF;
-			}
+		getComponentAsString(component){
+			let c = this.getComponent(component);
+			if(c <= 0xF)
+				return "0" + c.toString(16).toUpperCase();
+			else
+				return c.toString(16).toUpperCase();
+		}
 
-			getComponentAsString(component){
-				let c = this.getComponent(component);
-				if(c <= 0xF)
-					return "0" + c.toString(16).toUpperCase();
-				else
-					return c.toString(16).toUpperCase();
-			}
-
-			toString(){
-				return "#"
-					+ this.getComponentAsString(Canvas.Color.COMPONENT_R)
-					+ this.getComponentAsString(Canvas.Color.COMPONENT_G)
-					+ this.getComponentAsString(Canvas.Color.COMPONENT_B)
-					+ this.getComponentAsString(Canvas.Color.COMPONENT_A);
-			}
-			
-			static fromString(color){
-				color = color.slice(1);
-				let r = +("0x" + color.slice(0, 2));
-				let g = +("0x" + color.slice(2, 4));
-				let b = +("0x" + color.slice(4, 6));
-				let a = +("0x" + color.slice(6, 8));
-				return new Canvas.Color.RGBa(r, g, b, a);
-			}
+		toString(){
+			return "#"
+				+ this.getComponentAsString(Canvas.Color.COMPONENT_R)
+				+ this.getComponentAsString(Canvas.Color.COMPONENT_G)
+				+ this.getComponentAsString(Canvas.Color.COMPONENT_B)
+				+ this.getComponentAsString(Canvas.Color.COMPONENT_A);
+		}
+		
+		static fromString(color){
+			color = color.slice(1);
+			let r = +("0x" + color.slice(0, 2));
+			let g = +("0x" + color.slice(2, 4));
+			let b = +("0x" + color.slice(4, 6));
+			let a = +("0x" + color.slice(6, 8));
+			return new Canvas.Color(r, g, b, a);
 		}
 	}
 
 	static Style = class Style {
-		constructor(stroke = new Canvas.Color.RGBa(0, 0, 0), lineWidth = 1){
+		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1){
 			this.stroke = stroke;
+			this.fill = fill;
 			this.lineWidth = lineWidth;
 		}
 	}
@@ -252,8 +297,14 @@ class Canvas {
 	}
 
 	static Shape = class Shape {
-
 		render(canvas){throw new Error}
+
+		get z(){
+			return this._z;
+		}
+		set z(value){
+			this._z = value;
+		}
 
 		static Line = class Line extends Shape {
 			constructor(p1, p2, style = new Canvas.Style){
@@ -270,7 +321,7 @@ class Canvas {
 		}
 
 		static Polyline = class Polyline extends Shape {
-			constructor(points, style = new Canvas.Style){
+			constructor(points = [], style = new Canvas.Style){
 				super();
 				this.points = points;
 				this.style = style;
@@ -283,8 +334,25 @@ class Canvas {
 			}
 		}
 
-		static BezierCurve = class BezierCurve extends Shape {
+		static Rect = class Rect extends Shape {
+			constructor(p, width, height, style = new Canvas.Style){
+				super();
+				this.p = p;
+				this.width = width;
+				this.height = height;
+				this.style = style;
+			}
 
+			render(canvas){
+				canvas.ctx.moveTo(this.p.x, this.p.y);
+				canvas.ctx.lineTo(this.p.x + this.width, this.p.y);
+				canvas.ctx.lineTo(this.p.x + this.width, this.p.y + this.height);
+				canvas.ctx.lineTo(this.p.x, this.p.y + this.height);
+				canvas.ctx.closePath();
+			}
+		}
+
+		static BezierCurve = class BezierCurve extends Shape {
 			constructor(points, q, style = new Canvas.Style){
 				super();
 				this.points = points;
@@ -294,20 +362,21 @@ class Canvas {
 
 			render(canvas){
 				canvas.ctx.moveTo(this.points[0].x, this.points[0].y);
-				var p, t;
-				for(var i = 0; i <= this.q; i++){
-					t = i / this.q;
-					p = this.getPointByTimeline(t);
+				var p;
+				for(let i = 0; i <= this.q; i++){
+					p = this.getPointByTimeline(i / this.q);
 					canvas.ctx.lineTo(p.x, p.y);
 				}
 			}
 
+			// Common bezier curve equation formula
 			getPointByTimeline(t){
 				var n = this.points.length - 1;
 				var x = 0, y = 0;
 				var b;
+				var diff = 1 - t;
 				for(var k = 0; k <= n; k++){
-					b = C(n, k) * Math.pow(t, k) * Math.pow(1 - t, n - k);
+					b = C(n, k) * Math.pow(t, k) * Math.pow(diff, n - k);
 					x += this.points[k].x * b;
 					y += this.points[k].y * b;
 				}
@@ -315,15 +384,22 @@ class Canvas {
 			}
 		}
 
-
-		// Circle, Bezier, BSpline, Path, NURBS,Rect
+		// Circle, BSpline, Path, NURBS,Rect
 	}
 
-	static Animation = class Animation {
-		
-	}
+	// static Animation = class Animation {}
 }
 
 function C(n, k){
 	return fac(n) / (fac(n - k) * fac(k));
+}
+
+
+function printHierarchy(obj, depth, tab = 1){
+	if(depth < 1)
+		return;
+	for(let prop in obj){
+		console.log("\t".repeat(tab) + prop);
+		printHierarchy(obj[prop], depth - 1, tab + 1);
+	}
 }
