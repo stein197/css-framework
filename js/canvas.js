@@ -106,17 +106,17 @@ class Canvas {
 	}
 
 	addShape(shape){
-		if(shape instanceof Canvas.Shape){
-			this.shapes.push(shape);
-			if(shape.z === undefined)
-				if(this.maxZ === -Infinity)
-					shape.z = this.maxZ = 0;
-				else
-					shape.z = this.maxZ = this.maxZ + 1;
+		if(!(shape instanceof Canvas.Shape))
+			return;
+		this.shapes.push(shape);
+		if(shape.z === undefined)
+			if(this.maxZ === -Infinity)
+				shape.z = this.maxZ = 0;
 			else
-				if(shape.z > this.maxZ)
-					this.maxZ = shape.z;
-		}
+				shape.z = this.maxZ = this.maxZ + 1;
+		else
+			if(shape.z > this.maxZ)
+				this.maxZ = shape.z;
 	}
 
 	removeShape(shape){
@@ -208,7 +208,14 @@ class Canvas {
 	}
 
 	static Style = class Style {
-		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1, lineCap = "butt", lineJoin = "miter", lineDash = []){
+
+		static STROKE_BUTT = "butt";
+		static STROKE_ROUND = "round";
+		static STROKE_SQUARE = "square";
+		static STROKE_BEVEL = "bevel";
+		static STROKE_MITER = "miter";
+		
+		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1, lineCap = Canvas.Style.STROKE_BUTT, lineJoin = Canvas.Style.STROKE_MITER, lineDash = []){
 			this.stroke = stroke;
 			this.fill = fill;
 			this.lineWidth = lineWidth;
@@ -223,12 +230,18 @@ class Canvas {
 			this.x = x;
 			this.y = y;
 		}
+
+		equals(p){
+			return this.x === p.x && this.y === p.y;
+		}
 	}
 
 	static Shape = class Shape {
 		render(canvas){throw new Error}
 		// clone(){throw new Error}
 		// getPoints(){throw new Error}
+		// on(event, f){throw new Error}
+		// isPointInside(p){throw new Error}
 
 		static Line = class Line extends Shape {
 			constructor(p1, p2, style = new Canvas.Style){
@@ -308,7 +321,9 @@ class Canvas {
 			}
 		}
 
-		static Circle = class Circle extends Shape {
+		// static Ellipse = class Ellipse extends Shape {}
+
+		static Circle = class Circle extends Shape/* .Ellipse */ {
 			constructor(center, r, q, style = new Canvas.Style){
 				super();
 				this.center = center;
@@ -330,10 +345,12 @@ class Canvas {
 			}
 		}
 
+
 		// Elipsis, BSpline, Path, NURBS
 	}
 
 	// static Animation = class Animation {}
+	// static Event = class Event {}
 	// static Layer = class Layer {}
 }
 
@@ -355,8 +372,9 @@ var CanvasTest = {
 				new Point(10, 10),
 				new Point(300, 500),
 				new Point(800, 100),
+				// new Point(500, 650),
 			];
-			let curve = new Shape.BezierCurve(points, 1500);
+			let curve = new Shape.BezierCurve(points, 100);
 			let poly = new Shape.Polyline(points);
 			poly.style.stroke = new Color(0, 0, 0, 0x80);
 			poly.style.lineWidth = 2;
@@ -366,13 +384,59 @@ var CanvasTest = {
 			curve.style.lineWidth = 3;
 			curve.style.lineCap = "round";
 			for(let i in points){
-				let circle = new Shape.Circle(points[i], 5, 12);
+				let circle = new Shape.Circle(points[i], 5, 10);
 				circle.style.fill = new Color(255, 0, 0);
 				circle.style.lineWidth = 2;
 				c.addShape(circle);
 			}
-			curve.style.fill = new Color(0,0,0,127);
 			c.render();
+			// просто обработчики-тесты
+			c.ctx.canvas.addEventListener("mousedown", e => {
+				var p = new Point(e.layerX, e.layerY);
+				for(var i in points){
+					if(Math.sqrt(Math.pow(p.x - points[i].x, 2) + Math.pow(p.y - points[i].y, 2)) <= 5){
+						var captured = points[i];
+						c.ctx.canvas.onmousemove = eMove => {
+							captured.x = eMove.layerX;
+							captured.y = eMove.layerY;
+							c.render();
+						}
+					}
+				}
+			});
+			c.ctx.canvas.addEventListener("dblclick", e => {
+				var p = new Point(e.layerX, e.layerY);
+				for(var i in points){
+					if(Math.sqrt(Math.pow(p.x - points[i].x, 2) + Math.pow(p.y - points[i].y, 2)) <= 5){
+						for(let idx in c.shapes){
+							if(c.shapes[idx] instanceof Shape.Circle && c.shapes[idx].center.equals(points[i])){
+								delete c.shapes[idx];
+								break;
+							}
+						}
+						delete points[i];
+						let pointsTmp = [];
+						for(let idx in points){
+							pointsTmp.push(points[idx]);
+						}
+						points.length = 0;
+						for(let idx in pointsTmp){
+							points.push(pointsTmp[idx]);
+						}
+						c.render();
+						return;
+					}
+				}
+				points.push(p);
+				var circle = new Shape.Circle(p, 5, 10);
+				circle.style.fill = new Color(255, 0, 0);
+				circle.style.lineWidth = 2;
+				c.addShape(circle);
+				c.render();
+			});
+			c.ctx.canvas.addEventListener("mouseup", e => {
+				c.ctx.canvas.onmousemove = null;
+			});
 		}
 	},
 };
