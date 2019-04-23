@@ -3,59 +3,12 @@ var Path = {
 	dimens: null,
 
 	init: function(){
-		if(!this.canvas)
-			this.setCanvas();
-	},
-
-	setCanvas: function(){
 		var canvas = document.getElementById("canvas");
 		Path.canvas = canvas.getContext("2d");
 		Path.dimens = {
 			width: canvas.width,
 			height: canvas.height
 		};
-	},
-	clear: function(){
-		Path.canvas.clearRect(0, 0, Path.dimens.width, Path.dimens.height);
-		Path.canvas.beginPath();
-	},
-	animateQ: function(p1, p2, p3, q, duration){
-		Path.clear();
-		Path.canvas.moveTo(p1.x, p1.y);
-		var stepSize = duration / q;
-		var curTime = 0;
-		var prevX = p1.x;
-		var prevY = p1.y;
-		var x, y, t;
-		for(var i = 0; i <= q; i++){
-			t = i / q;
-			x = (1 - t) ** 2 * p1.x + 2 * t * (1 - t) * p2.x + t ** 2 * p3.x;
-			y = (1 - t) ** 2 * p1.y + 2 * t * (1 - t) * p2.y + t ** 2 * p3.y;
-			color = Math.round(0xFF * t).toString(16);
-			color = "#" + color + color + color;
-			Path.lineTo(x, y, curTime += stepSize, prevX, prevY, color);
-			prevX = x;
-			prevY = y;
-		}
-	},
-	animateC: function(p1, p2, p3, p4, q, duration){
-		Path.clear();
-		Path.canvas.moveTo(p1.x, p1.y);
-		var stepSize = duration / q;
-		var curTime = 0;
-		var prevX = p1.x;
-		var prevY = p1.y;
-		var x, y, t;
-		for(var i = 0; i <= q; i++){
-			t = i / q;
-			x = (1 - t) ** 3 * p1.x + 3 * t * (1 - t) ** 2 * p2.x + 3 * t ** 2 * (1 - t) * p3.x + t ** 3 * p4.x;
-			y = (1 - t) ** 3 * p1.y + 3 * t * (1 - t) ** 2 * p2.y + 3 * t ** 2 * (1 - t) * p3.y + t ** 3 * p4.y;
-			color = Math.round(0xFF * t).toString(16);
-			color = "#" + color + color + color;
-			Path.lineTo(x, y, curTime += stepSize, prevX, prevY, color);
-			prevX = x;
-			prevY = y;
-		}
 	},
 	animateCustom: function(vertices, q, duration){
 		Path.canvas.moveTo(vertices[0].x, vertices[0].y);
@@ -82,9 +35,6 @@ var Path = {
 			Path.canvas.stroke();
 		}, timeout);
 	},
-	animateBSp(vert, q, dur){
-
-	}
 };
 
 class Point {
@@ -107,34 +57,7 @@ document.addEventListener("DOMContentLoaded", e => {
 	// 	{x: 0, y: 0},
 	// 	{x: 500, y: 0},
 	// ], 1000, 10000);
-	c = new Canvas("canvas");
-	let rect = new Canvas.Shape.Rect(new Point(100,100), 400, 300);
-	rect.style.fill = new Canvas.Color(0xFF, 0, 0, 0x80);
-	rect.style.lineWidth = 2;
-	
-	let rect2 = new Canvas.Shape.Rect(new Point(400,300), 400, 300);
-	rect2.style.fill = new Canvas.Color(0, 0xFF, 0, 0xA0);
-	rect2.style.lineWidth = 12;
-	rect2.style.stroke = new Canvas.Color(0, 0xFF, 0xFF);
-
-	let pl = new Canvas.Shape.Polyline();
-	pl.style = new Canvas.Style(new Canvas.Color(255, 0, 0), new Canvas.Color(255, 0, 255, 0x80), 5);
-	pl.points.push(new Canvas.Point(500, 500));
-	pl.points.push(new Canvas.Point(35, 567));
-	pl.points.push(new Canvas.Point(1000, 700));
-	pl.points.push(new Canvas.Point(0,0));
-
-	let arc = new Canvas.Shape.BezierCurve([
-		new Point(1000, 0),
-		new Point(300, 0),
-		new Point(300, 700),
-		new Point(1000, 700),
-	], 100);
-	c.addShape(rect);
-	c.addShape(rect2);
-	c.addShape(arc);
-	c.addShape(pl);
-	// c.render();
+	CanvasTest.start();
 });
 
 function getBezierPoint(t, vertices){
@@ -157,6 +80,10 @@ function fac(n){
 	return result;
 }
 
+function C(n, k){
+	return fac(n) / (fac(n - k) * fac(k));
+}
+
 class Canvas {
 	constructor(canv){
 		let c;
@@ -175,25 +102,27 @@ class Canvas {
 		this.width = c.width;
 		this.height = c.height;
 		this.shapes = [];
+		this.maxZ = -Infinity;
 	}
 
-	addShape(shape, render = true){
+	addShape(shape){
 		if(shape instanceof Canvas.Shape){
-			if(!shape.z)
-				shape.z = this.shapes.length;
 			this.shapes.push(shape);
-			if(render)
-				this.renderShape(shape);
+			if(shape.z === undefined)
+				if(this.maxZ === -Infinity)
+					shape.z = this.maxZ = 0;
+				else
+					shape.z = this.maxZ = this.maxZ + 1;
+			else
+				if(shape.z > this.maxZ)
+					this.maxZ = shape.z;
 		}
 	}
 
 	removeShape(shape){
 		for(let i in this.shapes)
-			if(shape === this.shapes[i]){
-				delete this.shapes[i];
-				this.render();
-				return;
-			}
+			if(shape === this.shapes[i])
+				return delete this.shapes[i];
 	}
 
 	renderShape(shape){
@@ -212,16 +141,17 @@ class Canvas {
 		this.shapes = this.shapes.sort((a, b) => {
 			return a.z > b.z ? 1 : -1;
 		});
-		this.render();
+		this.maxZ = this.shapes[this.shapes.length - 1].z;
 	}
 
 	begin(shape){
 		this.ctx.beginPath();
-		let stroke = shape.style.stroke.toString();
-		stroke === this.ctx.strokeStyle ? null : this.ctx.strokeStyle = stroke;
-		shape.style.lineWidth === this.ctx.lineWidth ? null : this.ctx.lineWidth = shape.style.lineWidth;
-		let fill = shape.style.fill.toString();
-		fill === this.ctx.fillStyle ? null : this.ctx.fillStyle = fill;
+		this.ctx.strokeStyle = shape.style.stroke.toString();
+		this.ctx.lineWidth = shape.style.lineWidth;
+		this.ctx.fillStyle = shape.style.fill.toString();
+		this.ctx.lineCap = shape.style.lineCap;
+		this.ctx.lineJoin = shape.style.lineJoin;
+		this.ctx.setLineDash(shape.style.lineDash);
 	}
 
 	end(){
@@ -278,10 +208,13 @@ class Canvas {
 	}
 
 	static Style = class Style {
-		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1){
+		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1, lineCap = "butt", lineJoin = "miter", lineDash = []){
 			this.stroke = stroke;
 			this.fill = fill;
 			this.lineWidth = lineWidth;
+			this.lineCap = lineCap;
+			this.lineJoin = lineJoin;
+			this.lineDash = lineDash;
 		}
 	}
 
@@ -290,21 +223,12 @@ class Canvas {
 			this.x = x;
 			this.y = y;
 		}
-
-		// getDistance(p){
-		// 	return Math.sqrt((p.x - this.x) ** 2 + (p.y - this.y) ** 2);
-		// }
 	}
 
 	static Shape = class Shape {
 		render(canvas){throw new Error}
-
-		get z(){
-			return this._z;
-		}
-		set z(value){
-			this._z = value;
-		}
+		// clone(){throw new Error}
+		// getPoints(){throw new Error}
 
 		static Line = class Line extends Shape {
 			constructor(p1, p2, style = new Canvas.Style){
@@ -364,13 +288,13 @@ class Canvas {
 				canvas.ctx.moveTo(this.points[0].x, this.points[0].y);
 				var p;
 				for(let i = 0; i <= this.q; i++){
-					p = this.getPointByTimeline(i / this.q);
+					p = this.getPoint(i / this.q);
 					canvas.ctx.lineTo(p.x, p.y);
 				}
 			}
 
 			// Common bezier curve equation formula
-			getPointByTimeline(t){
+			getPoint(t){
 				var n = this.points.length - 1;
 				var x = 0, y = 0;
 				var b;
@@ -384,16 +308,34 @@ class Canvas {
 			}
 		}
 
-		// Circle, BSpline, Path, NURBS,Rect
+		static Circle = class Circle extends Shape {
+			constructor(center, r, q, style = new Canvas.Style){
+				super();
+				this.center = center;
+				this.r = r;
+				this.q = q;
+				this.style = style;
+			}
+
+			render(canvas){
+				var p, angle;
+				var full = Math.PI * 2;
+				canvas.ctx.moveTo(this.center.x + this.r, this.center.y);
+				for(let i = 0; i < this.q; i++){
+					angle = full * (i / this.q);
+					p = new Canvas.Point(this.center.x + this.r * Math.cos(angle), this.center.y + this.r * Math.sin(angle));
+					canvas.ctx.lineTo(p.x, p.y);
+				}
+				canvas.ctx.closePath();
+			}
+		}
+
+		// Elipsis, BSpline, Path, NURBS
 	}
 
 	// static Animation = class Animation {}
+	// static Layer = class Layer {}
 }
-
-function C(n, k){
-	return fac(n) / (fac(n - k) * fac(k));
-}
-
 
 function printHierarchy(obj, depth, tab = 1){
 	if(depth < 1)
@@ -403,3 +345,34 @@ function printHierarchy(obj, depth, tab = 1){
 		printHierarchy(obj[prop], depth - 1, tab + 1);
 	}
 }
+
+var CanvasTest = {
+	start: function(){
+		c = new Canvas("canvas");
+		with(Canvas){
+			let points = [
+				new Point(10, 690),
+				new Point(10, 10),
+				new Point(300, 500),
+				new Point(800, 100),
+			];
+			let curve = new Shape.BezierCurve(points, 1500);
+			let poly = new Shape.Polyline(points);
+			poly.style.stroke = new Color(0, 0, 0, 0x80);
+			poly.style.lineWidth = 2;
+			poly.style.lineDash = [10, 10];
+			c.addShape(curve);
+			c.addShape(poly);
+			curve.style.lineWidth = 3;
+			curve.style.lineCap = "round";
+			for(let i in points){
+				let circle = new Shape.Circle(points[i], 5, 12);
+				circle.style.fill = new Color(255, 0, 0);
+				circle.style.lineWidth = 2;
+				c.addShape(circle);
+			}
+			curve.style.fill = new Color(0,0,0,127);
+			c.render();
+		}
+	},
+};
