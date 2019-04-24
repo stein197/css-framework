@@ -165,45 +165,62 @@ class Canvas {
 
 	static Color = class Color {
 
-		static COMPONENT_R = 16
-		static COMPONENT_G = 8
-		static COMPONENT_B = 0
-		static COMPONENT_A = -1
+		static RGBa = class RGBa {
 
-		constructor(r, g, b, a = 0xFF){
-			this.color = (r << 16) | (g << 8) | b;
-			this.alpha = a;
+			static COMPONENT_R = 16
+			static COMPONENT_G = 8
+			static COMPONENT_B = 0
+			static COMPONENT_A = -1
+
+			constructor(r, g, b, a = 0xFF){
+				this.color = (r << 16) | (g << 8) | b;
+				this.alpha = a;
+			}
+
+			getComponent(component){
+				if(component === Canvas.Color.RGBa.COMPONENT_A)
+					return this.alpha;
+				return (this.color >> component) & 0xFF;
+			}
+
+			getComponentAsString(component){
+				let c = this.getComponent(component);
+				if(c <= 0xF)
+					return "0" + c.toString(16).toUpperCase();
+				else
+					return c.toString(16).toUpperCase();
+			}
+
+			toString(){
+				return "#"
+					+ this.getComponentAsString(Canvas.Color.RGBa.COMPONENT_R)
+					+ this.getComponentAsString(Canvas.Color.RGBa.COMPONENT_G)
+					+ this.getComponentAsString(Canvas.Color.RGBa.COMPONENT_B)
+					+ this.getComponentAsString(Canvas.Color.RGBa.COMPONENT_A);
+			}
+			
+			static fromString(color){
+				color = color.slice(1);
+				let r = +("0x" + color.slice(0, 2));
+				let g = +("0x" + color.slice(2, 4));
+				let b = +("0x" + color.slice(4, 6));
+				let a = +("0x" + color.slice(6, 8));
+				return new Canvas.Color.RGBa(r, g, b, a);
+			}
 		}
 
-		getComponent(component){
-			if(component === Canvas.Color.COMPONENT_A)
-				return this.alpha;
-			return (this.color >> component) & 0xFF;
-		}
+		static HSLa = class HSLa {
+			
+			constructor(h, s, l, a = 1){
+				this.hue = h;
+				this.saturation = s;
+				this.lightness = l;
+				this.alpha = a;
+			}
 
-		getComponentAsString(component){
-			let c = this.getComponent(component);
-			if(c <= 0xF)
-				return "0" + c.toString(16).toUpperCase();
-			else
-				return c.toString(16).toUpperCase();
-		}
-
-		toString(){
-			return "#"
-				+ this.getComponentAsString(Canvas.Color.COMPONENT_R)
-				+ this.getComponentAsString(Canvas.Color.COMPONENT_G)
-				+ this.getComponentAsString(Canvas.Color.COMPONENT_B)
-				+ this.getComponentAsString(Canvas.Color.COMPONENT_A);
-		}
-		
-		static fromString(color){
-			color = color.slice(1);
-			let r = +("0x" + color.slice(0, 2));
-			let g = +("0x" + color.slice(2, 4));
-			let b = +("0x" + color.slice(4, 6));
-			let a = +("0x" + color.slice(6, 8));
-			return new Canvas.Color(r, g, b, a);
+			toString(){
+				return "hsla(" + this.hue + "," + this.saturation + "%," + this.lightness + "%," + this.alpha + ")";
+			}
 		}
 	}
 
@@ -215,7 +232,7 @@ class Canvas {
 		static STROKE_BEVEL = "bevel";
 		static STROKE_MITER = "miter";
 		
-		constructor(stroke = new Canvas.Color(0, 0, 0), fill = new Canvas.Color(0, 0, 0, 0), lineWidth = 1, lineCap = Canvas.Style.STROKE_BUTT, lineJoin = Canvas.Style.STROKE_MITER, lineDash = []){
+		constructor(stroke = new Canvas.Color.RGBa(0, 0, 0), fill = new Canvas.Color.RGBa(0, 0, 0, 0), lineWidth = 1, lineCap = Canvas.Style.STROKE_BUTT, lineJoin = Canvas.Style.STROKE_MITER, lineDash = []){
 			this.stroke = stroke;
 			this.fill = fill;
 			this.lineWidth = lineWidth;
@@ -376,16 +393,17 @@ var CanvasTest = {
 			];
 			let curve = new Shape.BezierCurve(points, 100);
 			let poly = new Shape.Polyline(points);
-			poly.style.stroke = new Color(0, 0, 0, 0x80);
+			poly.style.stroke = new Color.RGBa(0, 0, 0, 0x80);
 			poly.style.lineWidth = 2;
 			poly.style.lineDash = [10, 10];
+			poly.style.lineCap = Style.STROKE_ROUND;
 			c.addShape(curve);
 			c.addShape(poly);
 			curve.style.lineWidth = 3;
 			curve.style.lineCap = "round";
 			for(let i in points){
 				let circle = new Shape.Circle(points[i], 5, 10);
-				circle.style.fill = new Color(255, 0, 0);
+				circle.style.fill = new Color.RGBa(255, 0, 0);
 				circle.style.lineWidth = 2;
 				c.addShape(circle);
 			}
@@ -429,7 +447,7 @@ var CanvasTest = {
 				}
 				points.push(p);
 				var circle = new Shape.Circle(p, 5, 10);
-				circle.style.fill = new Color(255, 0, 0);
+				circle.style.fill = new Color.RGBa(255, 0, 0);
 				circle.style.lineWidth = 2;
 				c.addShape(circle);
 				c.render();
