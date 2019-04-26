@@ -338,9 +338,50 @@ class Canvas {
 			}
 		}
 
-		// static Ellipse = class Ellipse extends Shape {}
+		static Ellipse = class Ellipse extends Shape {
+			constructor(center, width, height, q, style = new Canvas.Style){
+				super();
+				this.center = center;
+				this.width = width;
+				this.height = height;
+				this.q = q;
+				this.style = style;
+			}
 
-		static Circle = class Circle extends Shape/* .Ellipse */ {
+			get width(){
+				return this.a * 2;
+			}
+
+			set width(value){
+				this.a = value / 2;
+			}
+
+			get height(){
+				return this.b * 2;
+			}
+
+			set height(value){
+				this.b = value / 2;
+			}
+
+			render(canvas){
+				var full = Math.PI * 2;
+				var ab = this.a * this.b;
+				var a2 = this.a ** 2;
+				var b2 = this.b ** 2;
+				var p, angle;
+				canvas.ctx.moveTo(this.center.x + this.a, this.center.y);
+				for(let i = 0; i < this.q; i++){
+					angle = full * (i / this.q);
+					let r = ab / Math.sqrt(b2 * (Math.cos(angle) ** 2) + a2 * (Math.sin(angle) ** 2));
+					p = new Canvas.Point(this.center.x + r * Math.cos(angle), this.center.y + r * Math.sin(angle));
+					canvas.ctx.lineTo(p.x, p.y);
+				}
+				canvas.ctx.closePath();
+			}
+		}
+
+		static Circle = class Circle extends Shape.Ellipse {
 			constructor(center, r, q, style = new Canvas.Style){
 				super();
 				this.center = center;
