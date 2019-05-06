@@ -133,8 +133,8 @@ class Canvas {
 
 	render(){
 		this.clear();
-		for(var i in this.shapes)
-			this.renderShape(this.shapes[i]);
+		for(var shape of this.shapes)
+			this.renderShape(shape);
 	}
 
 	reorder(){
@@ -251,14 +251,20 @@ class Canvas {
 		equals(p){
 			return this.x === p.x && this.y === p.y;
 		}
+
+		toString(){
+			return `${this.x},${this.y}`;
+		}
 	}
 
 	static Shape = class Shape {
-		render(canvas){throw new Error}
-		// clone(){throw new Error}
-		// getPoints(){throw new Error}
-		// on(event, f){throw new Error}
-		// isPointInside(p){throw new Error}
+		render(canvas){throw new Error("Attempt to call abstract method")}
+		// clone(){throw new Error("Attempt to call abstract method")}
+		// getPoints(){throw new Error("Attempt to call abstract method")}
+		// on(event, f){throw new Error("Attempt to call abstract method")}
+		// isPointInside(p){throw new Error("Attempt to call abstract method")}
+		// setTransform(transform){throw new Error("Attempt to call abstract method")}
+		getBoundingRect(){throw new Error}
 
 		static Line = class Line extends Shape {
 			constructor(p1, p2, style = new Canvas.Style){
@@ -271,6 +277,30 @@ class Canvas {
 			render(canvas){
 				canvas.ctx.moveTo(this.p1.x, this.p1.y);
 				canvas.ctx.lineTo(this.p2.x, this.p2.y);
+			}
+
+			getBoundingRect(){
+				var minX,
+					minY,
+					maxX,
+					maxY;
+				if(this.p1.x < this.p2.x){
+					minX = this.p1.x;
+					maxX = this.p2.x;
+				} else {
+					minX = this.p2.x;
+					maxX = this.p1.x;
+				}
+				if(this.p1.y < this.p2.y){
+					minY = this.p1.y;
+					maxY = this.p2.y;
+				} else {
+					minY = this.p2.y;
+					maxY = this.p1.y;
+				}
+				var width = maxX - minX;
+				var height = maxY - minY;
+				return new Canvas.Shape.Rect(new Point(minX, minY), width, height);
 			}
 		}
 
@@ -305,39 +335,7 @@ class Canvas {
 				canvas.ctx.closePath();
 			}
 		}
-
-		static BezierCurve = class BezierCurve extends Shape {
-			constructor(points, q, style = new Canvas.Style){
-				super();
-				this.points = points;
-				this.q = q;
-				this.style = style;
-			}
-
-			render(canvas){
-				canvas.ctx.moveTo(this.points[0].x, this.points[0].y);
-				var p;
-				for(let i = 0; i <= this.q; i++){
-					p = this.getPoint(i / this.q);
-					canvas.ctx.lineTo(p.x, p.y);
-				}
-			}
-
-			// Common bezier curve equation formula
-			getPoint(t){
-				var n = this.points.length - 1;
-				var x = 0, y = 0;
-				var b;
-				var diff = 1 - t;
-				for(var k = 0; k <= n; k++){
-					b = C(n, k) * Math.pow(t, k) * Math.pow(diff, n - k);
-					x += this.points[k].x * b;
-					y += this.points[k].y * b;
-				}
-				return new Canvas.Point(x, y);
-			}
-		}
-
+		// TODO Сделать возможность рисования дуги
 		static Ellipse = class Ellipse extends Shape {
 			constructor(center, width, height, q, style = new Canvas.Style){
 				super();
@@ -381,7 +379,8 @@ class Canvas {
 			}
 		}
 
-		static Circle = class Circle extends Shape.Ellipse {
+		// TODO add from/to points in degrees
+		static Circle = class Circle extends Shape {
 			constructor(center, r, q, style = new Canvas.Style){
 				super();
 				this.center = center;
@@ -403,13 +402,166 @@ class Canvas {
 			}
 		}
 
+		static BezierCurve = class BezierCurve extends Shape {
+			constructor(points, q, style = new Canvas.Style){
+				super();
+				this.points = points;
+				this.q = q;
+				this.style = style;
+			}
 
-		// Elipsis, BSpline, Path, NURBS
+			render(canvas){
+				canvas.ctx.moveTo(this.points[0].x, this.points[0].y);
+				var p;
+				for(let i = 0; i <= this.q; i++){
+					p = this.getPoint(i / this.q);
+					canvas.ctx.lineTo(p.x, p.y);
+				}
+			}
+
+			// Common bezier curve equation formula
+			getPoint(t){
+				var n = this.points.length - 1;
+				var x = 0, y = 0;
+				var b;
+				var diff = 1 - t;
+				for(var k = 0; k <= n; k++){
+					b = C(n, k) * Math.pow(t, k) * Math.pow(diff, n - k);
+					x += this.points[k].x * b;
+					y += this.points[k].y * b;
+				}
+				return new Canvas.Point(x, y);
+			}
+		}
+
+		static Path = class Path extends Shape {
+
+			static Command = class Command {
+				constructor(cmd, points, abs = true){
+					this.cmd = cmd;
+					this.points = points;
+					this.abs = abs;
+				}
+			}
+
+			static C_OUT = 0;
+			static C_MOVE_TO = 1;
+			static C_LINE_TO = 2;
+			static C_CUBIC_BEZIER = 3;
+			static C_QUADRATIC_BEZIER = 4;
+			static C_ARC = 5;
+			static C_CLOSE = 6;
+			static C_LINE_H = 7;
+			static C_LINE_V = 8;
+			static C_START = 9;
+			
+			constructor(data, style = new Canvas.Style){
+				super();
+				this.style = style;
+				if(typeof data === "string"){
+					this.path = [];
+					this.cursor = Canvas.Shape.Path.C_START;
+					this.prevP = new Canvas.Point(0, 0);
+					this.isAbs = true;
+					this.currentPoints = [];
+					this.parse(data);
+				} else {
+					this.path = data;
+					// this.cursor = 
+					// this.prevP = 
+					this.isAbs = data[data.length - 1].cmd.toLowerCase() !== data[data.length - 1].cmd;
+					// this.
+				}
+			}
+
+			parse(data){
+				for(let [p, c] of Object.entries(data)){
+					switch(this.cursor){
+						case Canvas.Shape.Path.C_START:
+							this._checkStart(p, c);
+							break;
+						case Canvas.Shape.Path.C_OUT:
+
+							break;
+						case Canvas.Shape.Path.C_MOVE_TO:
+							this._checkMoveTo(p, c);
+							break;
+						case Canvas.Shape.Path.C_LINE_TO:
+
+							break;
+						case Canvas.Shape.Path.C_CUBIC_BEZIER:
+
+							break;
+						case Canvas.Shape.Path.C_QUADRATIC_BEZIER:
+
+							break;
+						case Canvas.Shape.Path.C_ARC:
+
+							break;
+						case Canvas.Shape.Path.C_CLOSE:
+
+							break;
+					}
+				}
+			}
+
+			_checkStart(p, c){
+				if(Canvas.Shape.Path.isWhitespace(c))
+					return;
+				this.isAbs = c.toLowerCase() !== c;
+				c = c.toLowerCase();
+				if(c !== 'm')
+					throw new Error(`Expected moveto command at position ${p}`);
+				this.cursor = Canvas.Shape.Path.C_MOVE_TO;
+			}
+			
+			_checkMoveTo(p, c){
+
+			}
+
+			_guessType(c){
+				this.isAbs = c.toLowerCase() !== c;
+				switch(c.toUpperCase()){
+					case 'M':
+						this.cursor = Canvas.Shape.Path.C_MOVE_TO;
+						break;
+					case 'L':
+						this.cursor = Canvas.Shape.Path.C_LINE_TO;
+						break;
+					case 'H':
+						this.cursor = Canvas.Shape.Path.C_LINE_H;
+						break;
+					case 'V':
+						this.cursor = Canvas.Shape.Path.C_LINE_V;
+						break;
+					// 'QCSTZ'...
+					default:
+						throw new Error(`Unknown path command type '${c}'`);
+				}
+			}
+
+			render(canvas){
+				for(let cmd of this.path);
+			}
+
+			toString(){
+				var result = "";
+				for(let cmd of this.path)
+					result += cmd.cmd + cmd.points.join(",");
+				return result;
+			}
+
+			static isWhitespace(c){
+				return c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\f' || c === '\v';
+			}
+		}
+		// BSpline, Path, NURBS
 	}
 
 	// static Animation = class Animation {}
 	// static Event = class Event {}
 	// static Layer = class Layer {}
+	// static Transform = class Transform {}
 }
 
 function printHierarchy(obj, depth, tab = 1){
@@ -424,78 +576,31 @@ function printHierarchy(obj, depth, tab = 1){
 var CanvasTest = {
 	start: function(){
 		c = new Canvas("canvas");
-		with(Canvas){
-			let points = [
-				new Point(10, 690),
-				new Point(10, 10),
-				new Point(300, 500),
-				new Point(800, 100),
-				// new Point(500, 650),
-			];
-			let curve = new Shape.BezierCurve(points, 100);
-			let poly = new Shape.Polyline(points);
-			poly.style.stroke = new Color.RGBa(0, 0, 0, 0x80);
-			poly.style.lineWidth = 2;
-			poly.style.lineDash = [10, 10];
-			poly.style.lineCap = Style.STROKE_ROUND;
-			c.addShape(curve);
-			c.addShape(poly);
-			curve.style.lineWidth = 3;
-			curve.style.lineCap = "round";
-			for(let i in points){
-				let circle = new Shape.Circle(points[i], 5, 10);
-				circle.style.fill = new Color.RGBa(255, 0, 0);
-				circle.style.lineWidth = 2;
-				c.addShape(circle);
-			}
-			c.render();
-			// просто обработчики-тесты
-			c.ctx.canvas.addEventListener("mousedown", e => {
-				var p = new Point(e.layerX, e.layerY);
-				for(var i in points){
-					if(Math.sqrt(Math.pow(p.x - points[i].x, 2) + Math.pow(p.y - points[i].y, 2)) <= 5){
-						var captured = points[i];
-						c.ctx.canvas.onmousemove = eMove => {
-							captured.x = eMove.layerX;
-							captured.y = eMove.layerY;
-							c.render();
-						}
-					}
-				}
-			});
-			c.ctx.canvas.addEventListener("dblclick", e => {
-				var p = new Point(e.layerX, e.layerY);
-				for(var i in points){
-					if(Math.sqrt(Math.pow(p.x - points[i].x, 2) + Math.pow(p.y - points[i].y, 2)) <= 5){
-						for(let idx in c.shapes){
-							if(c.shapes[idx] instanceof Shape.Circle && c.shapes[idx].center.equals(points[i])){
-								delete c.shapes[idx];
-								break;
-							}
-						}
-						delete points[i];
-						let pointsTmp = [];
-						for(let idx in points){
-							pointsTmp.push(points[idx]);
-						}
-						points.length = 0;
-						for(let idx in pointsTmp){
-							points.push(pointsTmp[idx]);
-						}
-						c.render();
-						return;
-					}
-				}
-				points.push(p);
-				var circle = new Shape.Circle(p, 5, 10);
-				circle.style.fill = new Color.RGBa(255, 0, 0);
-				circle.style.lineWidth = 2;
-				c.addShape(circle);
-				c.render();
-			});
-			c.ctx.canvas.addEventListener("mouseup", e => {
-				c.ctx.canvas.onmousemove = null;
-			});
-		}
+		var points = [
+			new Point(10, 690),
+			new Point(10, 10),
+			new Point(300, 500),
+			new Point(800, 100),
+		];
+		let curve = new Canvas.Shape.BezierCurve(points, 100);
+		let poly = new Canvas.Shape.Polyline(points);
+		let path = new Canvas.Shape.Path([
+			new Canvas.Shape.Path.Command('M', [new Canvas.Point(0, 0)]),
+			new Canvas.Shape.Path.Command('L', [new Canvas.Point(20, 30)]),
+			new Canvas.Shape.Path.Command('l', [new Canvas.Point(20, -10)]),
+		]);
+		console.log(path.toString());
+		let ellipse = new Canvas.Shape.Ellipse(new Point(c.width / 2, c.height / 2), c.width, c.height, 360);
+
+		poly.style.stroke = new Canvas.Color.RGBa(0, 0, 0, 0x80);
+		poly.style.lineWidth = 2;
+		poly.style.lineDash = [10, 10];
+		poly.style.lineCap = Canvas.Style.STROKE_ROUND;
+		c.addShape(curve);
+		c.addShape(poly);
+		c.addShape(ellipse);
+		curve.style.lineWidth = 3;
+		curve.style.lineCap = "round";
+		c.render();
 	},
 };
