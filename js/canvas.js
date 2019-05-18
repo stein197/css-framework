@@ -1,77 +1,6 @@
-var Path = {
-	canvas: null,
-	dimens: null,
-
-	init: function(){
-		var canvas = document.getElementById("canvas");
-		Path.canvas = canvas.getContext("2d");
-		Path.dimens = {
-			width: canvas.width,
-			height: canvas.height
-		};
-	},
-	animateCustom: function(vertices, q, duration){
-		Path.canvas.moveTo(vertices[0].x, vertices[0].y);
-		Path.canvas.strokeStyle = "blue";
-		var stepSize = duration / q;
-		var curTime = 0;
-		var prevX = vertices[0].x;
-		var prevY = vertices[0].y;
-		var p, t;
-		for(var i = 0; i <= q; i++){
-			t = i / q;
-			p = getBezierPoint(t, vertices);
-			Path.lineTo(p.x, p.y, curTime += stepSize, prevX, prevY);
-			prevX = p.x;
-			prevY = p.y;
-		}
-	},
-	lineTo: function(x, y, timeout, prevX, prevY, color){
-		setTimeout(() => {
-			Path.canvas.beginPath();
-			Path.canvas.strokeStyle = color || "black";
-			Path.canvas.moveTo(prevX, prevY);
-			Path.canvas.lineTo(x, y);
-			Path.canvas.stroke();
-		}, timeout);
-	},
-};
-
-class Point {
-	constructor(x, y){
-		this.x = x;
-		this.y = y;
-	}
-}
 document.addEventListener("DOMContentLoaded", e => {
-	Path.init();
-	// Path.animateCustom([
-	// 	{x: 0, y: 0},
-	// 	{x: 500, y: 0},
-	// 	{x: 500, y: 500},
-	// 	{x: 0, y: 500},
-	// 	{x: 0, y: 0},
-	// 	{x: 500, y: 0},
-	// 	{x: 500, y: 500},
-	// 	{x: 0, y: 500},
-	// 	{x: 0, y: 0},
-	// 	{x: 500, y: 0},
-	// ], 1000, 10000);
 	CanvasTest.start();
 });
-
-function getBezierPoint(t, vertices){
-	var n = vertices.length - 1;
-	var x = 0, y = 0;
-	var b;
-	for(var k = 0; k <= n; k++){
-		b = C(n, k) * Math.pow(t, k) * Math.pow(1 - t, n - k);
-		x += vertices[k].x * b;
-		y += vertices[k].y * b;
-	}
-	return new Point(x, y);
-
-}
 
 function fac(n){
 	let result = 1;
@@ -85,6 +14,10 @@ function C(n, k){
 }
 
 class Canvas {
+	/**
+	 * Создаёт объект холста
+	 * @param {(string|HTMLCanvasElement|CanvasRenderingContext2D)} canv Объект канваса. Строка представляющая ID холста или сам объект холста
+	 */
 	constructor(canv){
 		let c;
 		if(typeof canv === "string"){
@@ -105,6 +38,13 @@ class Canvas {
 		this.maxZ = -Infinity;
 	}
 
+	/**
+	 * Добавляет фигуру во внутренний список.
+	 * Внутренний список сортируется в зависимости от z-параметров фигур.
+	 * Если у фигуры нет z-параметра, то фигура располагается в самом верху списка
+	 * @param {Canvas.Shape} shape Фигура
+	 * @return {void}
+	 */
 	addShape(shape){
 		if(!(shape instanceof Canvas.Shape))
 			return;
@@ -119,6 +59,12 @@ class Canvas {
 				this.maxZ = shape.z;
 	}
 
+	/**
+	 * Удаляет фигуру из списка фигур.
+	 * @param {Canvas.Shape} shape Удаляемая фигура. При этом
+	 *                             происходит удаление по ссылке.
+	 * @return {boolean} {@code true} если фигура была успешно удалена
+	 */
 	removeShape(shape){
 		for(let i in this.shapes)
 			if(shape === this.shapes[i])
@@ -435,113 +381,140 @@ class Canvas {
 		}
 
 		static Path = class Path extends Shape {
-
-			static Command = class Command {
-				constructor(cmd, points, abs = true){
-					this.cmd = cmd;
-					this.points = points;
-					this.abs = abs;
-				}
-			}
-
-			static C_OUT = 0;
-			static C_MOVE_TO = 1;
-			static C_LINE_TO = 2;
-			static C_CUBIC_BEZIER = 3;
-			static C_QUADRATIC_BEZIER = 4;
-			static C_ARC = 5;
-			static C_CLOSE = 6;
-			static C_LINE_H = 7;
-			static C_LINE_V = 8;
-			static C_START = 9;
 			
 			constructor(data, style = new Canvas.Style){
 				super();
 				this.style = style;
+				this.prevP = new Canvas.Point(0, 0);
+				this.currentDigit = "";
 				if(typeof data === "string"){
 					this.path = [];
-					this.cursor = Canvas.Shape.Path.C_START;
-					this.prevP = new Canvas.Point(0, 0);
-					this.isAbs = true;
-					this.currentPoints = [];
 					this.parse(data);
 				} else {
 					this.path = data;
-					// this.cursor = 
-					// this.prevP = 
-					this.isAbs = data[data.length - 1].cmd.toLowerCase() !== data[data.length - 1].cmd;
-					// this.
 				}
 			}
 
 			parse(data){
-				for(let [p, c] of Object.entries(data)){
-					switch(this.cursor){
-						case Canvas.Shape.Path.C_START:
-							this._checkStart(p, c);
-							break;
-						case Canvas.Shape.Path.C_OUT:
-
-							break;
-						case Canvas.Shape.Path.C_MOVE_TO:
-							this._checkMoveTo(p, c);
-							break;
-						case Canvas.Shape.Path.C_LINE_TO:
-
-							break;
-						case Canvas.Shape.Path.C_CUBIC_BEZIER:
-
-							break;
-						case Canvas.Shape.Path.C_QUADRATIC_BEZIER:
-
-							break;
-						case Canvas.Shape.Path.C_ARC:
-
-							break;
-						case Canvas.Shape.Path.C_CLOSE:
-
-							break;
-					}
-				}
-			}
-
-			_checkStart(p, c){
-				if(Canvas.Shape.Path.isWhitespace(c))
-					return;
-				this.isAbs = c.toLowerCase() !== c;
-				c = c.toLowerCase();
-				if(c !== 'm')
-					throw new Error(`Expected moveto command at position ${p}`);
-				this.cursor = Canvas.Shape.Path.C_MOVE_TO;
+				for(let [p, c] of Object.entries(data))
+					this._checkCommand(p, c);
+				this._writeCommand();
 			}
 			
-			_checkMoveTo(p, c){
-
+			_checkCommand(p, c){
+				switch(true){
+					case Canvas.Shape.Path.isDigit(c):
+						this.currentDigit += c;
+						break;
+					case Canvas.Shape.Path.isWhitespace(c) || c === ',':
+						if(this.currentDigit)
+							this._writeDigit();
+						break;
+					case Canvas.Shape.Path.isCommand(c):
+						if(this.currentCommand)
+							this._writeCommand();
+						this.currentCommand = new Canvas.Shape.Path.Command(c);
+						break;
+					default:
+						throw new Error(`Unknown command '${c}' at position ${p}`);
+				}
 			}
 
-			_guessType(c){
-				this.isAbs = c.toLowerCase() !== c;
-				switch(c.toUpperCase()){
-					case 'M':
-						this.cursor = Canvas.Shape.Path.C_MOVE_TO;
-						break;
-					case 'L':
-						this.cursor = Canvas.Shape.Path.C_LINE_TO;
-						break;
-					case 'H':
-						this.cursor = Canvas.Shape.Path.C_LINE_H;
-						break;
-					case 'V':
-						this.cursor = Canvas.Shape.Path.C_LINE_V;
-						break;
-					// 'QCSTZ'...
-					default:
-						throw new Error(`Unknown path command type '${c}'`);
-				}
+			_writeDigit(c){
+				if(!this.currentDigit)
+					return;
+				this.currentCommand.points.push(parseFloat(this.currentDigit));
+				this.currentDigit = "";
+			}
+
+			_writeCommand(){
+				this._writeDigit();
+				this.path.push(this.currentCommand);
+			}
+
+			_M(cmd, canvas){
+				if(cmd.isAbs)
+					canvas.ctx.moveTo(this.prevP.x = cmd.points[0], this.prevP.y = cmd.points[1]);
+				else
+					canvas.ctx.moveTo(this.prevP.x += cmd.points[0], this.prevP.y += cmd.points[1]);
+			}
+
+			_L(cmd, canvas){
+				if(cmd.isAbs)
+					for(let i = 0; i < cmd.points.length; i += 2)
+						canvas.ctx.lineTo(this.prevP.x = cmd.points[i], this.prevP.y = cmd.points[i + 1]);
+				else
+					for(let i = 0; i < cmd.points.length; i += 2)
+						canvas.ctx.lineTo(this.prevP.x += cmd.points[i], this.prevP.y += cmd.points[i + 1]);
+			}
+
+			_H(cmd, canvas){
+				if(cmd.isAbs)
+					for(let i = 0; i < cmd.points.length; i++)
+						canvas.ctx.lineTo(this.prevP.x = cmd.points[i], this.prevP.y);
+				else
+					for(let i = 0; i < cmd.points.length; i++)
+						canvas.ctx.lineTo(this.prevP.x += cmd.points[i], this.prevP.y);
+			}
+
+			_V(cmd, canvas){
+				if(cmd.isAbs)
+					for(let i = 0; i < cmd.points.length; i++)
+						canvas.ctx.lineTo(this.prevP.x, this.prevP.y = cmd.points[i]);
+				else
+					for(let i = 0; i < cmd.points.length; i++)
+						canvas.ctx.lineTo(this.prevP.x, this.prevP.y += cmd.points[i]);
+			}
+
+			_C(cmd, canvas){
+				if(cmd.isAbs)
+					for(let i = 0; i < cmd.points.length; i += 6)
+						canvas.ctx.bezierCurveTo(
+							cmd.points[i],
+							cmd.points[i + 1],
+							cmd.points[i + 2],
+							cmd.points[i + 3],
+							this.prevP.x = cmd.points[i + 4],
+							this.prevP.y = cmd.points[i + 5]
+						);
+				else
+					for(let i = 0; i < cmd.points.length; i += 6)
+						canvas.ctx.bezierCurveTo(
+							this.prevP.x + cmd.points[i],
+							this.prevP.y + cmd.points[i + 1],
+							this.prevP.x + cmd.points[i + 2],
+							this.prevP.y + cmd.points[i + 3],
+							this.prevP.x += cmd.points[i + 4],
+							this.prevP.y += cmd.points[i + 5]
+						);
+			}
+
+			_Q(cmd, canvas){
+				if(cmd.isAbs)
+					for(let i = 0; i < cmd.points.length; i += 4)
+						canvas.ctx.quadraticCurveTo(
+							cmd.points[i],
+							cmd.points[i + 1],
+							this.prevP.x = cmd.points[i + 2],
+							this.prevP.y = cmd.points[i + 3]
+						);
+				else
+					for(let i = 0; i < cmd.points.length; i += 4)
+						canvas.ctx.quadraticCurveTo(
+							this.prevP.x + cmd.points[i],
+							this.prevP.y + cmd.points[i + 1],
+							this.prevP.x += cmd.points[i + 2],
+							this.prevP.y += cmd.points[i + 3]
+						);
+			}
+
+			_Z(cmd, canvas){
+				canvas.ctx.closePath();
 			}
 
 			render(canvas){
-				for(let cmd of this.path);
+				for(let cmd of this.path)
+					this['_' + cmd.cmd.toUpperCase()](cmd, canvas);
 			}
 
 			toString(){
@@ -554,8 +527,25 @@ class Canvas {
 			static isWhitespace(c){
 				return c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\f' || c === '\v';
 			}
+
+			static isDigit(c){
+				var charCode = c.charCodeAt();
+				return (48 <= charCode && charCode <= 57) || c === '.' || c === '-';
+			}
+
+			static isCommand(c){
+				return "MLHVCSQTAZ".indexOf(c.toUpperCase()) >= 0;
+			}
+
+			static Command = class Command {
+				constructor(cmd, points = []){
+					this.cmd = cmd;
+					this.points = points;
+					this.isAbs = cmd.toUpperCase() === cmd;
+				}
+			}
 		}
-		// BSpline, Path, NURBS
+		// BSpline, NURBS
 	}
 
 	// static Animation = class Animation {}
@@ -577,20 +567,18 @@ var CanvasTest = {
 	start: function(){
 		c = new Canvas("canvas");
 		var points = [
-			new Point(10, 690),
-			new Point(10, 10),
-			new Point(300, 500),
-			new Point(800, 100),
+			new Canvas.Point(10, 690),
+			new Canvas.Point(10, 10),
+			new Canvas.Point(300, 500),
+			new Canvas.Point(800, 100),
 		];
 		let curve = new Canvas.Shape.BezierCurve(points, 100);
 		let poly = new Canvas.Shape.Polyline(points);
-		let path = new Canvas.Shape.Path([
-			new Canvas.Shape.Path.Command('M', [new Canvas.Point(0, 0)]),
-			new Canvas.Shape.Path.Command('L', [new Canvas.Point(20, 30)]),
-			new Canvas.Shape.Path.Command('l', [new Canvas.Point(20, -10)]),
-		]);
-		console.log(path.toString());
-		let ellipse = new Canvas.Shape.Ellipse(new Point(c.width / 2, c.height / 2), c.width, c.height, 360);
+		let ellipse = new Canvas.Shape.Ellipse(new Canvas.Point(c.width / 2, c.height / 2), c.width, c.height, 360);
+		var pdata = "M100,100C0,100,200,100,200,0l10,10 q 0 100 100 100";
+		var path = new Canvas.Shape.Path(pdata);
+		c.addShape(path);
+		console.log(path, pdata, path.toString());
 
 		poly.style.stroke = new Canvas.Color.RGBa(0, 0, 0, 0x80);
 		poly.style.lineWidth = 2;
