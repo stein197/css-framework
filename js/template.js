@@ -557,92 +557,108 @@ function $_COOKIE(key, value, path, lifetime){
 	}
 }
 
-/**
-* Устанавливает, меняет и удаляет параметры query-строки. Доступно в IE10+
-* @param {string|object} [key] Имя параметра или набор параметров
-* @param {string} [value] Значение параметра
-* @return {(string|object|undefined|boolean)} Одиночное значение | Все get-параметры | Параметр(-ы) не найдены | Установлено новое значение
-* @throws {Error} Если браузер не поддерживает метод
-* @version 1.2
-**/
-function $_GET(key, value){
-	if(!history.pushState) throw new Error("Your browser does not support \"history.pushState\" method");
-	var url = location.href;
-	var query = url.split("?")[1];
-	// Вернуть список всех query-параметров или undefined, если список пуст
-	if(!key){
-		if(!query) return undefined;
-		query = query.split("&");
-		var queryLength = query.length;
-		var result = param =[];
-		result = {
-			keys: [],
-			values: []
-		};
-		for(var i = 0; i < queryLength; ++i){
-			param = query[i].split("=");
-			result.keys.push(param[0]);
-			result.values.push(param[1]);
-		}
-		return result;
-	// Вернуть одно значение или undefined, если нет, или очистить всю query-строку
-	} else if(value === undefined){
-		if(typeof key === "string"){
-			if(!query) return undefined;
-			query = query.split("&");
-			var val = query.find(function(v, i, a){
-				var keyName = v.split("=")[0];
-				return keyName === key;
-			});
-			if(val === undefined) return undefined;
-			else return val.split("=")[1];
-		// Установить набор значений
-		} else if(Object.keys(key).length){
-			for(var prop in key){
-				$_GET(prop, key[prop]);
+function $_GET(){
+	if(arguments.length){
+		// Установить массив значений/очистить строку / вернуть одно значение
+		if(arguments.length === 1){
+			// Вернуть одно значение
+			if(typeof arguments[0] === "string"){
+				return $_GET()[arguments[0]];
+			// Установить массив значений/очистить строку
+			} else {
+				var params = arguments[0];
+				var queryString = $_GET.toQueryString(params);
+				var url = location.protocol + "//" + location.host + location.pathname;
+				if(queryString)
+					url += "?" + queryString;
+				if(location.hash)
+					url += location.hash;
+				history.pushState({
+					path: url
+				}, "", url);
 			}
-		// Очистить query-строку
+		// Установить/удалить пару ключ/значение
 		} else {
-			var params = $_GET();
-			for(var i = 0; i < params.keys.length; i++){
-				$_GET(params.keys[i], "");
-			}
+			var key = arguments[0];
+			var value = arguments[1];
+			var queryParams = $_GET();
+			if(value)
+				queryParams[key] = value;
+			else
+				delete queryParams[key];
+			$_GET(queryParams);
 		}
-	// Установаить или удалить одно значение
+	// Вернуть все значения query-строки
 	} else {
-		// Удалить одно значение
-		if(value === ""){
-			if(!$_GET(key)) return true;
-			query = query.split("&");
-			query = query.filter(function(v, i, a){
-				var curVal = v.split("=")[0];
-				if(key === curVal) return false;
-				return true;
-			});
-			query = query.join("&");
-			url = location.protocol + "//" + location.host + location.pathname + (query ? "?" + query : "");
-			history.pushState({
-				path: url
-			}, "", url);
-			return true;
-		// Установить
+		return $_GET.fromQueryString();
+	}
+}
+
+$_GET.toQueryString = function(obj){
+	var result = [];
+	var keyPath = arguments[1] || [];
+	var keyPrefix = "";
+	if(keyPath.length){
+		keyPrefix = keyPath[0];
+		if((keyPath.length - 1) > 0)
+			keyPrefix += "[" + keyPath.slice(1).join("][") + "]";
+	}
+	for(var key in obj){
+		var value = obj[key];
+		if(typeof value === "object"){
+			result.push($_GET.toQueryString(value, keyPath.concat(key)));
 		} else {
-			query = query ? query.split("&") : [];
-			var val = $_GET(key);
-			if(val == value) return true;
-			if(val === undefined) query.push(key + "=" + value);
-			else{
-				var index = query.indexOf(key + "=" + val);
-				query[index] = key + "=" + value;
+			if(keyPrefix){
+				if(Array.isArray(obj)){
+					result.push(keyPrefix + "[]=" + value);
+				} else {
+					result.push(keyPrefix + "[" + key + "]=" + value);
+				}
+			} else {
+				result.push(key + "=" + value);
 			}
-			query = query.join("&");
-			url = location.protocol + "//" + location.host + location.pathname + "?" + query;
-			history.pushState({
-				path: url
-			}, "", url);
-			return true;
 		}
 	}
+	return result.join("&");
+}
+
+$_GET.fromQueryString = function(str){
+	var queryString = "";
+	if(str)
+		queryString = str;
+	else
+		queryString = location.search ? location.search.split("?")[1] : "";
+	if(!queryString)
+		return {};
+	var result = {};
+	var queryParts = queryString.split("&");
+	for(var i in queryParts){
+		var parts = queryParts[i].split("=");
+		var keyParts = parts[0].split(/[\[\]]{1,2}/);
+		var value = parts[1];
+		if(keyParts.length > 2)
+			keyParts.pop();
+		var parentObj = result;
+		for(var j = 0; j < keyParts.length; j++){
+			var key = keyParts[j];
+			var nextKey = keyParts[j + 1];
+			if(!parentObj[key]){
+				if(nextKey === undefined){
+					if(Array.isArray(parentObj)){
+						parentObj.push(value);
+					} else {
+						parentObj[key] = value;
+					}
+				} else if(nextKey === "" || nextKey.search(/^\d+$/) >= 0) {
+					parentObj[key] = [];
+				} else {
+					parentObj[key] = {};
+				}
+			}
+			var parentObj = parentObj[key];
+		}
+	}
+	return result;
 }
 
 $(main);

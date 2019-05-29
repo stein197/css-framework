@@ -437,7 +437,7 @@ class Canvas {
 		static Path = class Path extends Shape {
 
 			static Command = class Command {
-				constructor(cmd, points, abs = true){
+				constructor(cmd, points = [], abs = true){
 					this.cmd = cmd;
 					this.points = points;
 					this.abs = abs;
@@ -463,13 +463,13 @@ class Canvas {
 					this.cursor = Canvas.Shape.Path.C_START;
 					this.prevP = new Canvas.Point(0, 0);
 					this.isAbs = true;
-					this.currentPoints = [];
+					this.currentCommand = new Canvas.Shape.Path.Command('M');
 					this.parse(data);
 				} else {
-					this.path = data;
+					// this.path = data;
 					// this.cursor = 
 					// this.prevP = 
-					this.isAbs = data[data.length - 1].cmd.toLowerCase() !== data[data.length - 1].cmd;
+					// this.isAbs = data[data.length - 1].cmd.toLowerCase() !== data[data.length - 1].cmd;
 					// this.
 				}
 			}
@@ -508,15 +508,15 @@ class Canvas {
 			_checkStart(p, c){
 				if(Canvas.Shape.Path.isWhitespace(c))
 					return;
-				this.isAbs = c.toLowerCase() !== c;
-				c = c.toLowerCase();
-				if(c !== 'm')
+				this.isAbs = Canvas.Shape.Path.isAbsolute(c);
+				c = c.toUpperCase();
+				if(c !== 'M')
 					throw new Error(`Expected moveto command at position ${p}`);
 				this.cursor = Canvas.Shape.Path.C_MOVE_TO;
 			}
 			
 			_checkMoveTo(p, c){
-
+				
 			}
 
 			_guessType(c){
@@ -553,6 +553,17 @@ class Canvas {
 
 			static isWhitespace(c){
 				return c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\f' || c === '\v';
+			}
+
+			static isAbsolute(c){
+				return c.toUpperCase() === c;
+			}
+
+			static isDigit(c){
+				var charCode = c.charCodeAt(0);
+				const CHAR_0 = 48;
+				const CHAR_9 = 57;
+				return CHAR_0 <= charCode && charCode <= CHAR_9;
 			}
 		}
 		// BSpline, Path, NURBS
@@ -604,3 +615,37 @@ var CanvasTest = {
 		c.render();
 	},
 };
+function Nu(i, p, u, U){
+	if(p === 0)
+		return U[i] <= u && u < U[i + 1] ? 1 : 0;
+	var left = ((u - U[i]) / (U[i + p] - U[i])) * Nu(i, p - 1, u, U);
+	var right = ((U[i + p + 1] - u) / (U[i + p + 1] - U[i + 1])) * Nu(i + 1, p - 1, u, U);
+	return left + right;
+}
+
+function Cu(u, n, p, U, P){
+	var sum = {x:0,y:0};
+	for(let i = 0; i <= n; i++){
+		sum.x += Nu(i, p, u, U) * P[i].x;
+		sum.y += Nu(i, p, u, U) * P[i].y;
+	}
+	return sum;
+}
+
+var P = [
+	{x:0,y:0},
+	{x:1,y:3},
+	{x:3,y:5},
+	{x:4,y:4},
+	{x:1,y:6},
+];
+
+var U = [0,0,0,0,2,3,3,3,3];
+
+var steps = 100;
+var stepSize = U[U.length - 1] - U[0] / steps;
+
+for(let i = U[0]; i <= U[U.length - 1]; i += stepSize){
+	let r = Cu(i, 4, 3, U, P);
+	console.log(r.x, r.y);
+}
