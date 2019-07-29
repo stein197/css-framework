@@ -38,7 +38,6 @@
 	&:hover,
 	&-dotted,
 	&-dashed,
-	&-thin,
 	&-invert,
 	&-invert_dotted,
 	&-invert_dashed{
@@ -52,11 +51,6 @@
 	}
 	&-dashed{
 		border-bottom: 1px dashed;
-		&:hover{
-			border-bottom-color: transparent;
-		}
-	}
-	&-thin{
 		&:hover{
 			border-bottom-color: transparent;
 		}
@@ -80,16 +74,6 @@
 	}
 }
 
-.link-wrapper:hover{
-	.link{
-		text-decoration: none;
-	}
-	.link-thin,
-	.link-dashed,
-	.link-dotted{
-		border-bottom-color: transparent;
-	}
-}
 .underline{
 	&-solid,
 	&-dotted,
@@ -119,18 +103,15 @@
 .pre{
 	white-space: pre;
 }
-@for $i from 0 through $line-height-max{
-	$value: $i / 10;
-	$strval: "";
-	@if $i < 10 {
-		$strval: "0" + $i;
-	} @else {
-		$strval: $i;
+@for $i from 0 through 10 {
+	$val: unquote("1.") + $i;
+	@if $i == 10 {
+		$val: 2;
 	}
-	.lh-#{$strval}{
-		line-height: #{$value};
+	.lh-#{$i}{
+		line-height: $val;
 	}
-	.ls-#{$strval}{
-		letter-spacing: #{$value}em;
+	.ls-#{$i}{
+		letter-spacing: #{$val}em;
 	}
 }

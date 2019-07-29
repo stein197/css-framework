@@ -6,32 +6,6 @@
 		height: 100%;
 	}
 }
-.slider-fullwidth{
-	@include mq("xl"){
-		.slick-prev{
-			left: calc((100% - 1170px) / 4);
-			transform: translateX(-50%);
-		}
-		.slick-next{
-			right: calc((100% - 1170px) / 4);
-			transform: translateX(-50%) scale(-1);
-		}
-	}
-}
-
-.slider-btns,
-.slider-dots{
-	position: absolute;
-	height: 100%;
-	width: 100%;
-	top: 0;
-}
-
-.slider-dots{
-	top: auto;
-	bottom: 0;
-}
-
 
 .slick-arrow{
 	display: block;
@@ -72,72 +46,5 @@
 		font-size: 0;
 		background-color: transparent;
 		cursor: pointer;
-	}
-}
-
-.slider-dots_position{
-	&_inside .slick-dots{
-		top: auto;
-		bottom: 0;
-	}
-	&_outside .slick-dots{
-		top: 100%;
-		bottom: auto;
-	}
-}
-.slider-dots_alignment{
-	&_center .slick-dots{
-		text-align: center;
-	}
-	&_left .slick-dots{
-		text-align: left;
-	}
-	&_right .slick-dots{
-		text-align: right;
-	}
-}
-.slider-arrows_position{
-	&_inside{
-		.slick-prev{
-			left: 0;
-			right: auto;
-		}
-		.slick-next{
-			left: auto;
-			right: 0;
-		}
-	}
-	&_outside{
-		.slick-prev{
-			left: -15px;
-			right: auto;
-		}
-		.slick-next{
-			left: auto;
-			right: -15px;
-		}
-		@include mq("xl"){
-			.slick-prev{
-				left: auto;
-				right: 100%;
-			}
-			.slick-next{
-				left: 100%;
-				right: auto;
-			}
-		}
-	}
-}
-
-.slider-arrows_style{
-	&_round{
-		.slick-arrow::before{
-			border-radius: 50%;
-		}
-	}
-	&_square{
-		.slick-arrow::before{
-			border-radius: 0;
-		}
 	}
 }

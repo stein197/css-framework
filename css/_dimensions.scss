@@ -52,12 +52,7 @@
 		width: percentage($width / 100);
 	}
 }
-@for $i from 0 through $square-loops{
-	$size: $i * 5;
-	.square-#{$size}{
-		@include square(#{$size}px);
-	}
-}
+
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
 		.full-#{$bp-name}-h{

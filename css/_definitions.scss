@@ -10,7 +10,7 @@ $font-weight: (
 	"black": 900,
 );
 $fs-loop-from: 4;
-$fs-loop-to: 40;
+$fs-loop-to: 25;
 
 $colors: (
 	"gray": #777777,
@@ -48,7 +48,7 @@ $positions: (
 );
 
 $h-loop-from: 0;
-$h-loop-to: 100;
+$h-loop-to: 50;
 $h-factor: 10;
 
 $offset-loops: 10;
@@ -58,15 +58,9 @@ $n-mr-loops: 6;
 
 $padding-loops: 20;
 
-$line-height-max: 30;
-
-@mixin square($dimens){
-	width: $dimens;
-	height: $dimens;
-}
-
 @mixin circle($d){
-	@include square($d);
+	width: $d;
+	height: $d;
 	border-radius: 50%;
 }
 
