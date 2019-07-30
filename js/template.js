@@ -342,25 +342,19 @@ function setScalable(){
 		},
 		onWindowScroll: function($e){
 			var $list = $("img." + opts.lazyload.class + ":not(.loaded)");
+			var $bgList = $("." + opts.lazyload.class + ":not(img):not(.loaded)");
 			$list.each(function(){
-				var $image = $(this);
-				if(fn.isInViewport(this))
+				if(fn.isInViewport(this)){
+					var $image = $(this);
 					$image.attr("src", $image.data("src"));
+				}
 			});
-		},
-		loadLazy: function(i){
-			if(!this.width && !this.height)
-				return;
-			var $this = $(this);
-			var box = $this.is("." + opts.cover.class) ? $this.parent() : $this;
-			box = box[0];
-			if(fn.isInViewport(box)){
-				$this.on("load", function(){
-					$this.addClass("loaded");
-					fn.showImage($this);
-				});
-				$this.attr("src", $this.data("src"));
-			}
+			$bgList.each(function(){
+				if(fn.isInViewport(this)){
+					var $this = $(this);
+					$this.css("background-image", "url(" + $this.data("bg-src") + ")").addClass("loaded");
+				}
+			});
 		},
 		onLoadLazy: function($e){
 			var $image = $(this);

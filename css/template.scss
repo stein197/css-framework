@@ -12,8 +12,9 @@
 *::before,
 *::after{
 	position: relative;
-	background-repeat: no-repeat;
 	box-sizing: border-box;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 html,
 body{
@@ -49,25 +50,6 @@ body{
 	text-decoration: none;
 }
 
-// Настройки псевдоэлементов по умолчанию
-.pseudo{
-	&::before,
-	&::after,
-	&-before::before,
-	&-after::after{
-		content: "";
-		position: absolute;
-		display: block;
-	}
-}
-
-.noselect{
-	user-select: none;
-	-o-user-select: none;
-	-ms-user-select: text;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-}
 .noresize{
 	resize: none;
 }
@@ -89,33 +71,7 @@ body{
 		background-color: $value;
 	}
 }
-.color-inherit{
-	color: inherit;
-}
 
-.bg-pos{
-	&-center{
-		background-position: center;
-	}
-	&-center-y{
-		background-position-y: center;
-	}
-	&-center-x{
-		background-position-x: center;
-	}
-	&-top{
-		background-position-y: top;
-	}
-	&-right{
-		background-position-x: right;
-	}
-	&-bottom{
-		background-position-y: bottom;
-	}
-	&-left{
-		background-position-x: left;
-	}
-}
 .bg{
 	&-cover{
 		background-size: cover;
@@ -140,22 +96,7 @@ header.fixed,
 body.fixed{
 	overflow: hidden !important;
 }
-// Прижимать подвал к низу (если известна высота подвала)
-footer.sticky,
-#footer.sticky{
-	position: absolute;
-	left: 0;
-	top: 100%;
-	width: 100%;
-}
 
-.delimiter-h{
-	height: 1px;
-}
-.delimiter-w{
-	height: 100%;
-	width: 1px;
-}
 table{
 	border-collapse: collapse;
 }
@@ -190,25 +131,6 @@ table.fixed{
 	white-space: nowrap;
 	&-rounded{
 		border-radius: 100px;
-	}
-}
-.transitionable{
-	transition: all .2s linear;
-}
-
-@for $i from 1 through $cols{
-	.columns-#{$i}{
-		column-count: $i;
-	}
-}
-
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
-		@for $i from 1 through $cols{
-			.columns-#{$bp-name}-#{$i}{
-				column-count: $i;
-			}
-		}
 	}
 }
 
