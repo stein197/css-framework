@@ -112,6 +112,6 @@
 		line-height: $val;
 	}
 	.ls-#{$i}{
-		letter-spacing: #{$val}em;
+		letter-spacing: #{$i}px;
 	}
 }

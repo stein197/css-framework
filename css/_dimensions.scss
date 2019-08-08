@@ -17,10 +17,6 @@
 	width: 100%;
 }
 
-.b-ratio{
-	height: 0;
-}
-
 @for $i from 1 through $cols {
 	.b-ratio-#{$i}{
 		padding-top: percentage($i / $cols);

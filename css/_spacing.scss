@@ -1,12 +1,3 @@
-// Отрицательный отступ. Значения 0, 5, 10...
-@for $i from 1 through $n-mr-loops{
-	$margin: $i * 5;
-	.n-mr-#{$margin}{
-		margin-left: -#{$margin}px;
-		margin-right: -#{$margin}px;
-	}
-}
-
 // .mr-30, .pd-0
 @for $i from 0 through $padding-loops{
 	$size: $i * 10;

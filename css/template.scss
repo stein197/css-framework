@@ -56,34 +56,12 @@ body{
 .crop{
 	overflow: hidden;
 }
-// Базовые цвета шрифтов и фонов
-@each $name, $value in $colors{
-	.color-#{$name}{
-		color: $value;
-		&.link-thin{
-			border-bottom: 1px solid rgba($value, 0.4);
-		}
-	}
-	.color-#{$name}_hover:hover{
-		color: $value;
-	}
-	.bg-c-#{$name}{
-		background-color: $value;
-	}
+
+.bg-default{
+	background-position: center;
+	background-size: cover;
 }
 
-.bg{
-	&-cover{
-		background-size: cover;
-	}
-	&-stretch{
-		background-size: 100% 100%;
-	}
-	&-default{
-		background-position: center;
-		background-size: cover;
-	}
-}
 // Фиксированная шапка
 header.fixed,
 #header.fixed{
@@ -96,7 +74,6 @@ header.fixed,
 body.fixed{
 	overflow: hidden !important;
 }
-
 table{
 	border-collapse: collapse;
 }
@@ -127,7 +104,7 @@ table.fixed{
 .btn{
 	display: inline-block;
 	cursor: pointer;
-	line-height: 1em;
+	line-height: 1;
 	white-space: nowrap;
 	&-rounded{
 		border-radius: 100px;

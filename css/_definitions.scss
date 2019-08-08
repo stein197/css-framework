@@ -9,14 +9,8 @@ $font-weight: (
 	"bold-x": 800,
 	"black": 900,
 );
-$fs-loop-from: 4;
-$fs-loop-to: 25;
-
-$colors: (
-	"gray": #777777,
-	"white": white,
-	"black": black
-);
+$fs-loop-from: 4; // => .fs-8
+$fs-loop-to: 25; // => .fs-50
 
 $breakpoints: (
 	"md": 768px,
@@ -48,15 +42,12 @@ $positions: (
 );
 
 $h-loop-from: 0;
-$h-loop-to: 50;
+$h-loop-to: 10;
 $h-factor: 10;
 
 $offset-loops: 10;
-$square-loops: 20;
 
-$n-mr-loops: 6;
-
-$padding-loops: 20;
+$padding-loops: 10;
 
 @mixin circle($d){
 	width: $d;
