@@ -100,9 +100,6 @@
 .nowrap{
 	white-space: nowrap;
 }
-.pre{
-	white-space: pre;
-}
 @for $i from 0 through 10 {
 	$val: unquote("1.") + $i;
 	@if $i == 10 {
@@ -110,8 +107,5 @@
 	}
 	.lh-#{$i}{
 		line-height: $val;
-	}
-	.ls-#{$i}{
-		letter-spacing: #{$i}px;
 	}
 }

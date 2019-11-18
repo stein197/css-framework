@@ -3,10 +3,10 @@
 @import "spacing";		// Настройки для управления расстояниями
 @import "positioning";	// Настройки позиционирования
 @import "dimensions";	// Настройки размеров
-@import "slick-default";// Настройки слайдера slick по умолчанию
+// @import "slick-default";// Настройки слайдера slick по умолчанию
 // @import "bs";		// Стандартные классы Bootstrap 4, если его нет
 // @import "grid";
-@import "bs-reset";		// Сброс стилей Bootstrap 4
+//@import "bs-reset";		// Сброс стилей Bootstrap 4
 
 *,
 *::before,
@@ -16,11 +16,7 @@
 	background-repeat: no-repeat;
 	background-position: center;
 }
-html,
-body{
-	font-size: 14px;
-	font-weight: 400;
-}
+
 // Предотвратить схлопывание высоты родителя с плавающими элементами
 .float::after{
 	content: "";
@@ -50,9 +46,6 @@ body{
 	text-decoration: none;
 }
 
-.noresize{
-	resize: none;
-}
 .crop{
 	overflow: hidden;
 }
@@ -83,23 +76,6 @@ table{
 		min-width: 100%;
 	}
 }
-table.unstyled{
-	background-color: transparent !important;
-	border: none !important;
-	padding: 0 !important;
-	tr,
-	th,
-	td,
-	thead,
-	tbody{
-		background-color: transparent !important;
-		border: none !important;
-		padding: 0 !important;
-	}
-}
-table.fixed{
-	table-layout: fixed;
-}
 
 .btn{
 	display: inline-block;
@@ -119,16 +95,8 @@ table.fixed{
 		padding-left: 0 !important;
 		padding-right: 0 !important;
 	}
-	.mobile-wrapper{
-		overflow-x: scroll
-	}
 }
 
-@for $i from 0 through 10{
-	.o-#{$i}{
-		opacity: $i / 10;
-	}
-}
 @for $i from 0 through 20{
 	.brd-rd-#{$i}{
 		border-radius: #{$i}px;

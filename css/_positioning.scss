@@ -20,6 +20,7 @@
 		position: $pos;
 	}
 }
+
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
 		@each $pos in $positions{
@@ -40,3 +41,27 @@
 		}
 	}
 }
+
+// float
+// .fl-l{
+// 	float: left;
+// }
+// .fl-r{
+// 	float: right;
+// }
+// .fl-n{
+// 	float: none;
+// }
+// @each $bp-name, $bp-value in $breakpoints{
+// 	@include mq($bp-name){
+// 		.fl-#{$bp-name}-l{
+// 			float: left;
+// 		}
+// 		.fl-#{$bp-name}-r{
+// 			float: right;
+// 		}
+// 		.fl-#{$bp-name}-n{
+// 			float: none;
+// 		}
+// 	}
+// }

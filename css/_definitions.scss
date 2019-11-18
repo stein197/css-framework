@@ -9,7 +9,7 @@ $font-weight: (
 	"bold-x": 800,
 	"black": 900,
 );
-$fs-loop-from: 4; // => .fs-8
+$fs-loop-from: 5; // => .fs-10
 $fs-loop-to: 25; // => .fs-50
 
 $breakpoints: (
@@ -40,10 +40,6 @@ $positions: (
 	absolute,
 	fixed,
 );
-
-$h-loop-from: 0;
-$h-loop-to: 10;
-$h-factor: 10;
 
 $offset-loops: 10;
 
