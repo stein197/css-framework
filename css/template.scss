@@ -82,7 +82,7 @@ table{
 	}
 }
 
-@for $i from 0 through 20 {
+@for $i from 1 through 20 {
 	.brd-rd-#{$i}{
 		border-radius: #{$i}px;
 	}
