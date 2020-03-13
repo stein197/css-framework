@@ -75,30 +75,6 @@
 	}
 }
 
-.underline{
-	&-solid,
-	&-dotted,
-	&-dashed{
-		line-height: 1em;
-		white-space: nowrap;
-		overflow: hidden;
-		&::after{
-			content: "";
-			display: inline-block;
-			width: 100%;
-		}
-	}
-	&-solid::after{
-		border-bottom: 1px solid;
-	}
-	&-dotted::after{
-		border-bottom: 1px dotted;
-	}
-	&-dashed::after{
-		border-bottom: 1px dashed;
-	}
-}
-
 .nowrap{
 	white-space: nowrap;
 }
