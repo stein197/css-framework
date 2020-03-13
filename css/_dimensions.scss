@@ -17,15 +17,27 @@
 	width: 100%;
 }
 
-@for $i from 0 through 10{
+@for $i from 0 through 10 {
 	$width: $i * 10;
 	.w-#{$width}{
 		width: percentage($width / 100);
 	}
 }
 
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
+@each $bp-name, $bp-value in $breakpoints {
+	@include mq($bp-name) {
+		.max-#{$bp-name}-w{
+			max-width: 100%;
+		}
+		.max-#{bp-name}-h{
+			max-height: 100%;
+		}
+		.min-#{$bp-name}-w{
+			min-width: 100%;
+		}
+		.min-#{bp-name}-h{
+			min-height: 100%;
+		}
 		.full-#{$bp-name}-h{
 			height: 100%;
 		}

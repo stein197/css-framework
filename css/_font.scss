@@ -1,17 +1,18 @@
-// Классы толщины
-@each $name, $value in $font-weight{
+// font-weight classes
+@each $name, $value in $font-weight {
 	.fw-#{$name}{
 		font-weight: $value;
 	}
 }
-// Классы размеров
-@for $i from $fs-loop-from through $fs-loop-to{
+// font-size classes
+@for $i from $fs-loop-from through $fs-loop-to {
 	$size: $i * 2;
 	.fs-#{$size}{
 		font-size: #{$size}px;
 	}
 }
-@each $bp-name, $bp-value in $breakpoints{
+
+@each $bp-name, $bp-value in $breakpoints {
 	@include mq($bp-name){
 		@for $i from $fs-loop-from through $fs-loop-to{
 			$size: $i * 2;
@@ -97,9 +98,11 @@
 		border-bottom: 1px dashed;
 	}
 }
+
 .nowrap{
 	white-space: nowrap;
 }
+
 @for $i from 0 through 10 {
 	$val: unquote("1.") + $i;
 	@if $i == 10 {

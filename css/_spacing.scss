@@ -121,13 +121,3 @@
 		margin: #{$i}px;
 	}
 }
-@for $i from 1 through 10 {
-	.nmr-x-#{$i}{
-		margin-left: -#{$i}px;
-		margin-right: -#{$i}px;
-	}
-	.nmr-x-#{$i} > *{
-		margin-left: #{$i}px;
-		margin-right: #{$i}px;
-	}
-}

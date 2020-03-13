@@ -13,7 +13,7 @@
 	background-position: center;
 }
 
-// Предотвратить схлопывание высоты родителя с плавающими элементами
+// Prevent float's parent element from collapsing
 .float::after{
 	content: "";
 	display: block;
@@ -27,14 +27,6 @@
 }
 .cp{
 	cursor: pointer;
-}
-.box{
-	&-content{
-		box-sizing: content-box;
-	}
-	&-border{
-		box-sizing: border-box;
-	}
 }
 
 .nolink,
@@ -51,15 +43,12 @@
 	background-size: cover;
 }
 
-// Фиксированная шапка
-header.fixed,
-#header.fixed{
+header.fixed{
 	position: fixed;
 	left: 0;
 	top: 0;
 	width: 100%;
 }
-// Убрать прокрутку контента
 body.fixed{
 	overflow: hidden !important;
 }
@@ -93,7 +82,7 @@ table{
 	}
 }
 
-@for $i from 0 through 20{
+@for $i from 0 through 20 {
 	.brd-rd-#{$i}{
 		border-radius: #{$i}px;
 	}
