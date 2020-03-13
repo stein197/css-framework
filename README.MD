@@ -16,7 +16,7 @@ All tables on the page have next styles by default:
 border-collapse: collapse;
 ```
 
-## Table of contents
+## Main classes
 
 | Class | Description |
 | --- | --- |
@@ -32,3 +32,14 @@ border-collapse: collapse;
 | .btn | Should be applied to buttons and button-like elements so the will have appropriate behaviour like not having whitespace breaks etc. |
 | .btn-mobile | When applied to button elements makes them 100% width and centers its content on screen size less than 768px |
 | .brd-rd-`<n>` | Sets element's border-radius. Allowable values for `<n>` are ranging from 1 to 20 inclusive |
+
+## Font classes
+
+| Class | Description |
+| --- | --- |
+| .fw-`*` | Controls the font weight from 100 (thin) to 900 (black). Allowable values are: <ul><li>thin (100)</li><li>light-x (200)</li><li>light (300)</li><li>regular (400)</li><li>medium (500)</li><li>bold-s (600)</li><li>bold (700)</li><li>bold-x (800)</li><li>black (900)</li></ul> |
+| .fs-`<n>` | Sets element's font size in pixels from 10 to 50 inclusive. Note that all values are even, like `.fs-12`, `.fs-14` |
+| .fs-`*`-`<n>` | Same as the above class besides that this can be used to control the font size depending on screen size. Allowable screen size prefixes are the same as BS4 |
+| .fs-decrease | Decreases current font size by 1px |
+| .fs-increase | Increases current font size by 1px |
+| .text-crop | Same as the `.crop` but for text. All the overflowed characters are replaced by ellipsis |
