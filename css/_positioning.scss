@@ -1,12 +1,10 @@
 // Offsets
 @each $letter, $value in $sides{
-	@for $i from 0 through $offset-loops{
-		$val: $i * 5;
-		.#{$letter}-#{$val}{
-			#{map_get($sides, $letter)}: #{$val}px;
-		}
+	.#{$letter}-0{
+		#{map_get($sides, $letter)}: 0;
 	}
 }
+
 // .z-35
 @for $i from 0 through 10{
 	$amount: $i * 5;
@@ -32,11 +30,8 @@
 			.#{$side-letter}-#{$bp-name}-a{
 				#{map_get($sides, $side-letter)}: auto;
 			}
-			@for $i from 0 through $offset-loops{
-				$val: $i * 5;
-				.#{$side-letter}-#{$bp-name}-#{$val}{
-					#{map_get($sides, $side-letter)}: #{$val}px;
-				}
+			.#{$side-letter}-#{$bp-name}-0{
+				#{map_get($sides, $side-letter)}: 0;
 			}
 		}
 	}
