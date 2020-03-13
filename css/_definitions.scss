@@ -51,7 +51,10 @@ $padding-loops: 10;
 	border-radius: 50%;
 }
 
-@mixin mq($width, $type: min){
+// Generates styles for specific media queries
+// $width may be string from $breakpoints array, or int number
+// $type controls styles flow. Appropriate values are min and max.
+@mixin mq($width, $type: min) {
 	@if type-of($width) == string {
 		@if map_has_key($breakpoints, $width) {
 			$width: map_get($breakpoints, $width);

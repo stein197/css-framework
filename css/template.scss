@@ -1,12 +1,8 @@
-@import "definitions";	// Переменные
-@import "font";			// Настройки шрифтов
-@import "spacing";		// Настройки для управления расстояниями
-@import "positioning";	// Настройки позиционирования
-@import "dimensions";	// Настройки размеров
-// @import "slick-default";// Настройки слайдера slick по умолчанию
-// @import "bs";		// Стандартные классы Bootstrap 4, если его нет
-// @import "grid";
-//@import "bs-reset";		// Сброс стилей Bootstrap 4
+@import "definitions";	// Variables
+@import "font";			// Font settings
+@import "spacing";		// Settings for managing spacing
+@import "positioning";	// Positioning settings
+@import "dimensions";	// Settings for managing sizes
 
 *,
 *::before,
