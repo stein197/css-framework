@@ -2,6 +2,16 @@
 
 Basic CSS and JS development kit based on Bootstrap 4. Most of the classes can be applied to any BS4-compatible breakpoint (like classes `.fs-20` and `.fs-md-20`) as well as BS4's classes.
 
+## Usage
+
+Include files contained in `dist` folder to your page.
+
+Note, that if you want build this files by yourselves then you need to install these utilities and add them to PATH variable:
+- [uglify-js](https://www.npmjs.com/package/uglify-js) for Node.js
+- [sass](https://rubygems.org/gems/sass/versions/3.4.22) gem for Ruby
+
+## Description
+
 All elements on the page have next styles by default:
 
 ```CSS
