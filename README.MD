@@ -43,7 +43,7 @@ border-collapse: collapse;
 | .btn-mobile | When applied to button elements makes them 100% width and centers its content on screen size less than 768px |
 | .brd-rd-`<n>` | Sets element's border-radius. Allowable values for `<n>` are ranging from 1 to 20 inclusive |
 
-## Font classes
+## Font and text classes
 
 | Class | Description |
 | --- | --- |
@@ -53,3 +53,11 @@ border-collapse: collapse;
 | .fs-decrease | Decreases current font size by 1px |
 | .fs-increase | Increases current font size by 1px |
 | .text-crop | Same as the `.crop` but for text. All the overflowed characters are replaced by ellipsis |
+| .link | Creates underline on links and hides it on hover |
+| .link-dotted | Same as `.link` except that underline is dotted |
+| .link-dashed | Same as `.link` except that underline is dashed |
+| .link-invert | Opposite of `.link`. Creates underlined only on hover |
+| .link-invert_dotted | Same as `.link-invert` except that underline is dotted |
+| .link-invert_dashed | Same as `.link-invert` except that underline is dashed |
+| .nowrap | Prevents text from wrapping at whitespaces. Places all text in one line |
+| .lh-`<n>` | Controls the line height in `em`. Allowable values range are from 0 to 10, where 0 is line-height = 1 and 10 is line-height 2  |
