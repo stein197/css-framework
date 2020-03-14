@@ -28,6 +28,8 @@ border-collapse: collapse;
 
 ## Main classes
 
+Main classes are used to make main issues like button appearance complete.
+
 | Class | Description |
 | --- | --- |
 | .float | Prevents element from collapsing when applied to element that has floating children |
@@ -45,6 +47,8 @@ border-collapse: collapse;
 
 ## Font and text classes
 
+These classes control text appearance like font size and font weight.
+
 | Class | Description |
 | --- | --- |
 | .fw-`*` | Controls the font weight from 100 (thin) to 900 (black). Allowable values are: <ul><li>thin (100)</li><li>light-x (200)</li><li>light (300)</li><li>regular (400)</li><li>medium (500)</li><li>bold-s (600)</li><li>bold (700)</li><li>bold-x (800)</li><li>black (900)</li></ul> |
@@ -60,4 +64,18 @@ border-collapse: collapse;
 | .link-invert_dotted | Same as `.link-invert` except that underline is dotted |
 | .link-invert_dashed | Same as `.link-invert` except that underline is dashed |
 | .nowrap | Prevents text from wrapping at whitespaces. Places all text in one line |
-| .lh-`<n>` | Controls the line height in `em`. Allowable values range are from 0 to 10, where 0 is line-height = 1 and 10 is line-height 2  |
+| .lh-`<n>` | Controls the line height in `em`. Allowable values range are from 0 to 10, where 0 is line-height = 1 and 10 is line-height 2 |
+
+## Spacing classes
+
+Spacing classes, as the name implies, controll offsets of elements. These classes are the largest part of this library in terms of size. All values are in range from 0 to 100 (in pixels) inclusive with a step size of 10, i.e. 0, 10, 20 etc. All classes in this section affect only paddings (`.pd-*` classes) and margins (`.mr-*` classes) and can be applied to single side (classes like `.pd-l-10`), opposite (classes like `.mr-y-0`) or all four sides (classes like `.pd-20`) of an element. In addition, they can be applied at any BS4-compatible screen size breakpoints.
+
+The less sides class cover the more specificity it has. For example, class `.pd-l-20` has more specificity over than other classes of the same level, because it covers only left side, while `.pd-x-50` covers two sides - left and right, so this class will affect only right side. And if an element has class like `.pd-100`, then the styles will look as following:
+
+![](assets/offsets.png)
+
+| Classes | Description |
+| --- | --- |
+| .mr-`<n>`, .pd-`<n>` | Sets the same offset at all sides of an element |
+
+| .mr-`*`-`<n>`, .pd-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.pd-md-40`, `.mr-xl-100` |
