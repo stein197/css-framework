@@ -9,6 +9,7 @@ Include files contained in `dist` folder to your page.
 Note, that if you want build this files by yourselves then you need to install these utilities and add them to PATH variable:
 - [uglify-js](https://www.npmjs.com/package/uglify-js) for Node.js
 - [sass](https://rubygems.org/gems/sass/versions/3.4.22) gem for Ruby
+Then run `build.bat` from command line.
 
 ## Description
 
@@ -70,7 +71,7 @@ These classes control text appearance like font size and font weight.
 
 Spacing classes, as the name implies, controll offsets of elements. These classes are the largest part of this library in terms of size. All values are in range from 0 to 100 (in pixels) inclusive with a step size of 10, i.e. 0, 10, 20 etc. All classes in this section affect only paddings (`.pd-*` classes) and margins (`.mr-*` classes) and can be applied to single side (classes like `.pd-l-10`), opposite (classes like `.mr-y-0`) or all four sides (classes like `.pd-20`) of an element. In addition, they can be applied at any BS4-compatible screen size breakpoints.
 
-The less sides class cover the more specificity it has. For example, class `.pd-l-20` has more specificity over than other classes of the same level, because it covers only left side, while `.pd-x-50` covers two sides - left and right, so this class will affect only right side. And if an element has class like `.pd-100`, then the styles will look as following:
+The less sides class covers the more specificity it has. For example, class `.pd-l-20` has more specificity over than other classes of the same level, because it covers only left side, while `.pd-x-50` covers two sides - left and right, so this class will affect only right side. And if an element has class like `.pd-100`, then the styles will look as following:
 
 ![](assets/offsets.png)
 
