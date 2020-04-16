@@ -58,6 +58,7 @@ These classes control text appearance like font size and font weight.
 | .fs-decrease | Decreases current font size by 1px |
 | .fs-increase | Increases current font size by 1px |
 | .text-crop | Same as the `.crop` but for text. All the overflowed characters are replaced by ellipsis |
+| .text-through | Makes text crossed out |
 | .link | Creates underline on links and hides it on hover |
 | .link-dotted | Same as `.link` except that underline is dotted |
 | .link-dashed | Same as `.link` except that underline is dashed |
