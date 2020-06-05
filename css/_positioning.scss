@@ -3,6 +3,9 @@
 	.#{$letter}-0{
 		#{map_get($sides, $letter)}: 0;
 	}
+	.#{$letter}-100{
+		#{map_get($sides, $letter)}: 100%;
+	}
 }
 
 // .z-35
@@ -40,6 +43,9 @@
 			}
 			.#{$side-letter}-#{$bp-name}-0{
 				#{map_get($sides, $side-letter)}: 0;
+			}
+			.#{$side-letter}-#{$bp-name}-100{
+				#{map_get($sides, $side-letter)}: 100%;
 			}
 		}
 	}
