@@ -30,6 +30,22 @@
 	bottom: 0;
 }
 
+$valign-values:
+	baseline,
+	sub,
+	super,
+	text-top,
+	text-bottom,
+	middle,
+	top,
+	bottom;
+
+@each $val in $valign-values {
+	.valign-#{$val}{
+		vertical-align: $val;
+	}
+}
+
 @each $bp-name, $bp-value in $breakpoints{
 	@include mq($bp-name){
 		@each $pos in $positions{
