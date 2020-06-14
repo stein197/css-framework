@@ -70,7 +70,7 @@ These classes control text appearance like font size and font weight.
 
 ## Spacing classes
 
-Spacing classes, as the name implies, controll offsets of elements. These classes are the largest part of this library in terms of size. All values are in range from 0 to 100 (in pixels) inclusive with a step size of 10, i.e. 0, 10, 20 etc. All classes in this section affect only paddings (`.pd-*` classes) and margins (`.mr-*` classes) and can be applied to single side (classes like `.pd-l-10`), opposite (classes like `.mr-y-0`) or all four sides (classes like `.pd-20`) of an element. In addition, they can be applied at any BS4-compatible screen size breakpoints.
+Spacing classes, as the name implies, controll offsets of elements. These classes are the largest part of this library. All values are in range from 0 to 100 (in pixels) inclusive with a step size of 10, i.e. 0, 10, 20 etc. All classes in this section affect only paddings (`.pd-*` classes) and margins (`.mr-*` classes) and can be applied to a single side (classes like `.pd-l-10`), opposite (classes like `.mr-y-0`) or all four sides (classes like `.pd-20`) of an element. In addition, they can be applied at any BS4-compatible screen size breakpoints.
 
 The less sides class covers the more specificity it has. For example, class `.pd-l-20` has more specificity over than other classes of the same level, because it covers only left side, while `.pd-x-50` covers two sides - left and right, so this class will affect only right side. And if an element has class like `.pd-100`, then the styles will look as following:
 
@@ -78,6 +78,49 @@ The less sides class covers the more specificity it has. For example, class `.pd
 
 | Classes | Description |
 | --- | --- |
-| .mr-`<n>`, .pd-`<n>` | Sets the same offset at all sides of an element |
+| .mr-`<n>`<br/>.pd-`<n>` | Sets the same offset at all sides of an element. For example: `.pd-0`, `.mr-20` |
+| .mr-`*`-`<n>`<br/>.pd-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.pd-md-40`, `.mr-xl-100` |
+| .mr-`<axis>`-`<n>`<br/>.pd-`<axis>`-`<n>` | Sets the same offset at horizontal (`x`) or vertical (`y`) axis. For example: `.mr-x-10`, `.pd-y-0` |
+| .mr-`<axis>`-`*`-`<n>`<br/>.pd-`<axis>`-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.mr-y-md-20`, `.pd-x-xl-0` |
+| .mr-`<side>`-`<n>`<br/>.pd-`<side>`-`<n>` | Sets separate offsets at an element. `<side>` can be one of four: `t` (top), `r` (right), `b` (bottom), `l` (left). For example: `.mr-t-20`, `.pd-l-100` |
+| .mr-`<side>`-`*`-`<n>`<br/>.pd-`<side>`-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.mr-y-lg-20`, `.pd-b-xl-20` |
 
-| .mr-`*`-`<n>`, .pd-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.pd-md-40`, `.mr-xl-100` |
+Also there are small amount of classes that set the exact offset in pixels (from 1 to 9). So if there is a need to set top offset at `57` you can do so by applying these classes:
+```
+.mr-t-50.pd-t-7
+```
+or:
+```
+.pd-t-50.mr-t-7
+```
+Also, these classes can be applied only at single side. There are no classes like `.mr-y-6` or `.pd-7`. Only you have is `.mr-l-1`, `.pd-t-md-6` and so on.
+
+## Positioning classes
+
+This category of classes manages positioning of elements in page. As the others, these also can be applied at any BS4-compatible breakpoints.
+
+| Classes | Description |
+| --- | --- |
+| .`<side>`-0<br/>.`<side>`-100<br/>.`<side>`-`*`-0<br/>.`<side>`-`*`-100<br/>.`<side>`-`*`-a | Pin an element to one of sides of parent (only if the one has an absolute positioning), where `<side>` is one of these - `t` (top), `r` (right), `b` (bottom), `l` (left). Zero type of classes pins the element to the specified side while the "hundred" pins to the opposite side of parent. "-a"-classes reset offsets to auto. Can be applied at any BS4 breakpoint. |
+| .z-`<n>` | Sets `z-index` property where `<n>` is in range from 0 to 50 with step size of 5 (`.z-0`, `.z-45` etc.) |
+| .p-`<pos>`<br/>.p-`*`-`<pos>` | Sets the `position` property of an element. Available values for `<pos>` are `static`, `relative`, `absolute` and `fixed`. Can be applied at any BS4 breakpoint. For example: `.p-static`, `.p-lg-absolute`. |
+| .fullarea | Sets the position property of an element to absolute and stretches it so it fill whole parent area. |
+| .valign-`<align>` | Sets the `vertical-align` property of an element. Possible values are `baseline`, `sub`, `super`, `text-top`, `text-bottom`, `middle`, `top` and `bottom` |
+
+## Dimension Classes
+
+Classes in this category manage sizing of elements.
+
+| Classes | Description |
+| --- | --- |
+| .max-w<br/>.max-h<br/>.min-w<br/>.min-h<br/>.max-`*`-w<br/>.max-`*`-h<br/>.min-`*`-w<br/>.min-`*`-h | Set the min/max-width/height properties of an element. Could be useful when applied to images and frames. Can be applied at any BS4 breakpoint. |
+| .full-w<br/>.full-h<br/>.full-`*`-w<br/>.full-`*`-h | Set width/height of an element to 100%. Can be applied at any BS4 breakpoint. |
+| .w-`<n>`<br/>.w-`*`-`<n>` | Set the width of an element from 0% to 100% width step size of 10. There is a special value for `<n>` - `a`. It resets the width to auto and can be used only at BS4 breakpoints. For example: `.w-40`, `.w-lg-a`. Can be applied at any BS4 breakpoint. |
+
+## Layout Classes
+
+Classes in this category manage the layout of an element.
+
+| Classes | Description |
+| --- | --- |
+| .col-cnt-`<n>`<br/>.col-cnt-`*`-`<n>` | Set the `column-count` property of an element. Posible values are in range from 1 to 5. Can be applied at any BS4 breakpoint. |
