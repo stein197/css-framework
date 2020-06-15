@@ -84,6 +84,7 @@ The less sides class covers the more specificity it has. For example, class `.pd
 | .mr-`<axis>`-`*`-`<n>`<br/>.pd-`<axis>`-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.mr-y-md-20`, `.pd-x-xl-0` |
 | .mr-`<side>`-`<n>`<br/>.pd-`<side>`-`<n>` | Sets separate offsets at an element. `<side>` can be one of four: `t` (top), `r` (right), `b` (bottom), `l` (left). For example: `.mr-t-20`, `.pd-l-100` |
 | .mr-`<side>`-`*`-`<n>`<br/>.pd-`<side>`-`*`-`<n>` | Same as above besides they can be applied at any BS4 breakpoint. For example: `.mr-y-lg-20`, `.pd-b-xl-20` |
+| .nmr-`<n>` | Add gaps to the children of an element. Possible values for `<n>` are in range from 1 to 10. |
 
 Also there are small amount of classes that set the exact offset in pixels (from 1 to 9). So if there is a need to set top offset at `57` you can do so by applying these classes:
 ```
