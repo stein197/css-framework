@@ -1,0 +1,23 @@
+{
+  "name": "template",
+  "version": "1.0.0",
+  "description": "Basic CSS and JS development kit based on Bootstrap 4. Most of the classes can be applied to any BS4-compatible breakpoint (like classes `.fs-20` and `.fs-md-20`) as well as BS4's classes.",
+  "main": "index.js",
+  "scripts": {
+    "sass": "cls & sass css/index.scss:dist/template.min.css --style=compressed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/STEIN197/template.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/STEIN197/template/issues"
+  },
+  "homepage": "https://github.com/STEIN197/template#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "sass": "^1.29.0"
+  }
+}
