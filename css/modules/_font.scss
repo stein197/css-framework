@@ -1,0 +1,115 @@
+@use '../func';
+
+$-weights: (
+	"thin": 100,
+	"light-x": 200,
+	"light": 300,
+	"regular": 400,
+	"medium": 500,
+	"bold-s": 600,
+	"bold": 700,
+	"bold-x": 800,
+	"black": 900,
+);
+$-fs-min: 1;
+$-fs-max: 5;
+$-fs-step: 0.2;
+
+@each $key, $value in $-weights {
+	.fw-#{$key} {
+		font-weight: $value;
+	}
+}
+
+// With breakpoints?
+@for $i from $-fs-min through $-fs-max {
+	$j: 0;
+	@while $j <= 1 {
+		$size: $i + $j;
+		.fs-#{func.selector-escape($size)} {
+			font-size: #{$size}rem;
+		}
+		$j: $j + $-fs-step;
+	}
+}
+
+// @each $bp-name, $bp-value in $breakpoints {
+// 	@include mq($bp-name){
+// 		@for $i from $fs-loop-from through $fs-loop-to{
+// 			$size: $i * 2;
+// 			.fs-#{$bp-name}-#{$size}{
+// 				font-size: #{$size}px;
+// 			}
+// 		}
+// 	}
+// }
+// .fs-decrease{
+// 	font-size: calc(1em - 1px);
+// }
+// .fs-increase{
+// 	font-size: calc(1em + 1px);
+// }
+
+// .text-crop{
+// 	overflow: hidden;
+// 	text-overflow: ellipsis;
+// }
+
+// .text-through{
+// 	text-decoration: line-through;
+// }
+
+// .link{
+// 	text-decoration: underline !important;
+// 	&:hover,
+// 	&-dotted,
+// 	&-dashed,
+// 	&-invert,
+// 	&-invert_dotted,
+// 	&-invert_dashed{
+// 		text-decoration: none !important;
+// 	}
+// 	&-dotted{
+// 		border-bottom: 1px dotted;
+// 		&:hover{
+// 			border-bottom-color: transparent;
+// 		}
+// 	}
+// 	&-dashed{
+// 		border-bottom: 1px dashed;
+// 		&:hover{
+// 			border-bottom-color: transparent;
+// 		}
+// 	}
+// 	&-invert{
+// 		&:hover{
+// 			text-decoration: underline !important;
+// 		}
+// 	}
+// 	&-invert_dotted{
+// 		border-bottom: 1px dotted transparent;
+// 		&:hover{
+// 			border-bottom: 1px dotted;
+// 		}
+// 	}
+// 	&-invert_dashed{
+// 		border-bottom: 1px dashed transparent;
+// 		&:hover{
+// 			border-bottom: 1px dashed;
+// 		}
+// 	}
+// }
+
+// .nowrap{
+// 	white-space: nowrap;
+// }
+
+// @for $i from 0 through 10 {
+// 	$val: unquote("1.") + $i;
+// 	@if $i == 10 {
+// 		$val: 2;
+// 	}
+// 	.lh-#{$i}{
+// 		line-height: $val;
+// 	}
+// }

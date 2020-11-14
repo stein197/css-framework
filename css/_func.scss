@@ -1,0 +1,56 @@
+@use 'sass:string';
+@use 'sass:list';
+
+$breakpoints: (
+	sm: 576px,
+	md: 768px,
+	lg: 992px,
+	xl: 1200px
+);
+
+@function to-str($string) {
+	@return inspect($string);
+}
+
+@function selector-escape($string) {
+	$string: to-str($string);
+	$escaped-characters:
+		':',
+		'.',
+		'#';
+	$result: '';
+	@each $char in str-to-list($string) {
+		@if list-contains($escaped-characters, $char) {
+			$result: $result + "\\" + $char;
+		} @else {
+			$result: $result + $char;
+		}
+	}
+	@return $result;
+}
+
+@function list-contains($list, $value) {
+	@return list.index($list, $value) != null;
+}
+
+@function str-to-list($string) {
+	$string: to-str($string);
+	$result: ();
+	$len: string.length($string);
+	@for $i from 1 through $len {
+		$char: string.slice($string, $i, $i);
+		$result: list.append($result, $char);
+	}
+	@return $result;
+}
+
+@mixin media-query($width) {
+	@if map_has_key($breakpoints, $width) {
+		$width: map_get($breakpoints, $width);
+		@media (min-width: $width) {
+			@content;
+		}
+	} @else {
+		@error "There is no breakpoint with $width name";
+	}
+}
