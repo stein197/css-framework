@@ -1,0 +1,57 @@
+@use '../func';
+
+$-sides: (
+	t: top,
+	r: right,
+	b: bottom,
+	l: left
+);
+$-positions: (
+	s: static,
+	r: relative,
+	a: absolute,
+	f: fixed
+);
+$-vertical-aligns: (
+	baseline: baseline,
+	top: top,
+	middle: middle,
+	bottom: bottom,
+	sub: sub,
+	text-top: text-top
+);
+
+$-z-min: 0;
+$-z-max: 5;
+$-z-step: 10;
+
+// top, right, bottom, left
+@each $key, $value in $-sides{
+	.#{$key}-0{
+		#{map_get($-sides, $key)}: 0;
+	}
+	.#{$key}-100{
+		#{map_get($-sides, $key)}: 100%;
+	}
+}
+
+// z-index
+@for $i from $-z-min through $-z-max {
+	$amount: $i * $-z-step;
+	.z-#{$amount}{
+		z-index: $amount;
+	}
+}
+
+// position
+@include func.rule-create-from-map(p, position, $-positions, true);
+// vertical-align
+@include func.rule-create-from-map(va, vertical-align, $-vertical-aligns);
+
+.fullarea{
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
