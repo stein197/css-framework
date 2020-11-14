@@ -44,6 +44,25 @@ $breakpoints: (
 	@return $result;
 }
 
+@mixin rule-create-from-map($prefix, $property, $map, $use-media: false) {
+	@each $key, $value in $map {
+		.#{$prefix}-#{$key} {
+			#{$property}: $value;
+		}
+	}
+	@if $use-media {
+		@each $bp-key, $bp-value in $breakpoints {
+			@include media-query($bp-key) {
+				@each $key, $value in $map {
+					.#{$prefix}-#{$bp-key}-#{$key} {
+						#{$property}: $value;
+					}
+				}
+			}
+		}
+	}
+}
+
 @mixin media-query($width) {
 	@if map_has_key($breakpoints, $width) {
 		$width: map_get($breakpoints, $width);

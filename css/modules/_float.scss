@@ -6,18 +6,4 @@ $-values: (
 	n: none
 );
 
-@each $key, $value in $-values {
-	.fl-#{$key} {
-		float: $value;
-	}
-}
-
-@each $bp-key, $bp-value in func.$breakpoints {
-	@include func.media-query($bp-key) {
-		@each $key, $value in $-values {
-			.fl-#{$bp-key}-#{$key} {
-				float: $value;
-			}
-		}
-	}
-}
+@include func.rule-create-from-map(f, float, $-values, true);
