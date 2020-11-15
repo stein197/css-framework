@@ -1,57 +1,22 @@
-.max-w{
-	max-width: 100%;
-}
-.max-h{
-	max-height: 100%;
-}
-.min-w{
-	min-width: 100%;
-}
-.min-h{
-	min-height: 100%;
-}
-.full-h{
-	height: 100%;
-}
-.full-w{
-	width: 100%;
-}
+@use '../func';
 
-@for $i from 0 through 10 {
-	$width: $i * 10;
-	.w-#{$width}{
-		width: percentage($width / 100);
-	}
-}
+$-max-sizes: (
+	n: none,
+	100: 100%
+);
+$-min-sizes: (
+	a: auto,
+	100: 100%
+);
+$-sizes: (
+	a: auto,
+	100: 100%
+);
 
-@each $bp-name, $bp-value in $breakpoints {
-	@include mq($bp-name) {
-		.max-#{$bp-name}-w{
-			max-width: 100%;
-		}
-		.max-#{bp-name}-h{
-			max-height: 100%;
-		}
-		.min-#{$bp-name}-w{
-			min-width: 100%;
-		}
-		.min-#{bp-name}-h{
-			min-height: 100%;
-		}
-		.full-#{$bp-name}-h{
-			height: 100%;
-		}
-		.full-#{$bp-name}-w{
-			width: 100%;
-		}
-		.w-#{$bp-name}-a{
-			width: auto;
-		}
-		@for $i from 0 through 10{
-			$width: $i * 10;
-			.w-#{$bp-name}-#{$width}{
-				width: percentage($width / 100);
-			}
-		}
-	}
-}
+@include func.rule-create-from-map(minw, min-width, $-min-sizes, true);
+@include func.rule-create-from-map(minh, min-height, $-min-sizes, true);
+@include func.rule-create-from-map(maxw, max-width, $-max-sizes, true);
+@include func.rule-create-from-map(maxh, max-height, $-max-sizes, true);
+
+@include func.rule-create-from-map(w, width, $-sizes, true);
+@include func.rule-create-from-map(h, height, $-sizes, true);
