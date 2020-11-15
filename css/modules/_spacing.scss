@@ -1,123 +1,142 @@
-// .mr-30, .pd-0
-@for $i from 0 through $padding-loops{
-	$size: $i * 10;
-	.mr-#{$size}{
-		margin: #{$size}px;
+@use '../func';
+
+$-sides: (
+	t: top,
+	r: right,
+	b: bottom,
+	l: left
+);
+
+$-space-min: 0;
+$-space-max: 10;
+$-space-step: 0.1;
+
+.m-a {
+	margin: auto;
+}
+@for $i from $-space-min through $-space-max {
+	.m-#{$i} {
+		margin: #{$i}rem;
 	}
-	.pd-#{$size}{
-		padding: #{$size}px;
+	.p-#{$i} {
+		padding: #{$i}rem;
 	}
 }
 
-// .pd-x-30, mr-y-100
-@for $i from 0 through $padding-loops{
-	$size: $i * 10;
-	.mr-x-#{$size}{
-		margin-left: #{$size}px;
-		margin-right: #{$size}px;
+.mx-a {
+	margin-left: auto;
+	margin-right: auto;
+}
+.my-a {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+@for $i from $-space-min through $-space-max {
+	.mx-#{$i} {
+		margin-left: #{$i}rem;
+		margin-right: #{$i}rem;
 	}
-	.mr-y-#{$size}{
-		margin-top: #{$size}px;
-		margin-bottom: #{$size}px;
+	.my-#{$i} {
+		margin-top: #{$i}rem;
+		margin-bottom: #{$i}rem;
 	}
-	.pd-x-#{$size}{
-		padding-left: #{$size}px;
-		padding-right: #{$size}px;
+	.px-#{$i} {
+		padding-left: #{$i}rem;
+		padding-right: #{$i}rem;
 	}
-	.pd-y-#{$size}{
-		padding-top: #{$size}px;
-		padding-bottom: #{$size}px;
+	.py-#{$i} {
+		padding-top: #{$i}rem;
+		padding-bottom: #{$i}rem;
 	}
 }
 
-// .pd-t-40, .mr-b-50
-@for $i from 0 through $padding-loops{
-	$size: $i * 10;
-	@each $side-letter, $side-name in $sides{
-		.mr-#{$side-letter}-#{$size}{
-			margin-#{$side-name}: #{$size}px;
+@each $key, $value in $-sides {
+	.m#{$key}-a {
+		margin-#{$value}: auto;
+	}
+}
+
+@for $i from $-space-min through $-space-max {
+	@each $key, $value in $-sides {
+		.m#{$key}-#{$i} {
+			margin-#{$value}: #{$i}rem;
 		}
-		.pd-#{$side-letter}-#{$size}{
-			padding-#{$side-name}: #{$size}px;
+		.p#{$key}-#{$i} {
+			padding-#{$value}: #{$i}rem;
 		}
 	}
 }
 
-// .pd-t-2, .mr-b-7
-@each $side-letter, $side-name in $sides{
-	@for $i from 1 through 9{
-		.mr-#{$side-letter}-#{$i}{
-			margin-#{$side-name}: #{$i}px;
+@each $key, $value in $-sides {
+	@for $i from 1 through 9 {
+		$size: $i / 10;
+		.m#{$key}-#{func.selector-escape($size)} {
+			margin-#{$value}: #{$size}rem;
 		}
-		.pd-#{$side-letter}-#{$i}{
-			padding-#{$side-name}: #{$i}px;
+		.p#{$key}-#{func.selector-escape($size)} {
+			padding-#{$value}: #{$size}rem;
 		}
 	}
 }
 
-@each $bp-name, $bp-value in $breakpoints{
-	@include mq($bp-name){
-		// .mr-lg-30
-		@for $i from 0 through $padding-loops{
-			$size: $i * 10;
-			.mr-#{$bp-name}-#{$size}{
-				margin: #{$size}px;
+@each $bp-name, $bp-value in func.$breakpoints {
+	@include func.media-query($bp-name) {
+		@for $i from $-space-min through $-space-max {
+			.m-#{$bp-name}-#{$i} {
+				margin: #{$i}rem;
 			}
-			.pd-#{$bp-name}-#{$size}{
-				padding: #{$size}px;
+			.p-#{$bp-name}-#{$i} {
+				padding: #{$i}rem;
 			}
 		}
-		// .pd-x-50
-		@for $i from 0 through $padding-loops{
-			$size: $i * 10;
-			.mr-x-#{$bp-name}-#{$size}{
-				margin-left: #{$size}px;
-				margin-right: #{$size}px;
+		@for $i from $-space-min through $-space-max {
+			.mx-#{$bp-name}-#{$i} {
+				margin-left: #{$i}rem;
+				margin-right: #{$i}rem;
 			}
-			.mr-y-#{$bp-name}-#{$size}{
-				margin-top: #{$size}px;
-				margin-bottom: #{$size}px;
+			.my-#{$bp-name}-#{$i} {
+				margin-top: #{$i}rem;
+				margin-bottom: #{$i}rem;
 			}
-			.pd-x-#{$bp-name}-#{$size}{
-				padding-left: #{$size}px;
-				padding-right: #{$size}px;
+			.px-#{$bp-name}-#{$i} {
+				padding-left: #{$i}rem;
+				padding-right: #{$i}rem;
 			}
-			.pd-y-#{$bp-name}-#{$size}{
-				padding-top: #{$size}px;
-				padding-bottom: #{$size}px;
+			.py-#{$bp-name}-#{$i} {
+				padding-top: #{$i}rem;
+				padding-bottom: #{$i}rem;
 			}
 		}
-		// .mr-b-lg-50
-		@for $i from 0 through $padding-loops{
-			$size: $i * 10;
-			@each $side-letter, $side-name in $sides{
-				.mr-#{$side-letter}-#{$bp-name}-#{$size}{
-					margin-#{$side-name}: #{$size}px;
+		@for $i from $-space-min through $-space-max {
+			@each $side-letter, $side-name in $-sides {
+				.m#{$side-letter}-#{$bp-name}-#{$i}{
+					margin-#{$side-name}: #{$i}rem;
 				}
-				.pd-#{$side-letter}-#{$bp-name}-#{$size}{
-					padding-#{$side-name}: #{$size}px;
+				.p#{$side-letter}-#{$bp-name}-#{$i}{
+					padding-#{$side-name}: #{$i}rem;
 				}
 			}
 		}
-		// .pd-b-lg-5
-		@for $i from 1 through 9{
-			@each $side-letter, $side-name in $sides{
-				.mr-#{$side-letter}-#{$bp-name}-#{$i}{
-					margin-#{$side-name}: #{$i}px;
+		@each $key, $value in $-sides {
+			@for $i from 1 through 9 {
+				$size: $i / 10;
+				.m#{$key}-#{$bp-name}-#{func.selector-escape($size)} {
+					margin-#{$value}: #{$size}rem;
 				}
-				.pd-#{$side-letter}-#{$bp-name}-#{$i}{
-					padding-#{$side-name}: #{$i}px;
+				.p#{$key}-#{$bp-name}-#{func.selector-escape($size)} {
+					padding-#{$value}: #{$size}rem;
 				}
 			}
 		}
 	}
 }
 
-@for $i from 1 through 10 {
-	.nmr-#{$i}{
-		margin: -#{$i}px;
-	}
-	.nmr-#{$i} > *{
-		margin: #{$i}px;
-	}
-}
+// TODO: Uncomment this
+// @for $i from 1 through 10 {
+// 	.nmr-#{$i}{
+// 		margin: -#{$i}px;
+// 	}
+// 	.nmr-#{$i} > *{
+// 		margin: #{$i}px;
+// 	}
+// }
