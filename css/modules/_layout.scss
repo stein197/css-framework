@@ -1,12 +1,18 @@
-@for $i from 1 through $max-cols {
-	.col-cnt-#{$i}{
+@use '../func';
+
+$-column-count-min: 1;
+$-column-count-max: 4;
+
+@for $i from $-column-count-min through $-column-count-max {
+	.cc-#{$i}{
 		column-count: $i;
 	}
 }
-@each $bp-name, $bp-value in $breakpoints {
-	@include mq($bp-name){
-		@for $i from 1 through $max-cols {
-			.col-cnt-#{$bp-name}-#{$i}{
+
+@each $bp-name, $bp-value in func.$breakpoints {
+	@include func.media-query($bp-name){
+		@for $i from $-column-count-min through $-column-count-max {
+			.cc-#{$bp-name}-#{$i}{
 				column-count: $i;
 			}
 		}
