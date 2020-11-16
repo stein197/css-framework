@@ -96,14 +96,16 @@ $-lh-step: 0.1;
 // word-break
 @include func.rule-create-from-map(wb, word-break, $-word-breaks);
 
+.link-disabled,
+.link-disabled:hover {
+	text-decoration: none;
+}
+
 .link {
 	text-decoration: underline;
 	&:hover,
 	&-dotted,
-	&-dashed,
-	&-invert,
-	&-invert_dotted,
-	&-invert_dashed {
+	&-dashed {
 		text-decoration: none;
 	}
 	&-dotted {
@@ -116,23 +118,6 @@ $-lh-step: 0.1;
 		border-bottom: 1px dashed;
 		&:hover {
 			border-bottom-color: transparent;
-		}
-	}
-	&-invert {
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-	&-invert_dotted {
-		border-bottom: 1px dotted transparent;
-		&:hover {
-			border-bottom: 1px dotted;
-		}
-	}
-	&-invert_dashed {
-		border-bottom: 1px dashed transparent;
-		&:hover {
-			border-bottom: 1px dashed;
 		}
 	}
 }
