@@ -6,4 +6,6 @@ $-values: (
 	n: none
 );
 
-@include func.rule-create-from-map(f, float, $-values, true);
+@if func.module-enabled(float) {
+	@include func.rule-create-from-map(f, float, $-values, true);
+}
