@@ -11,4 +11,6 @@ $-displays: (
 	"g": grid
 );
 
-@include func.rule-create-from-map(d, display, $-displays, true);
+@if func.module-enabled(display) {
+	@include func.rule-create-from-map(d, display, $-displays, true);
+}

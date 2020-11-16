@@ -1,24 +1,30 @@
 @use '../func';
 
-// TODO: stretch?
+// TODO: space-around, space-evenly
+// TODO: Add align-self
 $-justify-contents: (
+	c: center,
+	s: stretch,
 	fs: flex-start,
 	fe: flex-end,
-	c: center,
 	sb: space-between,
-	sa: space-around,
-	se: space-evenly
 );
-$-align-content: (
-
+$-align-contents: (
+	c: center,
+	s: stretch,
+	fs: flex-start,
+	fe: flex-end,
+	sb: space-between
 );
 $-align-items: (
-	fstart: flex-start,
-	fend: flex-end,
-	center: center,
-	sbetween: space-between,
-	saround: space-around,
-	sevenly: space-evenly
+	c: center,
+	s: stretch,
+	fs: flex-start,
+	fe: flex-end
 );
 
-@include func.rule-create-from-map(jc, justify-content, $-justify-contents, true);
+@if func.module-enabled(flex) {
+	@include func.rule-create-from-map(jc, justify-content, $-justify-contents, true);
+	@include func.rule-create-from-map(ac, align-content, $-align-contents, true);
+	@include func.rule-create-from-map(ai, align-items, $-align-items, true);
+}

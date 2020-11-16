@@ -1,19 +1,19 @@
 @use '../func';
 
-@if func.module-enabled(dimension) {
-	$-max-sizes: (
-		n: none,
-		100: 100%
-	);
-	$-min-sizes: (
-		a: auto,
-		100: 100%
-	);
-	$-sizes: (
-		a: auto,
-		100: 100%
-	);
+$-max-sizes: (
+	n: none,
+	100: 100%
+);
+$-min-sizes: (
+	a: auto,
+	100: 100%
+);
+$-sizes: (
+	a: auto,
+	100: 100%
+);
 
+@if func.module-enabled(dimension) {
 	@if func.module-enabled("dimension.min-max") {
 		@include func.rule-create-from-map(minw, min-width, $-min-sizes, true);
 		@include func.rule-create-from-map(minh, min-height, $-min-sizes, true);
