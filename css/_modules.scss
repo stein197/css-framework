@@ -1,7 +1,16 @@
-@use 'modules/font';
-@use 'modules/float';
-@use 'modules/position';
-@use 'modules/dimension';
-@use 'modules/layout';
-@use 'modules/space';
-@use 'modules/display';
+$modules: (
+	dimension,
+	display,
+	flex,
+	float,
+	font,
+	grid,
+	layout,
+	position,
+	space
+);
+
+$sub-modules: (
+	"dimension.default",
+	"dimension.min-max"
+);

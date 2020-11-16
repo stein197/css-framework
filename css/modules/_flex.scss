@@ -1,0 +1,24 @@
+@use '../func';
+
+// TODO: stretch?
+$-justify-contents: (
+	fs: flex-start,
+	fe: flex-end,
+	c: center,
+	sb: space-between,
+	sa: space-around,
+	se: space-evenly
+);
+$-align-content: (
+
+);
+$-align-items: (
+	fstart: flex-start,
+	fend: flex-end,
+	center: center,
+	sbetween: space-between,
+	saround: space-around,
+	sevenly: space-evenly
+);
+
+@include func.rule-create-from-map(jc, justify-content, $-justify-contents, true);

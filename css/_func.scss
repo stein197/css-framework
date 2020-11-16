@@ -1,5 +1,6 @@
 @use 'sass:string';
 @use 'sass:list';
+@use 'modules';
 
 $breakpoints: (
 	sm: 576px,
@@ -33,6 +34,10 @@ $breakpoints: (
 	@return list.index($list, $value) != null;
 }
 
+@function str-contains($string, $char) {
+	@return str-index($string, $char) != null;
+}
+
 @function str-to-list($string) {
 	$string: to-str($string);
 	$result: ();
@@ -42,6 +47,16 @@ $breakpoints: (
 		$result: list.append($result, $char);
 	}
 	@return $result;
+}
+
+@function module-enabled($module-name) {
+	$module-name: to-lower-case($module-name);
+	$is-submodule: str-contains($module-name, ".");
+	@if $is-submodule {
+		@return list-contains(modules.$sub-modules, $module-name);
+	} @else {
+		@return list-contains(modules.$modules, $module-name);
+	}
 }
 
 @mixin rule-create-from-map($prefix, $property, $map, $use-media: false) {

@@ -1,22 +1,28 @@
 @use '../func';
 
-$-max-sizes: (
-	n: none,
-	100: 100%
-);
-$-min-sizes: (
-	a: auto,
-	100: 100%
-);
-$-sizes: (
-	a: auto,
-	100: 100%
-);
+@if func.module-enabled(dimension) {
+	$-max-sizes: (
+		n: none,
+		100: 100%
+	);
+	$-min-sizes: (
+		a: auto,
+		100: 100%
+	);
+	$-sizes: (
+		a: auto,
+		100: 100%
+	);
 
-@include func.rule-create-from-map(minw, min-width, $-min-sizes, true);
-@include func.rule-create-from-map(minh, min-height, $-min-sizes, true);
-@include func.rule-create-from-map(maxw, max-width, $-max-sizes, true);
-@include func.rule-create-from-map(maxh, max-height, $-max-sizes, true);
+	@if func.module-enabled("dimension.min-max") {
+		@include func.rule-create-from-map(minw, min-width, $-min-sizes, true);
+		@include func.rule-create-from-map(minh, min-height, $-min-sizes, true);
+		@include func.rule-create-from-map(maxw, max-width, $-max-sizes, true);
+		@include func.rule-create-from-map(maxh, max-height, $-max-sizes, true);
+	}
 
-@include func.rule-create-from-map(w, width, $-sizes, true);
-@include func.rule-create-from-map(h, height, $-sizes, true);
+	@if func.module-enabled("dimension.default") {
+		@include func.rule-create-from-map(w, width, $-sizes, true);
+		@include func.rule-create-from-map(h, height, $-sizes, true);
+	}
+}

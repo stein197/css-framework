@@ -1,4 +1,11 @@
 @use 'reset';
 @use 'misc';
 @use 'func';
-@use 'modules';
+
+@use 'modules/font';
+@use 'modules/float';
+@use 'modules/position';
+@use 'modules/dimension';
+@use 'modules/layout';
+@use 'modules/space';
+@use 'modules/display';
