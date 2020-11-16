@@ -1,0 +1,71 @@
+@use 'func';
+
+.float-container::after {
+	content: "";
+	display: block;
+	clear: both;
+}
+.clear {
+	clear: both;
+}
+.circle {
+	border-radius: 50%;
+}
+.c-p{
+	cursor: pointer;
+}
+
+
+.crop{
+	overflow: hidden;
+}
+
+.bg-default{
+	background-position: center;
+	background-size: cover;
+}
+
+header.fixed{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+}
+body.fixed{
+	overflow: hidden !important;
+}
+table{
+	border-collapse: collapse;
+}
+.table-wrapper{
+	overflow-x: auto;
+	& > table{
+		min-width: 100%;
+	}
+}
+
+.btn{
+	display: inline-block;
+	cursor: pointer;
+	line-height: 1;
+	white-space: nowrap;
+	&-rounded{
+		border-radius: 100px;
+	}
+}
+
+// Only for mobile
+@include func.media-query("md"){
+	.btn-mobile{
+		width: 100% !important;
+		text-align: center !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+}
+
+@for $i from 1 through 20 {
+	.brd-rd-#{$i}{
+		border-radius: #{$i}px;
+	}
+}
