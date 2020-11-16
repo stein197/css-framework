@@ -1,5 +1,6 @@
 @use 'sass:string';
 @use 'sass:list';
+@use 'sass:map';
 @use 'modules';
 
 $breakpoints: (
@@ -53,9 +54,9 @@ $breakpoints: (
 	$module-name: to-lower-case($module-name);
 	$is-submodule: str-contains($module-name, ".");
 	@if $is-submodule {
-		@return list-contains(modules.$sub-modules, $module-name);
+		@return map.get(modules.$sub-modules, $module-name) == true;
 	} @else {
-		@return list-contains(modules.$modules, $module-name);
+		@return map.get(modules.$modules, $module-name) == true;
 	}
 }
 
