@@ -1,0 +1,14 @@
+@use '../func';
+
+$-displays: (
+	"n": none,
+	"i": inline,
+	"ib": inline-block,
+	"b": block,
+	"if": inline-flex,
+	"f": flex,
+	"ig": inline-grid,
+	"g": grid
+);
+
+@include func.rule-create-from-map(d, display, $-displays, true);
