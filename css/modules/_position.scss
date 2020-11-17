@@ -22,7 +22,7 @@ $-vertical-aligns: (
 );
 
 $-z-min: 0;
-$-z-max: 5;
+$-z-max: 50;
 $-z-step: 10;
 
 @if func.module-enabled(position) {
@@ -36,10 +36,9 @@ $-z-step: 10;
 			}
 		}
 	}
-	@for $i from $-z-min through $-z-max {
-		$amount: $i * $-z-step;
-		.z-#{$amount}{
-			z-index: $amount;
+	@each $value in func.range-create-from-borders($-z-min, $-z-max, $-z-step) {
+		.z-#{$value}{
+			z-index: $value;
 		}
 	}
 	@include func.rule-create-from-map(p, position, $-positions, true);
