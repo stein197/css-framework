@@ -87,13 +87,9 @@ $-overflows: (
 		}
 	}
 	@if func.module-enabled("misc.border-radius") {
-		@for $i from $-border-radius-min through $-border-radius-max {
-			$value: 0;
-			@while $value <= 1 {
-				.br-#{func.selector-escape($value + $i)} {
-					border-radius: #{$value + $i}rem;
-				}
-				$value: $value + $-border-radius-step;
+		@each $value in func.range-create-from-borders($-border-radius-min, $-border-radius-max, $-border-radius-step) {
+			.br-#{func.selector-escape($value)} {
+				border-radius: #{$value}rem;
 			}
 		}
 	}

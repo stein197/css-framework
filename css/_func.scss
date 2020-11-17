@@ -60,6 +60,16 @@ $breakpoints: (
 	}
 }
 
+@function range-create-from-borders($min, $max, $step) {
+	$result: ();
+	$value: $min;
+	@while $value <= $max {
+		$result: list.append($result, $value);
+		$value: $value + $step;
+	}
+	@return $result;
+}
+
 @mixin rule-create-from-map($prefix, $property, $map, $use-media: false) {
 	@each $key, $value in $map {
 		.#{$prefix}-#{$key} {
