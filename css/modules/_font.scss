@@ -61,33 +61,23 @@ $-lh-step: 0.1;
 	}
 
 	@if func.module-enabled("font.size") {
-		@for $i from $-fs-min through $-fs-max {
-			$j: 0;
-			@while $j <= 1 {
-				$size: $i + $j;
-				.fs-#{func.selector-escape($size)} {
-					font-size: #{$size}rem;
-				}
-				$j: $j + $-fs-step;
+		@each $value in func.range-create-from-borders($-fs-min, $-fs-max, $-fs-step) {
+			.fs-#{func.selector-escape($value)} {
+				font-size: #{$value}rem;
 			}
 		}
 		.fs-decrease{
-			font-size: calc(1em - 1px);
+			font-size: calc(1em - 0.1rem);
 		}
 		.fs-increase{
-			font-size: calc(1em + 1px);
+			font-size: calc(1em + 0.1rem);
 		}
 	}
 
 	@if func.module-enabled("font.line-height") {
-		@for $i from $-lh-min through $-lh-max {
-			$j: 0;
-			@while $j <= 1 {
-				$lh: $i + $j;
-				.lh-#{func.selector-escape($lh)} {
-					line-height: $lh;
-				}
-				$j: $j + $-lh-step;
+		@each $value in func.range-create-from-borders($-lh-min, $-lh-max, $-lh-step) {
+			.lh-#{func.selector-escape($value)} {
+				line-height: $value;
 			}
 		}
 	}
@@ -148,5 +138,3 @@ $-lh-step: 0.1;
 		}
 	}
 }
-
-
