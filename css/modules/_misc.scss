@@ -12,15 +12,6 @@ $-overflows: (
 );
 
 @if func.module-enabled(misc) {
-	// TODO: Move to float
-	.container-float::after {
-		content: "";
-		display: block;
-		clear: both;
-	}
-	.clear {
-		clear: both;
-	}
 	.circle {
 		border-radius: 50%;
 	}
