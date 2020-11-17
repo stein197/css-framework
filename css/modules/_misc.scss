@@ -1,7 +1,19 @@
 @use '../func';
 
+$-border-radius-min: 0;
+$-border-radius-max: 2;
+$-border-radius-step: 0.1;
+
+$-overflows: (
+	v: visible,
+	h: hidden,
+	s: scroll,
+	a: auto
+);
+
 @if func.module-enabled(misc) {
-	.float-container::after {
+	// TODO: Move to float
+	.container-float::after {
 		content: "";
 		display: block;
 		clear: both;
@@ -16,11 +28,21 @@
 		cursor: pointer;
 	}
 
-
-	.crop{
-		overflow: hidden;
+	@if func.module-enabled("misc.overflow") {
+		@include func.rule-create-from-map(o, overflow, $-overflows);
+		@include func.rule-create-from-map(ox, overflow-x, $-overflows);
+		@include func.rule-create-from-map(oy, overflow-y, $-overflows);
+	}
+	@if func.module-enabled("misc.opacity") {
+		.o-0{
+			opacity: 0;
+		}
+		.o-1{
+			opacity: 1;
+		}
 	}
 
+	.bg-sz-cover{}
 	.bg-default{
 		background-position: center;
 		background-size: cover;
@@ -51,7 +73,7 @@
 		line-height: 1;
 		white-space: nowrap;
 		&-rounded{
-			border-radius: 100px;
+			border-radius: 10rem;
 		}
 	}
 
@@ -64,10 +86,15 @@
 			padding-right: 0 !important;
 		}
 	}
-
-	@for $i from 1 through 20 {
-		.brd-rd-#{$i}{
-			border-radius: #{$i}px;
+	@if func.module-enabled("misc.border-radius") {
+		@for $i from $-border-radius-min through $-border-radius-max {
+			$value: 0;
+			@while $value <= 1 {
+				.br-#{func.selector-escape($value + $i)} {
+					border-radius: #{$value + $i}rem;
+				}
+				$value: $value + $-border-radius-step;
+			}
 		}
 	}
 }
