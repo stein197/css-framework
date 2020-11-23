@@ -1,6 +1,5 @@
 @use '../func';
 
-// TODO: space-around, space-evenly
 // TODO: Add align-self
 $-justify-contents: (
 	c: center,
@@ -22,9 +21,15 @@ $-align-items: (
 	fs: flex-start,
 	fe: flex-end
 );
+$-grows-n-shrinks: (
+	0: 0,
+	1: 1
+);
 
 @if func.module-enabled(flex) {
 	@include func.rule-create-from-map(jc, justify-content, $-justify-contents, true);
 	@include func.rule-create-from-map(ac, align-content, $-align-contents, true);
 	@include func.rule-create-from-map(ai, align-items, $-align-items, true);
+	@include func.rule-create-from-map(fg, flex-grow, $-grows-n-shrinks, true);
+	@include func.rule-create-from-map(fsh, flex-shrink, $-grows-n-shrinks, true);
 }
