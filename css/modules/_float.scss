@@ -6,4 +6,14 @@ $-values: (
 	n: none
 );
 
-@include func.rule-create-from-map(f, float, $-values, true);
+@if func.module-enabled(float) {
+	.container-float::after {
+		content: "";
+		display: block;
+		clear: both;
+	}
+	.clear {
+		clear: both;
+	}
+	@include func.rule-create-from-map(f, float, $-values, true);
+}

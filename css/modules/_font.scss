@@ -54,92 +54,87 @@ $-lh-min: 0;
 $-lh-max: 1;
 $-lh-step: 0.1;
 
-// font-weight
-@include func.rule-create-from-map(fw, font-weight, $-font-weights);
+@if func.module-enabled(font) {
 
-// font-size
-@for $i from $-fs-min through $-fs-max {
-	$j: 0;
-	@while $j <= 1 {
-		$size: $i + $j;
-		.fs-#{func.selector-escape($size)} {
-			font-size: #{$size}rem;
+	@if func.module-enabled("font.weight") {
+		@include func.rule-create-from-map(fw, font-weight, $-font-weights);
+	}
+
+	@if func.module-enabled("font.size") {
+		@each $value in func.range-create-from-borders($-fs-min, $-fs-max, $-fs-step) {
+			.fs-#{func.selector-escape($value)} {
+				font-size: #{$value}rem;
+			}
 		}
-		$j: $j + $-fs-step;
-	}
-}
-
-// line-height
-@for $i from $-lh-min through $-lh-max {
-	$j: 0;
-	@while $j <= 1 {
-		$lh: $i + $j;
-		.lh-#{func.selector-escape($lh)} {
-			line-height: $lh;
+		.fs-decrease{
+			font-size: calc(1em - 0.1rem);
 		}
-		$j: $j + $-lh-step;
-	}
-}
-
-// font-style
-@include func.rule-create-from-map(fs, font-style, $-font-styles);
-// text-align
-@include func.rule-create-from-map(ta, text-align, $-text-aligns, true);
-// text-decoration
-@include func.rule-create-from-map(td, text-decoration, $-text-decorations);
-// text-overflow
-@include func.rule-create-from-map(to, text-overflow, $-text-overflows);
-// text-transform
-@include func.rule-create-from-map(tt, text-transform, $-text-transforms);
-// white-space
-@include func.rule-create-from-map(ws, white-space, $-white-spaces);
-// word-break
-@include func.rule-create-from-map(wb, word-break, $-word-breaks);
-
-.link {
-	text-decoration: underline;
-	&:hover,
-	&-dotted,
-	&-dashed,
-	&-invert,
-	&-invert_dotted,
-	&-invert_dashed {
-		text-decoration: none;
-	}
-	&-dotted {
-		border-bottom: 1px dotted;
-		&:hover {
-			border-bottom-color: transparent;
+		.fs-increase{
+			font-size: calc(1em + 0.1rem);
 		}
 	}
-	&-dashed {
-		border-bottom: 1px dashed;
-		&:hover {
-			border-bottom-color: transparent;
+
+	@if func.module-enabled("font.line-height") {
+		@each $value in func.range-create-from-borders($-lh-min, $-lh-max, $-lh-step) {
+			.lh-#{func.selector-escape($value)} {
+				line-height: $value;
+			}
 		}
 	}
-	&-invert {
-		&:hover {
+
+	@if func.module-enabled("font.style") {
+		@include func.rule-create-from-map(fs, font-style, $-font-styles);
+	}
+
+	@if func.module-enabled("font.align") {
+		@include func.rule-create-from-map(ta, text-align, $-text-aligns, true);
+	}
+
+	@if func.module-enabled("font.decoration") {
+		@include func.rule-create-from-map(td, text-decoration, $-text-decorations);
+	}
+
+	@if func.module-enabled("font.overflow") {
+		@include func.rule-create-from-map(to, text-overflow, $-text-overflows);
+	}
+
+	@if func.module-enabled("font.transform") {
+		@include func.rule-create-from-map(tt, text-transform, $-text-transforms);
+	}
+
+	@if func.module-enabled("font.white-space") {
+		@include func.rule-create-from-map(ws, white-space, $-white-spaces);
+	}
+
+	@if func.module-enabled("font.word-break") {
+		@include func.rule-create-from-map(wb, word-break, $-word-breaks);
+	}
+
+	@if func.module-enabled("font.links") {
+		.link-disabled,
+		.link-disabled:hover {
+			text-decoration: none;
+		}
+
+		.link {
 			text-decoration: underline;
-		}
-	}
-	&-invert_dotted {
-		border-bottom: 1px dotted transparent;
-		&:hover {
-			border-bottom: 1px dotted;
-		}
-	}
-	&-invert_dashed {
-		border-bottom: 1px dashed transparent;
-		&:hover {
-			border-bottom: 1px dashed;
+			&:hover,
+			&-dotted,
+			&-dashed {
+				text-decoration: none;
+			}
+			&-dotted {
+				border-bottom: 1px dotted;
+				&:hover {
+					border-bottom-color: transparent;
+				}
+			}
+			&-dashed {
+				border-bottom: 1px dashed;
+				&:hover {
+					border-bottom-color: transparent;
+				}
+			}
 		}
 	}
 }
-
-// .fs-decrease{
-// 	font-size: calc(1em - 1px);
-// }
-// .fs-increase{
-// 	font-size: calc(1em + 1px);
-// }

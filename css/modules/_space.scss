@@ -1,0 +1,144 @@
+@use '../func';
+
+$-sides: (
+	t: top,
+	r: right,
+	b: bottom,
+	l: left
+);
+
+$-space-min: 0;
+$-space-max: 10;
+$-space-step: 0.1;
+
+@if func.module-enabled(space) {
+	.m-a {
+		margin: auto;
+	}
+	@for $i from $-space-min through $-space-max {
+		.m-#{$i} {
+			margin: #{$i}rem;
+		}
+		.p-#{$i} {
+			padding: #{$i}rem;
+		}
+	}
+
+	.mx-a {
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.my-a {
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+	@for $i from $-space-min through $-space-max {
+		.mx-#{$i} {
+			margin-left: #{$i}rem;
+			margin-right: #{$i}rem;
+		}
+		.my-#{$i} {
+			margin-top: #{$i}rem;
+			margin-bottom: #{$i}rem;
+		}
+		.px-#{$i} {
+			padding-left: #{$i}rem;
+			padding-right: #{$i}rem;
+		}
+		.py-#{$i} {
+			padding-top: #{$i}rem;
+			padding-bottom: #{$i}rem;
+		}
+	}
+
+	@each $key, $value in $-sides {
+		.m#{$key}-a {
+			margin-#{$value}: auto;
+		}
+	}
+
+	@for $i from $-space-min through $-space-max {
+		@each $key, $value in $-sides {
+			.m#{$key}-#{$i} {
+				margin-#{$value}: #{$i}rem;
+			}
+			.p#{$key}-#{$i} {
+				padding-#{$value}: #{$i}rem;
+			}
+		}
+	}
+
+	@each $key, $value in $-sides {
+		@for $i from 1 through 9 {
+			$size: $i / 10;
+			.m#{$key}-#{func.selector-escape($size)} {
+				margin-#{$value}: #{$size}rem;
+			}
+			.p#{$key}-#{func.selector-escape($size)} {
+				padding-#{$value}: #{$size}rem;
+			}
+		}
+	}
+
+	@each $bp-name, $bp-value in func.$breakpoints {
+		@include func.media-query($bp-name) {
+			@for $i from $-space-min through $-space-max {
+				.m-#{$bp-name}-#{$i} {
+					margin: #{$i}rem;
+				}
+				.p-#{$bp-name}-#{$i} {
+					padding: #{$i}rem;
+				}
+			}
+			@for $i from $-space-min through $-space-max {
+				.mx-#{$bp-name}-#{$i} {
+					margin-left: #{$i}rem;
+					margin-right: #{$i}rem;
+				}
+				.my-#{$bp-name}-#{$i} {
+					margin-top: #{$i}rem;
+					margin-bottom: #{$i}rem;
+				}
+				.px-#{$bp-name}-#{$i} {
+					padding-left: #{$i}rem;
+					padding-right: #{$i}rem;
+				}
+				.py-#{$bp-name}-#{$i} {
+					padding-top: #{$i}rem;
+					padding-bottom: #{$i}rem;
+				}
+			}
+			@for $i from $-space-min through $-space-max {
+				@each $side-letter, $side-name in $-sides {
+					.m#{$side-letter}-#{$bp-name}-#{$i}{
+						margin-#{$side-name}: #{$i}rem;
+					}
+					.p#{$side-letter}-#{$bp-name}-#{$i}{
+						padding-#{$side-name}: #{$i}rem;
+					}
+				}
+			}
+			@each $key, $value in $-sides {
+				@for $i from 1 through 9 {
+					$size: $i / 10;
+					.m#{$key}-#{$bp-name}-#{func.selector-escape($size)} {
+						margin-#{$value}: #{$size}rem;
+					}
+					.p#{$key}-#{$bp-name}-#{func.selector-escape($size)} {
+						padding-#{$value}: #{$size}rem;
+					}
+				}
+			}
+		}
+	}
+
+	// TODO: Uncomment this
+	// @for $i from 1 through 10 {
+	// 	.nmr-#{$i}{
+	// 		margin: -#{$i}px;
+	// 	}
+	// 	.nmr-#{$i} > *{
+	// 		margin: #{$i}px;
+	// 	}
+	// }
+}

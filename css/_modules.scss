@@ -1,6 +1,34 @@
-@use 'modules/font';
-@use 'modules/float';
-@use 'modules/position';
-@use 'modules/dimension';
-@use 'modules/layout';
-@use 'modules/spacing';
+$modules: (
+	dimension: true,
+	display: true,
+	flex: true,
+	float: true,
+	font: true,
+	grid: true,
+	layout: true,
+	position: true,
+	space: true,
+	misc: true,
+	reset: true
+);
+
+$sub-modules: (
+	"dimension.default": true,
+	"dimension.min-max": true,
+	"font.weight": true,
+	"font.size": true,
+	"font.style": true,
+	"font.line-height": true,
+	"font.align": true,
+	"font.decoration": true,
+	"font.overflow": true,
+	"font.transform": true,
+	"font.white-space": true,
+	"font.word-break": true,
+	"font.links": true,
+	"position.offset": true,
+	"position.valign": true,
+	"misc.overflow": true,
+	"misc.opacity": true,
+	"misc.border-radius": true,
+);

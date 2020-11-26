@@ -1,8 +1,10 @@
 @use 'sass:string';
 @use 'sass:list';
+@use 'sass:map';
+@use 'modules';
 
 $breakpoints: (
-	sm: 576px,
+	// sm: 576px,
 	md: 768px,
 	lg: 992px,
 	xl: 1200px
@@ -33,6 +35,10 @@ $breakpoints: (
 	@return list.index($list, $value) != null;
 }
 
+@function str-contains($string, $char) {
+	@return str-index($string, $char) != null;
+}
+
 @function str-to-list($string) {
 	$string: to-str($string);
 	$result: ();
@@ -40,6 +46,26 @@ $breakpoints: (
 	@for $i from 1 through $len {
 		$char: string.slice($string, $i, $i);
 		$result: list.append($result, $char);
+	}
+	@return $result;
+}
+
+@function module-enabled($module-name) {
+	$module-name: to-lower-case($module-name);
+	$is-submodule: str-contains($module-name, ".");
+	@if $is-submodule {
+		@return map.get(modules.$sub-modules, $module-name) == true;
+	} @else {
+		@return map.get(modules.$modules, $module-name) == true;
+	}
+}
+
+@function range-create-from-borders($min, $max, $step) {
+	$result: ();
+	$value: $min;
+	@while $value <= $max {
+		$result: list.append($result, $value);
+		$value: $value + $step;
 	}
 	@return $result;
 }
