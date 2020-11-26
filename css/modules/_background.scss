@@ -1,0 +1,8 @@
+@use '../func';
+
+@if func.module-enabled("background") {
+	.bg-default{
+		background-position: center;
+		background-size: cover;
+	}
+}
