@@ -52,12 +52,7 @@ $breakpoints: (
 
 @function module-enabled($module-name) {
 	$module-name: to-lower-case($module-name);
-	$is-submodule: str-contains($module-name, ".");
-	@if $is-submodule {
-		@return map.get(modules.$sub-modules, $module-name) == true;
-	} @else {
-		@return map.get(modules.$modules, $module-name) == true;
-	}
+	@return map.get(modules.$modules, $module-name);
 }
 
 @function range-create-from-borders($min, $max, $step) {
