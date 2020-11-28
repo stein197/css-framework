@@ -42,9 +42,7 @@ $-overflows: (
 	body.fixed{
 		overflow: hidden !important;
 	}
-	table{
-		border-collapse: collapse;
-	}
+
 	.table-wrapper{
 		overflow-x: auto;
 		& > table{
@@ -52,7 +50,7 @@ $-overflows: (
 		}
 	}
 
-	.btn{
+	.btn {
 		display: inline-block;
 		cursor: pointer;
 		line-height: 1;
