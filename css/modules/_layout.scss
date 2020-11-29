@@ -1,0 +1,22 @@
+@use '../func';
+
+$-column-count-min: 1;
+$-column-count-max: 4;
+
+@if func.module-enabled(layout) {
+	@for $i from $-column-count-min through $-column-count-max {
+		.cc-#{$i}{
+			column-count: $i;
+		}
+	}
+
+	@each $bp-name, $bp-value in func.$breakpoints {
+		@include func.media-query($bp-name){
+			@for $i from $-column-count-min through $-column-count-max {
+				.cc-#{$bp-name}-#{$i}{
+					column-count: $i;
+				}
+			}
+		}
+	}
+}

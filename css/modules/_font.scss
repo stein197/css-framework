@@ -1,0 +1,140 @@
+@use '../func';
+
+$-font-weights: (
+	"thin": 100,
+	"light-x": 200,
+	"light": 300,
+	"regular": 400,
+	"medium": 500,
+	"bold-s": 600,
+	"bold": 700,
+	"bold-x": 800,
+	"black": 900,
+);
+$-font-styles: (
+	n: normal,
+	i: italic
+);
+$-text-aligns: (
+	l: left,
+	r: right,
+	c: center,
+	j: justify
+);
+$-text-decorations: (
+	n: none,
+	u: underline,
+	o: overline,
+	lt: line-through
+);
+$-text-overflows: (
+	c: clip,
+	e: ellipsis
+);
+$-text-transforms: (
+	n: none,
+	u: uppercase,
+	l: lowercase,
+	c: capitalize
+);
+$-white-spaces: (
+	normal: normal,
+	nowrap: nowrap
+);
+$-word-breaks: (
+	n: normal,
+	ba: break-all
+);
+
+$-fs-min: 1;
+$-fs-max: 5;
+$-fs-step: 0.2;
+
+$-lh-min: 0;
+$-lh-max: 1;
+$-lh-step: 0.1;
+
+@if func.module-enabled(font) {
+
+	@if func.module-enabled("font.weight") {
+		@include func.rule-create-from-map(fw, font-weight, $-font-weights);
+	}
+
+	@if func.module-enabled("font.size") {
+		@each $value in func.range-create-from-borders($-fs-min, $-fs-max, $-fs-step) {
+			.fs-#{func.selector-escape($value)} {
+				font-size: #{$value}rem;
+			}
+		}
+		.fs-decrease{
+			font-size: calc(1em - 0.1rem);
+		}
+		.fs-increase{
+			font-size: calc(1em + 0.1rem);
+		}
+	}
+
+	@if func.module-enabled("font.line-height") {
+		@each $value in func.range-create-from-borders($-lh-min, $-lh-max, $-lh-step) {
+			.lh-#{func.selector-escape($value)} {
+				line-height: $value;
+			}
+		}
+	}
+
+	@if func.module-enabled("font.style") {
+		@include func.rule-create-from-map(fs, font-style, $-font-styles);
+	}
+
+	@if func.module-enabled("font.align") {
+		@include func.rule-create-from-map(ta, text-align, $-text-aligns, true);
+	}
+
+	@if func.module-enabled("font.decoration") {
+		@include func.rule-create-from-map(td, text-decoration, $-text-decorations);
+	}
+
+	@if func.module-enabled("font.overflow") {
+		@include func.rule-create-from-map(to, text-overflow, $-text-overflows);
+	}
+
+	@if func.module-enabled("font.transform") {
+		@include func.rule-create-from-map(tt, text-transform, $-text-transforms);
+	}
+
+	@if func.module-enabled("font.white-space") {
+		@include func.rule-create-from-map(ws, white-space, $-white-spaces);
+	}
+
+	@if func.module-enabled("font.word-break") {
+		@include func.rule-create-from-map(wb, word-break, $-word-breaks);
+	}
+
+	@if func.module-enabled("font.links") {
+		.link-disabled,
+		.link-disabled:hover {
+			text-decoration: none;
+		}
+
+		.link {
+			text-decoration: underline;
+			&:hover,
+			&-dotted,
+			&-dashed {
+				text-decoration: none;
+			}
+			&-dotted {
+				border-bottom: 1px dotted;
+				&:hover {
+					border-bottom-color: transparent;
+				}
+			}
+			&-dashed {
+				border-bottom: 1px dashed;
+				&:hover {
+					border-bottom-color: transparent;
+				}
+			}
+		}
+	}
+}

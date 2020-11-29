@@ -1,0 +1,22 @@
+@use '../func';
+
+@if func.module-enabled(reset) {
+	*,
+	*::before,
+	*::after{
+		position: relative;
+		box-sizing: border-box;
+		background-repeat: no-repeat;
+		margin: 0;
+		padding: 0;
+	}
+	html{
+		font-size: 10px;
+	}
+	body{
+		font-size: 1.4rem;
+	}
+	table{
+		border-collapse: collapse;
+	}
+}

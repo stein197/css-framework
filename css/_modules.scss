@@ -1,0 +1,39 @@
+$modules: (
+	"dimension": true,
+	"dimension.default": true,
+	"dimension.min-max": true,
+
+	"display": true,
+	"flex": true,
+	"float": true,
+
+	"font": true,
+	"font.weight": true,
+	"font.size": true,
+	"font.style": true,
+	"font.line-height": true,
+	"font.align": true,
+	"font.decoration": true,
+	"font.overflow": true,
+	"font.transform": true,
+	"font.white-space": true,
+	"font.word-break": true,
+	"font.links": true,
+
+	"grid": true,
+	"layout": true,
+
+	"position": true,
+	"position.offset": true,
+	"position.valign": true,
+	
+	"space": true,
+
+	"misc": true,
+	"misc.overflow": true,
+	"misc.opacity": true,
+	"misc.border-radius": true,
+	
+	"reset": true,
+	"background": true,
+);

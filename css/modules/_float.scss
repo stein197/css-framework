@@ -1,0 +1,19 @@
+@use '../func';
+
+$-values: (
+	l: left,
+	r: right,
+	n: none
+);
+
+@if func.module-enabled(float) {
+	.container-float::after {
+		content: "";
+		display: block;
+		clear: both;
+	}
+	.clear {
+		clear: both;
+	}
+	@include func.rule-create-from-map(f, float, $-values, true);
+}
