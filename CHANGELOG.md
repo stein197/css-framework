@@ -1,4 +1,6 @@
 # Changelog
+## v2.1.1
+- Fixed wring `line-height` generation;
 ## v2.1.0
 - Added additional flex classes like `flex-direction` and `flex-wrap`;
 - Changed `font-weight` class names from `fw-<keyword>` to `fw-<number>`;
