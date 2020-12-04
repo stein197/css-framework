@@ -25,6 +25,18 @@ $-grows-n-shrinks: (
 	0: 0,
 	1: 1
 );
+$-flex-directions: (
+	r: row,
+	c: column,
+	rr: row-reverse,
+	cr: column-reverse
+);
+// TODO: Add flex-flow property if needed
+$-flex-wraps: (
+	w: wrap,
+	n: nowrap,
+	wr: wrap-reverse
+);
 
 @if func.module-enabled(flex) {
 	@include func.rule-create-from-map(jc, justify-content, $-justify-contents, true);
@@ -32,4 +44,6 @@ $-grows-n-shrinks: (
 	@include func.rule-create-from-map(ai, align-items, $-align-items, true);
 	@include func.rule-create-from-map(fg, flex-grow, $-grows-n-shrinks, true);
 	@include func.rule-create-from-map(fsh, flex-shrink, $-grows-n-shrinks, true);
+	@include func.rule-create-from-map(fd, flex-direction, $-flex-directions, true);
+	@include func.rule-create-from-map(fw, flex-wrap, $-flex-wraps, true);
 }
