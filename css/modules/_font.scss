@@ -50,8 +50,8 @@ $-fs-min: 1;
 $-fs-max: 5;
 $-fs-step: 0.2;
 
-$-lh-min: 0;
-$-lh-max: 1;
+$-lh-min: 1;
+$-lh-max: 2;
 $-lh-step: 0.1;
 
 @if func.module-enabled(font) {
