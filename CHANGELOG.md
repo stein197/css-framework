@@ -1,4 +1,6 @@
 # Changelog
+## v2.2.0
+- Added flex-based grid;
 ## v2.1.1
 - Fixed wring `line-height` generation;
 ## v2.1.0

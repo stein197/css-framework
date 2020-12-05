@@ -11,3 +11,4 @@
 @use 'modules/display';
 @use 'modules/flex';
 @use 'modules/grid';
+@use 'modules/grid.flex' as grid-flex;

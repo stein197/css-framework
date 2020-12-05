@@ -1,14 +1,69 @@
+@use 'sass:list';
 @use '../func';
 
 $-gutters:
-	0,
 	1,
-	1.5;
+	1.5,
+	2;
+$-cell-max-size: 12;
+// TODO: Add order if needed
 @if func.module-enabled("grid.flex") {
 	.row-flex {
 		display: flex;
 		flex-wrap: wrap;
 	}
-	.row-flex.v-gutters {}
-	.row-flex > .cell {}
+	@each $value in $-gutters {
+		.row-flex.gutter-#{func.selector-escape($value)} {
+			margin-left: -#{$value}rem;
+			margin-right: -#{$value}rem;
+		}
+		.gutter-#{func.selector-escape($value)} > .cell {
+			padding-left: #{$value}rem;
+			padding-right: #{$value}rem;
+		}
+	}
+	// Remove redudant ratios
+	$-ratios: ();
+	.cell-auto {
+		width: auto;
+		flex-grow: 1;
+	}
+	.cell-1 {
+		width: 100%;
+	}
+	@for $i from 2 through $-cell-max-size {
+		@for $j from 1 through $i {
+			@if not func.list-contains($-ratios, $j / $i) and $i != $j {
+				$-ratios: list.append($-ratios, $j / $i);
+				.cell-#{$j + \002F + $i} {
+					width: calc(100% * #{$j} / #{$i});
+					flex-grow: 0;
+				}
+			}
+		}
+	}
+
+	@each $bp-key, $bp-value in func.$breakpoints {
+		$-ratios: ();
+		@include func.media-query($bp-key) {
+			.cell-#{$bp-key}-auto {
+				width: auto;
+				flex-grow: 1;
+			}
+			.cell-#{$bp-key}-1 {
+				width: 100%;
+			}
+			@for $i from 2 through $-cell-max-size {
+				@for $j from 1 through $i {
+					@if not func.list-contains($-ratios, $j / $i) and $i != $j {
+						$-ratios: list.append($-ratios, $j / $i);
+						.cell-#{$bp-key}-#{$j + \002F + $i} {
+							width: calc(100% * #{$j} / #{$i});
+							flex-grow: 0;
+						}
+					}
+				}
+			}
+		}
+	}
 }
