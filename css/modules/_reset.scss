@@ -3,20 +3,29 @@
 @if func.module-enabled(reset) {
 	*,
 	*::before,
-	*::after{
+	*::after {
 		position: relative;
 		box-sizing: border-box;
 		background-repeat: no-repeat;
 		margin: 0;
 		padding: 0;
+		transform-origin: center;
 	}
-	html{
+
+	html {
 		font-size: 10px;
 	}
-	body{
+
+	body {
 		font-size: 1.4rem;
 	}
-	table{
+
+	table {
 		border-collapse: collapse;
+	}
+
+	button {
+		border: none;
+		background-color: transparent;
 	}
 }
